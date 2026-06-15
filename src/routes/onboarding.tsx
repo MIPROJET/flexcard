@@ -92,8 +92,10 @@ function OnboardingPage() {
   const finish = () => {
     const slug = slugify(`${firstName}-${lastName}`) || me.id;
     update({ firstName, lastName, title, company, sector, description, city, phones, website, publicEmail, templateId, palette, slug });
+    try { localStorage.removeItem(DRAFT_KEY); } catch {}
     navigate({ to: "/dashboard" });
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-mesh">
