@@ -8,6 +8,7 @@ import {
   Check, X, MapPin, Star, CreditCard, Coins, Briefcase,
 } from "lucide-react";
 import cardImg from "@/assets/flexcard-card.jpg.asset.json";
+import commissionImg from "@/assets/flexcard-commission.png.asset.json";
 import { PhoneInput, splitDial } from "@/components/flex/PhoneInput";
 
 import { fmt } from "@/lib/mock/utils";
@@ -519,6 +520,7 @@ function WhySection() {
             icon={<Coins />}
             title="Votre carte vous rapporte de l'argent."
             desc="Invitez vos contacts sur FlexCard. À chaque abonnement souscrit par votre filleul, vous gagnez une commission automatique. Votre réseau grandit. Vos revenus aussi."
+            image={commissionImg.url}
             accent
           />
         </div>
@@ -540,7 +542,7 @@ function Feature({ icon, title, desc, image, accent }: { icon: React.ReactNode; 
         <div className="mt-5 flex justify-center">
           <img
             src={image}
-            alt="Carte physique FlexCard"
+            alt={title}
             className="w-full max-w-[280px] rounded-xl shadow-elev"
             style={{ transform: "rotate(-3deg)" }}
             loading="lazy"
