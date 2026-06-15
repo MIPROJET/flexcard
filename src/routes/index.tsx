@@ -542,7 +542,7 @@ function Feature({ icon, title, desc, image, accent }: { icon: React.ReactNode; 
         <div className="mt-5 flex justify-center">
           <img
             src={image}
-            alt="Carte physique FlexCard"
+            alt={title}
             className="w-full max-w-[280px] rounded-xl shadow-elev"
             style={{ transform: "rotate(-3deg)" }}
             loading="lazy"
