@@ -9,19 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TarifsRouteImport } from './routes/tarifs'
+import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as ImprimeurRouteImport } from './routes/imprimeur'
 import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PrintCodeRouteImport } from './routes/print.$code'
+import { Route as OnboardingVocalRouteImport } from './routes/onboarding.vocal'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated.templates'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated.team'
+import { Route as AuthenticatedRevenusRouteImport } from './routes/_authenticated.revenus'
 import { Route as AuthenticatedProspectsRouteImport } from './routes/_authenticated.prospects'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as AuthenticatedPremiumRouteImport } from './routes/_authenticated.premium'
@@ -29,6 +35,16 @@ import { Route as AuthenticatedGalleryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated.billing'
 
+const TarifsRoute = TarifsRouteImport.update({
+  id: '/tarifs',
+  path: '/tarifs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParrainageRoute = ParrainageRouteImport.update({
+  id: '/parrainage',
+  path: '/parrainage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -37,6 +53,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   id: '/mentions-legales',
   path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImprimeurRoute = ImprimeurRouteImport.update({
+  id: '/imprimeur',
+  path: '/imprimeur',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DirectoryRoute = DirectoryRouteImport.update({
@@ -59,6 +80,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -78,6 +104,11 @@ const PrintCodeRoute = PrintCodeRouteImport.update({
   path: '/print/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingVocalRoute = OnboardingVocalRouteImport.update({
+  id: '/vocal',
+  path: '/vocal',
+  getParentRoute: () => OnboardingRoute,
+} as any)
 const CSlugRoute = CSlugRouteImport.update({
   id: '/c/$slug',
   path: '/c/$slug',
@@ -91,6 +122,11 @@ const AuthenticatedTemplatesRoute = AuthenticatedTemplatesRouteImport.update({
 const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
   id: '/team',
   path: '/team',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRevenusRoute = AuthenticatedRevenusRouteImport.update({
+  id: '/revenus',
+  path: '/revenus',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedProspectsRoute = AuthenticatedProspectsRouteImport.update({
@@ -127,41 +163,53 @@ const AuthenticatedBillingRoute = AuthenticatedBillingRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
+  '/imprimeur': typeof ImprimeurRoute
   '/mentions-legales': typeof MentionsLegalesRoute
-  '/onboarding': typeof OnboardingRoute
+  '/onboarding': typeof OnboardingRouteWithChildren
+  '/parrainage': typeof ParrainageRoute
+  '/tarifs': typeof TarifsRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/gallery': typeof AuthenticatedGalleryRoute
   '/premium': typeof AuthenticatedPremiumRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/prospects': typeof AuthenticatedProspectsRoute
+  '/revenus': typeof AuthenticatedRevenusRoute
   '/team': typeof AuthenticatedTeamRoute
   '/templates': typeof AuthenticatedTemplatesRoute
   '/c/$slug': typeof CSlugRoute
+  '/onboarding/vocal': typeof OnboardingVocalRoute
   '/print/$code': typeof PrintCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
+  '/imprimeur': typeof ImprimeurRoute
   '/mentions-legales': typeof MentionsLegalesRoute
-  '/onboarding': typeof OnboardingRoute
+  '/onboarding': typeof OnboardingRouteWithChildren
+  '/parrainage': typeof ParrainageRoute
+  '/tarifs': typeof TarifsRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/gallery': typeof AuthenticatedGalleryRoute
   '/premium': typeof AuthenticatedPremiumRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/prospects': typeof AuthenticatedProspectsRoute
+  '/revenus': typeof AuthenticatedRevenusRoute
   '/team': typeof AuthenticatedTeamRoute
   '/templates': typeof AuthenticatedTemplatesRoute
   '/c/$slug': typeof CSlugRoute
+  '/onboarding/vocal': typeof OnboardingVocalRoute
   '/print/$code': typeof PrintCodeRoute
 }
 export interface FileRoutesById {
@@ -169,21 +217,27 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
+  '/imprimeur': typeof ImprimeurRoute
   '/mentions-legales': typeof MentionsLegalesRoute
-  '/onboarding': typeof OnboardingRoute
+  '/onboarding': typeof OnboardingRouteWithChildren
+  '/parrainage': typeof ParrainageRoute
+  '/tarifs': typeof TarifsRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/gallery': typeof AuthenticatedGalleryRoute
   '/_authenticated/premium': typeof AuthenticatedPremiumRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/prospects': typeof AuthenticatedProspectsRoute
+  '/_authenticated/revenus': typeof AuthenticatedRevenusRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/_authenticated/templates': typeof AuthenticatedTemplatesRoute
   '/c/$slug': typeof CSlugRoute
+  '/onboarding/vocal': typeof OnboardingVocalRoute
   '/print/$code': typeof PrintCodeRoute
 }
 export interface FileRouteTypes {
@@ -191,62 +245,80 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/auth'
     | '/confidentialite'
     | '/contact'
     | '/directory'
+    | '/imprimeur'
     | '/mentions-legales'
     | '/onboarding'
+    | '/parrainage'
+    | '/tarifs'
     | '/billing'
     | '/dashboard'
     | '/gallery'
     | '/premium'
     | '/profile'
     | '/prospects'
+    | '/revenus'
     | '/team'
     | '/templates'
     | '/c/$slug'
+    | '/onboarding/vocal'
     | '/print/$code'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/auth'
     | '/confidentialite'
     | '/contact'
     | '/directory'
+    | '/imprimeur'
     | '/mentions-legales'
     | '/onboarding'
+    | '/parrainage'
+    | '/tarifs'
     | '/billing'
     | '/dashboard'
     | '/gallery'
     | '/premium'
     | '/profile'
     | '/prospects'
+    | '/revenus'
     | '/team'
     | '/templates'
     | '/c/$slug'
+    | '/onboarding/vocal'
     | '/print/$code'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/admin'
     | '/auth'
     | '/confidentialite'
     | '/contact'
     | '/directory'
+    | '/imprimeur'
     | '/mentions-legales'
     | '/onboarding'
+    | '/parrainage'
+    | '/tarifs'
     | '/_authenticated/billing'
     | '/_authenticated/dashboard'
     | '/_authenticated/gallery'
     | '/_authenticated/premium'
     | '/_authenticated/profile'
     | '/_authenticated/prospects'
+    | '/_authenticated/revenus'
     | '/_authenticated/team'
     | '/_authenticated/templates'
     | '/c/$slug'
+    | '/onboarding/vocal'
     | '/print/$code'
   fileRoutesById: FileRoutesById
 }
@@ -254,18 +326,36 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   ContactRoute: typeof ContactRoute
   DirectoryRoute: typeof DirectoryRoute
+  ImprimeurRoute: typeof ImprimeurRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
-  OnboardingRoute: typeof OnboardingRoute
+  OnboardingRoute: typeof OnboardingRouteWithChildren
+  ParrainageRoute: typeof ParrainageRoute
+  TarifsRoute: typeof TarifsRoute
   CSlugRoute: typeof CSlugRoute
   PrintCodeRoute: typeof PrintCodeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tarifs': {
+      id: '/tarifs'
+      path: '/tarifs'
+      fullPath: '/tarifs'
+      preLoaderRoute: typeof TarifsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/parrainage': {
+      id: '/parrainage'
+      path: '/parrainage'
+      fullPath: '/parrainage'
+      preLoaderRoute: typeof ParrainageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -278,6 +368,13 @@ declare module '@tanstack/react-router' {
       path: '/mentions-legales'
       fullPath: '/mentions-legales'
       preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/imprimeur': {
+      id: '/imprimeur'
+      path: '/imprimeur'
+      fullPath: '/imprimeur'
+      preLoaderRoute: typeof ImprimeurRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/directory': {
@@ -308,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -336,6 +440,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrintCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding/vocal': {
+      id: '/onboarding/vocal'
+      path: '/vocal'
+      fullPath: '/onboarding/vocal'
+      preLoaderRoute: typeof OnboardingVocalRouteImport
+      parentRoute: typeof OnboardingRoute
+    }
     '/c/$slug': {
       id: '/c/$slug'
       path: '/c/$slug'
@@ -355,6 +466,13 @@ declare module '@tanstack/react-router' {
       path: '/team'
       fullPath: '/team'
       preLoaderRoute: typeof AuthenticatedTeamRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/revenus': {
+      id: '/_authenticated/revenus'
+      path: '/revenus'
+      fullPath: '/revenus'
+      preLoaderRoute: typeof AuthenticatedRevenusRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/prospects': {
@@ -409,6 +527,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPremiumRoute: typeof AuthenticatedPremiumRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedProspectsRoute: typeof AuthenticatedProspectsRoute
+  AuthenticatedRevenusRoute: typeof AuthenticatedRevenusRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
   AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRoute
 }
@@ -420,6 +539,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPremiumRoute: AuthenticatedPremiumRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedProspectsRoute: AuthenticatedProspectsRoute,
+  AuthenticatedRevenusRoute: AuthenticatedRevenusRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
   AuthenticatedTemplatesRoute: AuthenticatedTemplatesRoute,
 }
@@ -428,16 +548,32 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface OnboardingRouteChildren {
+  OnboardingVocalRoute: typeof OnboardingVocalRoute
+}
+
+const OnboardingRouteChildren: OnboardingRouteChildren = {
+  OnboardingVocalRoute: OnboardingVocalRoute,
+}
+
+const OnboardingRouteWithChildren = OnboardingRoute._addFileChildren(
+  OnboardingRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
   ContactRoute: ContactRoute,
   DirectoryRoute: DirectoryRoute,
+  ImprimeurRoute: ImprimeurRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
-  OnboardingRoute: OnboardingRoute,
+  OnboardingRoute: OnboardingRouteWithChildren,
+  ParrainageRoute: ParrainageRoute,
+  TarifsRoute: TarifsRoute,
   CSlugRoute: CSlugRoute,
   PrintCodeRoute: PrintCodeRoute,
 }
