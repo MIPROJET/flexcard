@@ -527,17 +527,29 @@ function WhySection() {
   );
 }
 
-function Feature({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
+function Feature({ icon, title, desc, image, accent }: { icon: React.ReactNode; title: string; desc: string; image?: string; accent?: boolean }) {
   return (
-    <div className="surface-elevated p-6">
-      <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-brand text-white shadow-glow">
+    <div className={`surface-elevated p-6 ${accent ? "border-2 border-[color:var(--accent-orange)]/40" : ""}`}>
+      <div className={`inline-flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-glow ${accent ? "bg-[color:var(--accent-orange)]" : "bg-gradient-brand"}`}>
         {icon}
       </div>
       <h3 className="mt-4 text-lg font-semibold">{title}</h3>
       <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{desc}</p>
+      {image && (
+        <div className="mt-5 flex justify-center">
+          <img
+            src={image}
+            alt="Carte physique FlexCard"
+            className="w-full max-w-[280px] rounded-xl shadow-elev"
+            style={{ transform: "rotate(-3deg)" }}
+            loading="lazy"
+          />
+        </div>
+      )}
     </div>
   );
 }
+
 
 /* ----- Témoignages ----- */
 function TestimonialsSection() {
