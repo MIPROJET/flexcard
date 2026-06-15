@@ -8,6 +8,7 @@ import {
   Check, X, MapPin, Star, CreditCard, Coins, Briefcase,
 } from "lucide-react";
 import cardImg from "@/assets/flexcard-card.jpg.asset.json";
+import commissionImg from "@/assets/flexcard-commission.png.asset.json";
 import { PhoneInput, splitDial } from "@/components/flex/PhoneInput";
 
 import { fmt } from "@/lib/mock/utils";
