@@ -61,25 +61,27 @@
 
   /* Surfaces */
   --background: oklch(0.985 0.005 240);
-  --foreground: oklch(0.18 0.04 260);
-  --ink: oklch(0.12 0.04 260);
+  --foreground: oklch(0.18 0.07 265);
+  --ink: oklch(0.18 0.07 265);
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.04 260);
+  --card-foreground: oklch(0.18 0.07 265);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.04 260);
+  --popover-foreground: oklch(0.18 0.07 265);
 
-  /* Brand — FlexCard blues */
-  --primary: oklch(0.55 0.22 255);          /* bleu électrique du logo */
+  /* Brand — FlexCard navy #0D1B3E, electric blue #1E90FF, orange #F5A623 */
+  --primary: oklch(0.65 0.18 250);          /* #1E90FF */
   --primary-foreground: oklch(0.99 0 0);
-  --primary-glow: oklch(0.72 0.18 235);     /* bleu clair lumineux */
+  --primary-glow: oklch(0.78 0.14 240);
+  --navy: oklch(0.22 0.08 265);             /* #0D1B3E */
+  --accent-orange: oklch(0.76 0.16 70);     /* #F5A623 */
 
   --secondary: oklch(0.96 0.012 250);
-  --secondary-foreground: oklch(0.22 0.05 260);
+  --secondary-foreground: oklch(0.22 0.05 265);
   --muted: oklch(0.96 0.012 250);
   --muted-foreground: oklch(0.5 0.03 255);
-  --accent: oklch(0.94 0.03 245);
-  --accent-foreground: oklch(0.2 0.05 260);
+  --accent: oklch(0.76 0.16 70);            /* orange accent */
+  --accent-foreground: oklch(0.18 0.07 265);
 
   --destructive: oklch(0.58 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
@@ -90,15 +92,16 @@
 
   --border: oklch(0.92 0.015 245);
   --input: oklch(0.94 0.012 245);
-  --ring: oklch(0.55 0.22 255);
+  --ring: oklch(0.65 0.18 250);
 
-  /* Gradients & shadows */
-  --gradient-brand: linear-gradient(135deg, oklch(0.45 0.24 265) 0%, oklch(0.65 0.2 240) 50%, oklch(0.78 0.16 220) 100%);
-  --gradient-hero: radial-gradient(ellipse at top, oklch(0.7 0.18 240 / 0.18), transparent 60%),
-                   radial-gradient(ellipse at bottom right, oklch(0.55 0.22 260 / 0.15), transparent 60%);
-  --gradient-mesh: radial-gradient(at 20% 10%, oklch(0.78 0.16 220 / 0.35), transparent 50%),
-                   radial-gradient(at 80% 0%, oklch(0.55 0.22 260 / 0.3), transparent 50%),
-                   radial-gradient(at 40% 90%, oklch(0.72 0.18 235 / 0.25), transparent 50%);
+  /* Gradients & shadows — navy → electric blue → orange */
+  --gradient-brand: linear-gradient(135deg, oklch(0.22 0.08 265) 0%, oklch(0.55 0.2 250) 55%, oklch(0.76 0.16 70) 100%);
+  --gradient-hero: radial-gradient(ellipse at top, oklch(0.65 0.18 250 / 0.18), transparent 60%),
+                   radial-gradient(ellipse at bottom right, oklch(0.76 0.16 70 / 0.12), transparent 60%);
+  --gradient-mesh: radial-gradient(at 20% 10%, oklch(0.78 0.14 240 / 0.35), transparent 50%),
+                   radial-gradient(at 80% 0%, oklch(0.22 0.08 265 / 0.25), transparent 50%),
+                   radial-gradient(at 40% 90%, oklch(0.76 0.16 70 / 0.22), transparent 50%);
+
 
   --shadow-sm: 0 1px 2px oklch(0.4 0.1 260 / 0.06);
   --shadow-md: 0 4px 16px -4px oklch(0.4 0.1 260 / 0.1);
