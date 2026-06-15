@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useApp, useCurrentProfile } from "@/lib/mock/store";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { detectOperator, normalizePhone, slugify, validatePhonesAgainstRules } from "@/lib/mock/utils";
-import { Save, Plus, X } from "lucide-react";
+import { Save, Plus, X, Camera, Film, Upload, Trash2 } from "lucide-react";
 import { PhoneInput } from "@/components/flex/PhoneInput";
+import { toast } from "sonner";
 
 import { ALL_SECTORS as SECTORS } from "@/lib/mock/sectors";
 
