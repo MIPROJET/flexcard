@@ -100,9 +100,9 @@ function PlanCard({ name, price, period, features, cta }: { name: string; price:
         {features.map((f) => <li key={f} className="flex gap-2"><Check className="h-4 w-4 text-success mt-0.5" /> {f}</li>)}
       </ul>
       <button
-        onClick={() => alert(`Paiement simulé pour ${name}.`)}
-        className="mt-5 rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-glow"
-      >{cta}</button>
+        onClick={() => toast.success(`Paiement Wave réussi`, { description: `${name} activé (démo).` })}
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#00d2ff] px-5 py-2.5 text-sm font-bold text-[#001a33] shadow-glow"
+      ><Wallet className="h-4 w-4" /> Payer avec Wave</button>
     </div>
   );
 }
