@@ -501,12 +501,27 @@ function WhySection() {
           </div>
         </div>
 
-        {/* Mini-features */}
+        {/* 5 avantages — 3 ligne 1 + 2 ligne 2 (centrés) */}
         <div className="mt-10 grid gap-6 md:grid-cols-3">
-          <Feature icon={<Zap />} title="Toujours à jour" desc="Modifie ton poste, ton numéro — tout se met à jour dans la poche de tes contacts." />
-          <Feature icon={<QrCode />} title="QR code + URL" desc="flexcard.app/nomutilisateur. Scanné = enregistré dans l'annuaire." />
+          <Feature icon={<Zap />} title="Toujours à jour" desc="Modifie ton poste, ton numéro — tout se met à jour dans la poche de tes contacts, en temps réel." />
+          <Feature icon={<QrCode />} title="QR code + URL" desc="flexcard.app/nomutilisateur. Scanné = enregistré dans l'annuaire intelligent." />
           <Feature icon={<Globe />} title="Annuaire intelligent" desc="Ton numéro affiche tous les pros que tu as scannés. Recherche par ville, secteur." />
         </div>
+        <div className="mt-6 grid gap-6 md:grid-cols-2 md:max-w-5xl md:mx-auto">
+          <Feature
+            icon={<CreditCard />}
+            title="Une carte physique. Mille connexions."
+            desc="Une seule carte imprimée à vie. QR code gravé, scannable par n'importe quel téléphone. Connectez autant de prospects que vous voulez. Économisez jusqu'à 99% sur vos frais d'impression."
+            image={cardImg.url}
+          />
+          <Feature
+            icon={<Coins />}
+            title="Votre carte vous rapporte de l'argent."
+            desc="Invitez vos contacts sur FlexCard. À chaque abonnement souscrit par votre filleul, vous gagnez une commission automatique. Votre réseau grandit. Vos revenus aussi."
+            accent
+          />
+        </div>
+
       </div>
     </section>
   );
