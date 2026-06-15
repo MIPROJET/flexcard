@@ -6,7 +6,10 @@ import { useState } from "react";
 
 const links = [
   { to: "/", label: "Accueil" },
-  { to: "/about", label: "À propos" },
+  { to: "/tarifs", label: "Tarifs" },
+  { to: "/parrainage", label: "Parrainage" },
+  { to: "/directory", label: "Annuaire" },
+  { to: "/imprimeur", label: "Imprimeur" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -103,15 +106,18 @@ export function PublicFooter() {
           <div className="text-sm">
             <h4 className="mb-3 font-semibold">Produit</h4>
             <ul className="space-y-2 text-muted-foreground">
-              <li><Link to="/about" className="hover:text-foreground">À propos</Link></li>
+              <li><Link to="/tarifs" className="hover:text-foreground">Tarifs</Link></li>
+              <li><Link to="/parrainage" className="hover:text-foreground">Parrainage</Link></li>
               <li><Link to="/directory" className="hover:text-foreground">Annuaire</Link></li>
+              <li><Link to="/imprimeur" className="hover:text-foreground">Imprimeur</Link></li>
               <li><Link to="/auth" className="hover:text-foreground">Créer ma carte</Link></li>
-              <li><Link to="/contact" className="hover:text-foreground">Contact</Link></li>
             </ul>
           </div>
           <div className="text-sm">
             <h4 className="mb-3 font-semibold">Légal</h4>
             <ul className="space-y-2 text-muted-foreground">
+              <li><Link to="/about" className="hover:text-foreground">À propos</Link></li>
+              <li><Link to="/contact" className="hover:text-foreground">Contact</Link></li>
               <li><Link to="/confidentialite" className="hover:text-foreground">Confidentialité</Link></li>
               <li><Link to="/mentions-legales" className="hover:text-foreground">Mentions légales</Link></li>
             </ul>

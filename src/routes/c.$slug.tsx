@@ -2,13 +2,19 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useProfileBySlug, useApp } from "@/lib/mock/store";
 import { BusinessCard } from "@/components/flex/BusinessCard";
 import { Logo } from "@/components/flex/Logo";
-import { Download, Save, Share2, ImagePlus, Megaphone, Newspaper } from "lucide-react";
+import {
+  Download, Save, Share2, ImagePlus, Megaphone, Newspaper,
+  Phone, MessageCircle, Mail, Globe, QrCode as QrIcon, Linkedin, Instagram, Facebook,
+} from "lucide-react";
 import { PhoneInput } from "@/components/flex/PhoneInput";
 import { useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import { toast } from "sonner";
+import logoAsset from "@/assets/flexcard-logo.png.asset.json";
 
 export const Route = createFileRoute("/c/$slug")({
-  
-  ssr: false,head: ({ params }) => ({
+  ssr: false,
+  head: ({ params }) => ({
     meta: [
       { title: `${params.slug} — FlexCard` },
       { name: "description", content: "Carte de visite digitale FlexCard." },
@@ -19,11 +25,30 @@ export const Route = createFileRoute("/c/$slug")({
   component: PublicCardPage,
 });
 
+function buildVCard(p: any): string {
+  const lines = [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    `N:${p.lastName};${p.firstName};;;`,
+    `FN:${p.firstName} ${p.lastName}`,
+    p.title ? `TITLE:${p.title}` : "",
+    p.company ? `ORG:${p.company}` : "",
+    ...p.phones.map((ph: any) => `TEL;TYPE=cell:${ph.number.replace(/\s/g, "")}`),
+    p.publicEmail ? `EMAIL;TYPE=INTERNET:${p.publicEmail}` : "",
+    p.website ? `URL:${p.website}` : "",
+    p.city ? `ADR;TYPE=WORK:;;;${p.city};;;` : "",
+    `NOTE:${(p.description ?? "").slice(0, 240)}`,
+    "END:VCARD",
+  ].filter(Boolean);
+  return lines.join("\n");
+}
+
 function PublicCardPage() {
   const { slug } = Route.useParams();
   const profile = useProfileBySlug(slug);
   const recordScan = useApp((s) => s.recordScan);
   const [linkOpen, setLinkOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
   const [linkPhone, setLinkPhone] = useState("");
   const [linkName, setLinkName] = useState("");
 
@@ -38,11 +63,32 @@ function PublicCardPage() {
     );
   }
 
+  const cardUrl = typeof window !== "undefined" ? `${window.location.origin}/c/${profile.slug}` : "";
+  const tel = profile.phones[0]?.number.replace(/\s/g, "");
+  const wa = profile.socials.whatsapp?.replace(/\D/g, "") || (tel?.replace(/\D/g, ""));
+
   const photos = profile.gallery.filter((g) => g.category === "photos");
   const affiches = profile.gallery.filter((g) => g.category === "affiches");
   const visuels = profile.gallery.filter((g) => g.category === "visuels");
   const videos = profile.gallery.filter((g) => g.category === "videos");
   const news = profile.gallery.filter((g) => g.category === "actualites");
+
+  const downloadVCard = () => {
+    const blob = new Blob([buildVCard(profile)], { type: "text/vcard;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `${profile.slug}.vcf`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Contact téléchargé", { description: "Ouvre le fichier pour l'ajouter à tes contacts." });
+  };
+
+  const share = async () => {
+    if ((navigator as any).share) {
+      try { await (navigator as any).share({ title: `${profile.firstName} ${profile.lastName}`, text: profile.title, url: cardUrl }); return; } catch {}
+    }
+    try { await navigator.clipboard.writeText(cardUrl); toast.success("Lien copié"); } catch { toast.error("Impossible de partager"); }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-mesh pb-16">
@@ -65,6 +111,30 @@ function PublicCardPage() {
           </div>
         )}
         <BusinessCard profile={profile} variant="full" />
+
+        {/* Action bar */}
+        <div className="surface-elevated p-4">
+          <div className="grid grid-cols-4 gap-3 sm:grid-cols-7">
+            {tel && <ActionBtn href={`tel:${tel}`} label="Appel" icon={<Phone className="h-5 w-5" />} color={profile.palette.primary} />}
+            {wa && <ActionBtn href={`https://wa.me/${wa}`} label="WhatsApp" icon={<MessageCircle className="h-5 w-5" />} color="#25D366" />}
+            {profile.publicEmail && <ActionBtn href={`mailto:${profile.publicEmail}`} label="Email" icon={<Mail className="h-5 w-5" />} color={profile.palette.ink} />}
+            {profile.website && <ActionBtn href={profile.website} label="Web" icon={<Globe className="h-5 w-5" />} color={profile.palette.accent} />}
+            {profile.socials.linkedin && <ActionBtn href={`https://linkedin.com/in/${profile.socials.linkedin}`} label="LinkedIn" icon={<Linkedin className="h-5 w-5" />} color="#0A66C2" />}
+            {profile.socials.instagram && <ActionBtn href={`https://instagram.com/${profile.socials.instagram}`} label="Insta" icon={<Instagram className="h-5 w-5" />} color="#E1306C" />}
+            {profile.socials.facebook && <ActionBtn href={`https://facebook.com/${profile.socials.facebook}`} label="Facebook" icon={<Facebook className="h-5 w-5" />} color="#1877F2" />}
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            <button onClick={downloadVCard} className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2.5 text-xs font-semibold hover:bg-secondary">
+              <Download className="h-3.5 w-3.5" /> vCard
+            </button>
+            <button onClick={() => setQrOpen(true)} className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2.5 text-xs font-semibold hover:bg-secondary">
+              <QrIcon className="h-3.5 w-3.5" /> QR Code
+            </button>
+            <button onClick={share} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-brand px-3 py-2.5 text-xs font-semibold text-white shadow-glow">
+              <Share2 className="h-3.5 w-3.5" /> Partager
+            </button>
+          </div>
+        </div>
 
         {photos.length > 0 && <GallerySection title="Photos" icon={<ImagePlus className="h-4 w-4" />} items={photos} />}
         {affiches.length > 0 && <GallerySection title="Affiches" icon={<Megaphone className="h-4 w-4" />} items={affiches} />}
@@ -89,12 +159,27 @@ function PublicCardPage() {
         </div>
       </div>
 
+      {/* QR modal */}
+      {qrOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={() => setQrOpen(false)}>
+          <div className="w-full max-w-sm surface-elevated p-6 text-center" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold">Scanne ma carte</h3>
+            <p className="mt-1 text-xs text-muted-foreground">QR haute résistance · Niveau H</p>
+            <div className="relative mx-auto mt-5 inline-block rounded-2xl bg-white p-4 ring-1 ring-border">
+              <QRCodeSVG value={cardUrl} size={220} level="H" fgColor={profile.palette.ink} bgColor="#ffffff" imageSettings={{ src: logoAsset.url, height: 44, width: 44, excavate: true }} />
+            </div>
+            <p className="mt-3 break-all text-xs text-muted-foreground">{cardUrl}</p>
+            <button onClick={() => setQrOpen(false)} className="mt-5 w-full rounded-xl bg-gradient-brand px-5 py-3 text-sm font-semibold text-white shadow-glow">Fermer</button>
+          </div>
+        </div>
+      )}
+
       {linkOpen && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center" onClick={() => setLinkOpen(false)}>
           <div className="w-full max-w-md surface-elevated p-6" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-semibold">Enregistrer ce contact</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Pour la démo, indique ton numéro afin de créer le lien d'annuaire.
+              Indique ton numéro pour créer le lien d'annuaire automatique.
             </p>
             <div className="mt-5 space-y-3">
               <input
@@ -105,23 +190,32 @@ function PublicCardPage() {
               <PhoneInput value={linkPhone} onChange={setLinkPhone} placeholder="07 12 34 56 78" />
               <button
                 onClick={() => {
-                  if (linkPhone.length < 6) return;
+                  if (linkPhone.length < 6) { toast.error("Numéro invalide"); return; }
                   recordScan(profile.id, linkPhone, linkName || undefined);
-                  alert("Contact enregistré ! Tu apparais maintenant dans son annuaire de prospects.");
+                  downloadVCard();
+                  toast.success("Contact enregistré !", { description: "Tu apparais maintenant dans son annuaire de prospects." });
                   setLinkOpen(false);
                 }}
                 className="w-full rounded-xl bg-gradient-brand px-5 py-3 text-sm font-semibold text-white shadow-glow"
               >
                 Enregistrer dans mon téléphone
               </button>
-              <p className="text-[11px] text-muted-foreground">
-                Sur l'app réelle, FlexCard utilisera l'API Contacts du téléphone et créera le lien automatiquement.
-              </p>
             </div>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function ActionBtn({ href, label, icon, color }: { href: string; label: string; icon: React.ReactNode; color: string }) {
+  return (
+    <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className="flex flex-col items-center gap-1.5 group">
+      <span className="grid h-12 w-12 place-items-center rounded-full text-white shadow-md transition group-hover:scale-110" style={{ background: color }}>
+        {icon}
+      </span>
+      <span className="text-[10px] font-semibold text-muted-foreground">{label}</span>
+    </a>
   );
 }
 

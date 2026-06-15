@@ -2,7 +2,7 @@ import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { Logo } from "./Logo";
 import { useApp, useCurrentProfile } from "@/lib/mock/store";
 import {
-  LayoutDashboard, User, Image as ImageIcon, Palette, CreditCard, Users, Building2, Crown, LogOut, Menu, X,
+  LayoutDashboard, User, Image as ImageIcon, Palette, CreditCard, Users, Building2, Crown, LogOut, Menu, X, Wallet,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -12,6 +12,7 @@ const nav = [
   { to: "/gallery", label: "Galerie", icon: ImageIcon },
   { to: "/templates", label: "Templates", icon: Palette },
   { to: "/prospects", label: "Prospects", icon: Users },
+  { to: "/revenus", label: "Mes Revenus", icon: Wallet },
   { to: "/premium", label: "Carte Premium", icon: Crown },
   { to: "/team", label: "Équipe", icon: Building2 },
   { to: "/billing", label: "Forfaits", icon: CreditCard },

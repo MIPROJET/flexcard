@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useApp, useCurrentProfile } from "@/lib/mock/store";
-import { Check, Crown, Building2, Sparkles } from "lucide-react";
+import { Check, Crown, Building2, Sparkles, Wallet } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const PARTICULIER_PLANS = [
   { id: "free", name: "Gratuit", price: "0 F", period: "à vie", features: ["1 carte digitale", "QR code permanent", "Annuaire prospects", "Galerie limitée"], cta: "Actuel" },
@@ -60,12 +61,20 @@ function BillingPage() {
               <ul className="mt-4 space-y-1.5 text-sm">
                 {p.features.map((f) => <li key={f} className="flex gap-2"><Check className="h-4 w-4 text-success mt-0.5" /> {f}</li>)}
               </ul>
-              <button
-                onClick={() => alert(`Paiement simulé pour ${p.name}. Avec Supabase + Stripe/Wave/Orange Money, le flux réel sera branché ici.`)}
-                className="mt-5 w-full rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-glow"
-              >
-                Choisir ce forfait
-              </button>
+              <div className="mt-5 grid gap-2">
+                <button
+                  onClick={() => toast.success(`Paiement Wave réussi`, { description: `Forfait ${p.name} activé (démo). Pack premium impression inclus : ${p.pack}.` })}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#00d2ff] px-5 py-2.5 text-sm font-bold text-[#001a33] shadow-glow"
+                >
+                  <Wallet className="h-4 w-4" /> Payer avec Wave
+                </button>
+                <button
+                  onClick={() => toast.success(`Devis envoyé`, { description: `Notre équipe te recontactera pour le forfait ${p.name}.` })}
+                  className="w-full rounded-xl border border-border bg-card px-5 py-2.5 text-xs font-semibold hover:bg-secondary"
+                >
+                  Demander un devis
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -91,9 +100,9 @@ function PlanCard({ name, price, period, features, cta }: { name: string; price:
         {features.map((f) => <li key={f} className="flex gap-2"><Check className="h-4 w-4 text-success mt-0.5" /> {f}</li>)}
       </ul>
       <button
-        onClick={() => alert(`Paiement simulé pour ${name}.`)}
-        className="mt-5 rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-glow"
-      >{cta}</button>
+        onClick={() => toast.success(`Paiement Wave réussi`, { description: `${name} activé (démo).` })}
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#00d2ff] px-5 py-2.5 text-sm font-bold text-[#001a33] shadow-glow"
+      ><Wallet className="h-4 w-4" /> Payer avec Wave</button>
     </div>
   );
 }
