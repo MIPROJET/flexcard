@@ -22,6 +22,9 @@ function ProfilePage() {
   const setSocial = (k: keyof typeof draft.socials, v: string) =>
     setDraft({ ...draft, socials: { ...draft.socials, [k]: v || undefined } });
 
+  const avatarInput = useRef<HTMLInputElement>(null);
+  const coverInput = useRef<HTMLInputElement>(null);
+
   const addPhone = () => {
     const op = detectOperator(phoneInput);
     if (op === "Inconnu") return alert("Préfixe inconnu (accepté: 01/05/07 +225)");
@@ -31,10 +34,53 @@ function ProfilePage() {
     set("phones", next); setPhoneInput("");
   };
 
+  const fileToDataURL = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result));
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+
+  const handleAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith("image/")) return toast.error("Format image uniquement");
+    if (f.size > 5 * 1024 * 1024) return toast.error("Photo trop lourde (5 Mo max)");
+    const url = await fileToDataURL(f);
+    setDraft((d) => ({ ...d, avatarUrl: url }));
+    toast.success("Photo de profil chargée — pense à enregistrer");
+  };
+
+  const handleCover = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const isVideo = f.type.startsWith("video/");
+    const isImage = f.type.startsWith("image/");
+    if (!isImage && !isVideo) return toast.error("Format image ou vidéo uniquement");
+    if (isImage && f.size > 8 * 1024 * 1024) return toast.error("Image trop lourde (8 Mo max)");
+    if (isVideo && f.size > 100 * 1024 * 1024) return toast.error("Vidéo trop lourde (100 Mo max)");
+    if (isVideo) {
+      // contrôle durée 30s max
+      const ok = await new Promise<boolean>((resolve) => {
+        const v = document.createElement("video");
+        v.preload = "metadata";
+        v.onloadedmetadata = () => resolve(v.duration <= 30.5);
+        v.onerror = () => resolve(false);
+        v.src = URL.createObjectURL(f);
+      });
+      if (!ok) return toast.error("Vidéo trop longue (30 secondes max).");
+    }
+    const url = await fileToDataURL(f);
+    setDraft((d) => ({ ...d, coverUrl: url, coverType: isVideo ? "video" : "image" }));
+    toast.success(`Couverture ${isVideo ? "vidéo" : "image"} chargée`);
+  };
+
   const save = () => {
     const slug = slugify(`${draft.firstName}-${draft.lastName}`) || me.id;
     update({ ...draft, slug });
     setSaved(true);
+    toast.success("Profil enregistré");
     setTimeout(() => setSaved(false), 2000);
   };
 
