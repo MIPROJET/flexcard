@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import {
   ScanLine, Search, ArrowRight, Sparkles, QrCode, Zap, Globe, Users, Crown,
   Mic, Keyboard, User, Store, Building2, Gift, TrendingUp, ShieldCheck,
-  Check, X, MapPin, Star, CreditCard, Coins,
+  Check, X, MapPin, Star, CreditCard, Coins, Briefcase,
 } from "lucide-react";
 import cardImg from "@/assets/flexcard-card.jpg.asset.json";
+import { PhoneInput, splitDial } from "@/components/flex/PhoneInput";
 
 import { fmt } from "@/lib/mock/utils";
 
@@ -62,26 +63,26 @@ function HomePage() {
       {/* ============ HERO ============ */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
-        <div className="absolute inset-0 grid-noise opacity-30 pointer-events-none" />
-        <div className="relative mx-auto max-w-7xl px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24">
-          <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
+        <div className="absolute inset-0 grid-noise opacity-20 pointer-events-none" />
+        <div className="relative mx-auto max-w-7xl px-4 pt-8 pb-10 sm:px-6 sm:pt-14 sm:pb-14">
+          <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
             <div className="animate-float-up">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
                 <Sparkles className="h-3.5 w-3.5" /> Lancement Afrique de l'Ouest · 2026
               </div>
-              <h1 className="mt-5 text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl">
+              <h1 className="mt-4 text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl">
                 Une carte.
                 <br />
-                <span className="text-gradient-brand">Mille connexions.</span>
+                <span className="text-navy">Mille </span><span style={{ color: "var(--accent-orange)" }}>connexions.</span>
               </h1>
-              <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+              <p className="mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
                 La carte de visite digitale pour <strong>tous</strong> les acteurs économiques d'Afrique :
                 particuliers, vendeuses de marché, artisans, entreprises. Même sans savoir lire ni écrire — grâce à l'interface vocale.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   to="/auth"
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-brand px-6 py-3.5 text-sm font-semibold text-white shadow-glow hover:opacity-95"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-glow hover:opacity-95"
                 >
                   Créer ma carte gratuite <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -89,20 +90,20 @@ function HomePage() {
                   onClick={() =>
                     alert("Caméra QR — la lecture caméra sera activée à l'intégration backend. Pour démo : /c/inocent-koffi")
                   }
-                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold hover:bg-secondary"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold hover:bg-secondary"
                 >
                   <ScanLine className="h-4 w-4" /> Scanner un QR
                 </button>
               </div>
 
               {/* Search / Annuaire / Code imprimeur */}
-              <form onSubmit={submit} className="mt-8 max-w-xl">
+              <form onSubmit={submit} className="mt-6 max-w-xl">
                 <div className="flex gap-1 rounded-full border border-border bg-card p-1 text-xs font-semibold">
                   <button
                     type="button"
                     onClick={() => setMode("phone")}
                     className={`flex-1 rounded-full px-3 py-1.5 transition ${
-                      mode === "phone" ? "bg-gradient-brand text-white" : "text-muted-foreground"
+                      mode === "phone" ? "bg-primary text-white" : "text-muted-foreground"
                     }`}
                   >
                     Annuaire (téléphone)
@@ -111,38 +112,49 @@ function HomePage() {
                     type="button"
                     onClick={() => setMode("printer")}
                     className={`flex-1 rounded-full px-3 py-1.5 transition ${
-                      mode === "printer" ? "bg-gradient-brand text-white" : "text-muted-foreground"
+                      mode === "printer" ? "bg-primary text-white" : "text-muted-foreground"
                     }`}
                   >
                     Code imprimeur
                   </button>
                 </div>
-                <div className="mt-2 flex items-center gap-2 rounded-2xl border border-border bg-card p-2 shadow-card focus-within:ring-brand">
-                  <Search className="ml-2 h-4 w-4 text-muted-foreground" />
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder={mode === "phone" ? "+225 07 12 34 56 78" : "FX-XXXX-XXXX-XXXX"}
-                    className="flex-1 bg-transparent px-2 py-2 text-sm outline-none"
-                  />
-                  <button className="rounded-xl bg-gradient-brand px-4 py-2 text-sm font-semibold text-white">
-                    {mode === "phone" ? "Voir mes pros" : "Ouvrir"}
-                  </button>
+                <div className="mt-2 rounded-2xl border border-border bg-card p-2 shadow-card focus-within:ring-brand">
+                  {mode === "phone" ? (
+                    <div className="flex items-center gap-2">
+                      <PhoneInput value={query} onChange={setQuery} placeholder="07 12 34 56 78" className="flex-1" />
+                      <button className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white shrink-0">
+                        Voir mes pros
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Search className="ml-2 h-4 w-4 text-muted-foreground" />
+                      <input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="FX-XXXX-XXXX-XXXX"
+                        className="flex-1 bg-transparent px-2 py-2 text-sm outline-none"
+                      />
+                      <button className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">
+                        Ouvrir
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
                   {mode === "phone"
-                    ? "Saisis ton numéro : tu retrouves l'annuaire des pros qui t'ont déjà scanné."
+                    ? "Choisis ton indicatif pays, saisis ton numéro : tu retrouves l'annuaire des pros qui t'ont déjà scanné."
                     : "Code unique imprimeur : ouvre le portail d'impression de la carte premium."}
                 </p>
               </form>
             </div>
 
-            {/* Counters live - ligne 1: Users + Premium / ligne 2: Vocaux + Démo */}
+            {/* Counters live — Users, Premium, Business, Vocaux (2x2) */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 animate-float-up [animation-delay:120ms]">
               <CounterCard label="Utilisateurs FlexCard" value={fmt(stats.total)} icon={<Users className="h-5 w-5" />} pulse />
-              <CounterCard label="Cartes Premium" value={fmt(stats.premium)} icon={<Crown className="h-5 w-5" />} accent />
+              <CounterCard label="Cartes Premium" value={fmt(stats.premium)} icon={<Crown className="h-5 w-5" />} variant="navy" />
+              <CounterCard label="Entreprises / Pros" value={fmt(stats.pro)} icon={<Briefcase className="h-5 w-5" />} variant="orange" />
               <CounterCard label="Utilisateurs vocaux" value={fmt(Math.max(1, Math.floor(stats.total * 0.42)))} icon={<Mic className="h-5 w-5" />} pulse />
-              <DemoCard />
             </div>
 
           </div>
@@ -196,40 +208,29 @@ function HomePage() {
 /* ============ COMPONENTS ============ */
 
 function CounterCard({
-  label, value, icon, pulse, accent,
-}: { label: string; value: string; icon: React.ReactNode; pulse?: boolean; accent?: boolean }) {
+  label, value, icon, pulse, variant,
+}: { label: string; value: string; icon: React.ReactNode; pulse?: boolean; variant?: "navy" | "orange" }) {
+  const style =
+    variant === "navy" ? { background: "var(--navy)", color: "#fff" } :
+    variant === "orange" ? { background: "var(--accent-orange)", color: "#fff" } :
+    undefined;
   return (
-    <div className={`surface-elevated relative overflow-hidden p-5 ${accent ? "bg-gradient-brand text-white border-0" : ""}`}>
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider opacity-70">
+    <div
+      className={`surface-elevated relative overflow-hidden p-5 ${variant ? "border-0" : ""}`}
+      style={style}
+    >
+      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider opacity-80">
         {icon} {label}
       </div>
       <div className="mt-3 flex items-baseline gap-2">
         <div className="text-4xl font-black tracking-tight">{value}</div>
         {pulse && <span className="inline-block h-2.5 w-2.5 rounded-full bg-success animate-pulse-ring" aria-hidden />}
       </div>
-      <div className="mt-1 text-xs opacity-60">en temps réel</div>
+      <div className="mt-1 text-xs opacity-70">en temps réel</div>
     </div>
   );
 }
 
-function DemoCard() {
-  return (
-    <Link
-      to="/c/$slug"
-      params={{ slug: "inocent-koffi" }}
-      className="col-span-2 group surface-elevated p-5 hover:shadow-elev transition"
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Démo</div>
-          <div className="mt-1 text-base font-semibold">Voir une carte FlexCard</div>
-          <div className="text-sm text-muted-foreground">Inocent Koffi · MiPROJET</div>
-        </div>
-        <ArrowRight className="h-5 w-5 text-primary transition group-hover:translate-x-1" />
-      </div>
-    </Link>
-  );
-}
 
 /* ----- Section "Créer ma carte" ----- */
 function CreateCardSection() {
