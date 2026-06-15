@@ -520,6 +520,7 @@ function WhySection() {
             icon={<Coins />}
             title="Votre carte vous rapporte de l'argent."
             desc="Invitez vos contacts sur FlexCard. À chaque abonnement souscrit par votre filleul, vous gagnez une commission automatique. Votre réseau grandit. Vos revenus aussi."
+            image={commissionImg.url}
             accent
           />
         </div>
