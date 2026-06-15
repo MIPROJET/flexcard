@@ -98,7 +98,7 @@ export function PublicFooter() {
               La première plateforme africaine de gestion de l'identité professionnelle
               et du networking intelligent. Une carte. Mille connexions.
             </p>
-            <p className="mt-4 text-xs text-muted-foreground">flexcard.app · © IKNov 2026</p>
+            <p className="mt-4 text-xs text-muted-foreground">flexcard.app · © MiPROJET 2026</p>
           </div>
           <div className="text-sm">
             <h4 className="mb-3 font-semibold">Produit</h4>

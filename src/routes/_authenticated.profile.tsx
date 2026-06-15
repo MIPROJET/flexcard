@@ -3,6 +3,7 @@ import { useApp, useCurrentProfile } from "@/lib/mock/store";
 import { useState } from "react";
 import { detectOperator, normalizePhone, slugify, validatePhonesAgainstRules } from "@/lib/mock/utils";
 import { Save, Plus, X } from "lucide-react";
+import { PhoneInput } from "@/components/flex/PhoneInput";
 
 const SECTORS = [
   "Tech & Innovation", "Architecture & BTP", "Photo & Vidéo", "Conseil & Formation",
@@ -79,10 +80,8 @@ function ProfilePage() {
         <div>
           <label className="text-sm font-medium">Numéros (max 3, un par opérateur)</label>
           <div className="mt-1.5 flex gap-2">
-            <input value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)}
-              placeholder="+225 07 12 34 56 78"
-              className="flex-1 rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-brand" />
-            <button onClick={addPhone} className="inline-flex items-center gap-1 rounded-xl bg-gradient-brand px-4 text-sm font-semibold text-white">
+            <PhoneInput value={phoneInput} onChange={setPhoneInput} placeholder="07 12 34 56 78" className="flex-1" />
+            <button onClick={addPhone} className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-primary px-4 text-sm font-semibold text-white">
               <Plus className="h-4 w-4" />
             </button>
           </div>

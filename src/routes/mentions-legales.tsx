@@ -16,7 +16,7 @@ function Page() {
         <div className="mt-10 space-y-6 text-sm leading-relaxed text-foreground/90">
           <section>
             <h2 className="text-xl font-semibold">Éditeur</h2>
-            <p>FlexCard est édité par <strong>IKNov</strong>, porteur : Inocent KOFFI.<br />Contact : contact@flexcard.app · Abidjan, Côte d'Ivoire.</p>
+            <p>FlexCard est édité par <strong>MiPROJET</strong>, porteur : Inocent KOFFI.<br />Contact : contact@flexcard.app · Abidjan, Côte d'Ivoire.</p>
           </section>
           <section>
             <h2 className="text-xl font-semibold">Hébergement</h2>
@@ -24,7 +24,7 @@ function Page() {
           </section>
           <section>
             <h2 className="text-xl font-semibold">Propriété intellectuelle</h2>
-            <p>Logo, marque, nom commercial « FlexCard » et slogan « Une carte. Mille connexions. » sont la propriété exclusive d'IKNov. Toute reproduction est interdite sans autorisation écrite.</p>
+            <p>Logo, marque, nom commercial « FlexCard » et slogan « Une carte. Mille connexions. » sont la propriété exclusive de MiPROJET. Toute reproduction est interdite sans autorisation écrite.</p>
           </section>
           <section>
             <h2 className="text-xl font-semibold">Responsabilité</h2>

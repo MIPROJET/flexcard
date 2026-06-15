@@ -10,7 +10,7 @@ export const Route = createFileRoute("/contact")({
       { title: "Contact — FlexCard" },
       { name: "description", content: "Une question, un partenariat, un besoin entreprise ? Écris-nous." },
       { property: "og:title", content: "Contact — FlexCard" },
-      { property: "og:description", content: "L'équipe IKNov te répond rapidement." },
+      { property: "og:description", content: "L'équipe MiPROJET te répond rapidement." },
     ],
   }),
   component: ContactPage,
@@ -25,7 +25,7 @@ function ContactPage() {
         <div className="grid gap-12 lg:grid-cols-2">
           <div>
             <h1 className="text-4xl font-black sm:text-5xl">
-              Parle à <span className="text-gradient-brand">IKNov</span>
+              Parle à <span className="text-gradient-brand">MiPROJET</span>
             </h1>
             <p className="mt-4 text-muted-foreground max-w-md">
               Question, partenariat, besoin entreprise sur-mesure — on répond sous 24h ouvrées.
@@ -38,10 +38,10 @@ function ContactPage() {
                   <div className="text-xs text-muted-foreground">Email général</div>
                 </div>
               </a>
-              <a href="https://wa.me/22507000000" className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 hover:bg-secondary">
+              <a href="https://wa.me/22507596087" className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 hover:bg-secondary">
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10 text-success"><MessageCircle className="h-5 w-5" /></span>
                 <div>
-                  <div className="text-sm font-semibold">+225 07 00 00 00</div>
+                  <div className="text-sm font-semibold">+225 07 59 60 87</div>
                   <div className="text-xs text-muted-foreground">WhatsApp Business</div>
                 </div>
               </a>
