@@ -10,6 +10,7 @@ const links = [
   { to: "/parrainage", label: "Parrainage" },
   { to: "/directory", label: "Annuaire" },
   { to: "/imprimeur", label: "Imprimeur" },
+  { to: "/about", label: "À propos" },
   { to: "/contact", label: "Contact" },
 ];
 

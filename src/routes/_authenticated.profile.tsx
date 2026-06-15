@@ -5,11 +5,7 @@ import { detectOperator, normalizePhone, slugify, validatePhonesAgainstRules } f
 import { Save, Plus, X } from "lucide-react";
 import { PhoneInput } from "@/components/flex/PhoneInput";
 
-const SECTORS = [
-  "Tech & Innovation", "Architecture & BTP", "Photo & Vidéo", "Conseil & Formation",
-  "Droit & Juridique", "Musique & Événementiel", "Restauration & Food", "Mode & Beauté",
-  "Santé & Bien-être", "Finance & Banque", "Commerce & Distribution", "Éducation", "Autre",
-];
+import { ALL_SECTORS as SECTORS } from "@/lib/mock/sectors";
 
 export const Route = createFileRoute("/_authenticated/profile")({ 
   ssr: false,component: ProfilePage });
