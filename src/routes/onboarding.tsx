@@ -41,8 +41,44 @@ function OnboardingPage() {
   const [templateId, setTemplateId] = useState(me.templateId);
   const [paletteIdx, setPaletteIdx] = useState(0);
 
+  // Persist onboarding draft across reloads / HMR so the user never loses input
+  const DRAFT_KEY = `flexcard-onboarding-draft-${me.id}`;
+  const hydrated = useRef(false);
+  useEffect(() => {
+    if (hydrated.current) return;
+    hydrated.current = true;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (d.firstName !== undefined) setFirstName(d.firstName);
+      if (d.lastName !== undefined) setLastName(d.lastName);
+      if (d.title !== undefined) setTitle(d.title);
+      if (d.company !== undefined) setCompany(d.company);
+      if (d.sector !== undefined) setSector(d.sector);
+      if (d.description !== undefined) setDescription(d.description);
+      if (d.city !== undefined) setCity(d.city);
+      if (d.phones !== undefined) setPhones(d.phones);
+      if (d.website !== undefined) setWebsite(d.website);
+      if (d.publicEmail !== undefined) setPublicEmail(d.publicEmail);
+      if (d.templateId !== undefined) setTemplateId(d.templateId);
+      if (d.paletteIdx !== undefined) setPaletteIdx(d.paletteIdx);
+      if (d.step !== undefined) setStep(d.step);
+    } catch {}
+  }, [DRAFT_KEY]);
+  useEffect(() => {
+    if (!hydrated.current) return;
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        firstName, lastName, title, company, sector, description, city,
+        phones, website, publicEmail, templateId, paletteIdx, step,
+      }));
+    } catch {}
+  }, [DRAFT_KEY, firstName, lastName, title, company, sector, description, city, phones, website, publicEmail, templateId, paletteIdx, step]);
+
   const palette = PALETTE_PRESETS[paletteIdx];
   const preview = { ...me, firstName, lastName, title, company, sector, description, city, phones, website, publicEmail, templateId, palette };
+
 
   const addPhone = () => {
     const op = detectOperator(phoneInput);
