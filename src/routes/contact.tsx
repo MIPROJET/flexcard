@@ -38,7 +38,7 @@ function ContactPage() {
                   <div className="text-xs text-muted-foreground">Email général</div>
                 </div>
               </a>
-              <a href="https://wa.me/2250759608702" className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 hover:bg-secondary">
+              <a href="https://wa.me/22507596087" className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 hover:bg-secondary">
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10 text-success"><MessageCircle className="h-5 w-5" /></span>
                 <div>
                   <div className="text-sm font-semibold">+225 07 59 60 87</div>
