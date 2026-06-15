@@ -106,8 +106,12 @@ function PublicCardPage() {
 
       <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
         {profile.coverUrl && (
-          <div className="h-44 w-full overflow-hidden rounded-3xl bg-secondary">
-            <img src={profile.coverUrl} alt="" className="h-full w-full object-cover" />
+          <div className="h-44 w-full overflow-hidden rounded-3xl bg-secondary sm:h-56">
+            {profile.coverType === "video" ? (
+              <video src={profile.coverUrl} className="h-full w-full object-cover" autoPlay loop muted playsInline />
+            ) : (
+              <img src={profile.coverUrl} alt="" className="h-full w-full object-cover" />
+            )}
           </div>
         )}
         <BusinessCard profile={profile} variant="full" />
