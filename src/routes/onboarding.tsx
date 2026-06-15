@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Navigate } from "@tanstack/react-router";
 import { useApp, useCurrentProfile } from "@/lib/mock/store";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { detectOperator, normalizePhone, slugify, validatePhonesAgainstRules, isPersonalEmail } from "@/lib/mock/utils";
 import { TEMPLATE_DEFS, PALETTE_PRESETS } from "@/lib/mock/templates";
 import { BusinessCard } from "@/components/flex/BusinessCard";
@@ -41,8 +41,44 @@ function OnboardingPage() {
   const [templateId, setTemplateId] = useState(me.templateId);
   const [paletteIdx, setPaletteIdx] = useState(0);
 
+  // Persist onboarding draft across reloads / HMR so the user never loses input
+  const DRAFT_KEY = `flexcard-onboarding-draft-${me.id}`;
+  const hydrated = useRef(false);
+  useEffect(() => {
+    if (hydrated.current) return;
+    hydrated.current = true;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (d.firstName !== undefined) setFirstName(d.firstName);
+      if (d.lastName !== undefined) setLastName(d.lastName);
+      if (d.title !== undefined) setTitle(d.title);
+      if (d.company !== undefined) setCompany(d.company);
+      if (d.sector !== undefined) setSector(d.sector);
+      if (d.description !== undefined) setDescription(d.description);
+      if (d.city !== undefined) setCity(d.city);
+      if (d.phones !== undefined) setPhones(d.phones);
+      if (d.website !== undefined) setWebsite(d.website);
+      if (d.publicEmail !== undefined) setPublicEmail(d.publicEmail);
+      if (d.templateId !== undefined) setTemplateId(d.templateId);
+      if (d.paletteIdx !== undefined) setPaletteIdx(d.paletteIdx);
+      if (d.step !== undefined) setStep(d.step);
+    } catch {}
+  }, [DRAFT_KEY]);
+  useEffect(() => {
+    if (!hydrated.current) return;
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        firstName, lastName, title, company, sector, description, city,
+        phones, website, publicEmail, templateId, paletteIdx, step,
+      }));
+    } catch {}
+  }, [DRAFT_KEY, firstName, lastName, title, company, sector, description, city, phones, website, publicEmail, templateId, paletteIdx, step]);
+
   const palette = PALETTE_PRESETS[paletteIdx];
   const preview = { ...me, firstName, lastName, title, company, sector, description, city, phones, website, publicEmail, templateId, palette };
+
 
   const addPhone = () => {
     const op = detectOperator(phoneInput);
@@ -56,8 +92,10 @@ function OnboardingPage() {
   const finish = () => {
     const slug = slugify(`${firstName}-${lastName}`) || me.id;
     update({ firstName, lastName, title, company, sector, description, city, phones, website, publicEmail, templateId, palette, slug });
+    try { localStorage.removeItem(DRAFT_KEY); } catch {}
     navigate({ to: "/dashboard" });
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-mesh">
@@ -166,7 +204,7 @@ function OnboardingPage() {
                   <Sparkles className="h-4 w-4" /> Ton compte gratuit inclut
                 </div>
                 <ul className="mt-2 ml-6 list-disc text-sm text-muted-foreground space-y-1">
-                  <li>1 carte de visite numérique avec QR code</li>
+                  <li>1 carte de visite digitale avec QR code</li>
                   <li>Mise à jour en temps réel chez tes contacts</li>
                   <li>2 photos, 1 affiche, 1 visuel, 1 actualité dans la galerie</li>
                   <li>Annuaire des pros qui te scannent</li>

@@ -5,8 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import {
   ScanLine, Search, ArrowRight, Sparkles, QrCode, Zap, Globe, Users, Crown,
   Mic, Keyboard, User, Store, Building2, Gift, TrendingUp, ShieldCheck,
-  Check, X, MapPin, Star,
+  Check, X, MapPin, Star, CreditCard, Coins,
 } from "lucide-react";
+import cardImg from "@/assets/flexcard-card.jpg.asset.json";
+
 import { fmt } from "@/lib/mock/utils";
 
 export const Route = createFileRoute("/")({
@@ -14,7 +16,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "FlexCard — Une carte. Mille connexions." },
-      { name: "description", content: "La carte de visite numérique d'Afrique. Particuliers, informels, entreprises. Interface vocale pour tous. Partage instantané par QR code." },
+      { name: "description", content: "La carte de visite digitale d'Afrique. Particuliers, informels, entreprises. Interface vocale pour tous. Partage instantané par QR code." },
       { property: "og:title", content: "FlexCard — Une carte. Mille connexions." },
       { property: "og:description", content: "La première plateforme africaine d'identité professionnelle et de networking intelligent." },
     ],
@@ -73,7 +75,7 @@ function HomePage() {
                 <span className="text-gradient-brand">Mille connexions.</span>
               </h1>
               <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-                La carte de visite numérique pour <strong>tous</strong> les acteurs économiques d'Afrique :
+                La carte de visite digitale pour <strong>tous</strong> les acteurs économiques d'Afrique :
                 particuliers, vendeuses de marché, artisans, entreprises. Même sans savoir lire ni écrire — grâce à l'interface vocale.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -135,13 +137,14 @@ function HomePage() {
               </form>
             </div>
 
-            {/* Counters live */}
+            {/* Counters live - ligne 1: Users + Premium / ligne 2: Vocaux + Démo */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 animate-float-up [animation-delay:120ms]">
-              <CounterCard label="Utilisateurs" value={fmt(stats.total)} icon={<Users className="h-5 w-5" />} pulse />
+              <CounterCard label="Utilisateurs FlexCard" value={fmt(stats.total)} icon={<Users className="h-5 w-5" />} pulse />
               <CounterCard label="Cartes Premium" value={fmt(stats.premium)} icon={<Crown className="h-5 w-5" />} accent />
-              <CounterCard label="Pros & entreprises" value={fmt(stats.pro)} icon={<Building2 className="h-5 w-5" />} />
+              <CounterCard label="Utilisateurs vocaux" value={fmt(Math.max(1, Math.floor(stats.total * 0.42)))} icon={<Mic className="h-5 w-5" />} pulse />
               <DemoCard />
             </div>
+
           </div>
         </div>
       </section>
@@ -167,7 +170,7 @@ function HomePage() {
           <div className="absolute inset-0 grid-noise opacity-20 pointer-events-none" />
           <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-center">
             <div>
-              <h3 className="text-3xl font-bold sm:text-4xl">Prêt à passer au numérique ?</h3>
+              <h3 className="text-3xl font-bold sm:text-4xl">Prêt à passer au digital ?</h3>
               <p className="mt-3 max-w-xl opacity-90">
                 Crée ton compte en 30 secondes. Email + OTP, pas de mot de passe.
                 Carte premium imprimable à <strong>1 000 F</strong>, achat unique à vie.
@@ -460,7 +463,7 @@ function WhySection() {
     <section className="border-y border-border/60 bg-secondary/40 py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl">Pourquoi passer au numérique ?</h2>
+          <h2 className="text-3xl font-bold sm:text-4xl">Pourquoi passer au digital ?</h2>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
             La carte papier coûte cher, se perd et se périme. FlexCard, c'est l'inverse.
           </p>
@@ -485,7 +488,7 @@ function WhySection() {
             <div className="relative">
               <div className="flex items-center gap-2 text-success">
                 <Check className="h-5 w-5" />
-                <h3 className="text-lg font-bold">FlexCard numérique</h3>
+                <h3 className="text-lg font-bold">FlexCard digitale</h3>
               </div>
               <ul className="mt-4 space-y-3 text-sm">
                 {digital.map((x) => (
@@ -498,28 +501,55 @@ function WhySection() {
           </div>
         </div>
 
-        {/* Mini-features */}
+        {/* 5 avantages — 3 ligne 1 + 2 ligne 2 (centrés) */}
         <div className="mt-10 grid gap-6 md:grid-cols-3">
-          <Feature icon={<Zap />} title="Toujours à jour" desc="Modifie ton poste, ton numéro — tout se met à jour dans la poche de tes contacts." />
-          <Feature icon={<QrCode />} title="QR code + URL" desc="flexcard.app/nomutilisateur. Scanné = enregistré dans l'annuaire." />
+          <Feature icon={<Zap />} title="Toujours à jour" desc="Modifie ton poste, ton numéro — tout se met à jour dans la poche de tes contacts, en temps réel." />
+          <Feature icon={<QrCode />} title="QR code + URL" desc="flexcard.app/nomutilisateur. Scanné = enregistré dans l'annuaire intelligent." />
           <Feature icon={<Globe />} title="Annuaire intelligent" desc="Ton numéro affiche tous les pros que tu as scannés. Recherche par ville, secteur." />
         </div>
+        <div className="mt-6 grid gap-6 md:grid-cols-2 md:max-w-5xl md:mx-auto">
+          <Feature
+            icon={<CreditCard />}
+            title="Une carte physique. Mille connexions."
+            desc="Une seule carte imprimée à vie. QR code gravé, scannable par n'importe quel téléphone. Connectez autant de prospects que vous voulez. Économisez jusqu'à 99% sur vos frais d'impression."
+            image={cardImg.url}
+          />
+          <Feature
+            icon={<Coins />}
+            title="Votre carte vous rapporte de l'argent."
+            desc="Invitez vos contacts sur FlexCard. À chaque abonnement souscrit par votre filleul, vous gagnez une commission automatique. Votre réseau grandit. Vos revenus aussi."
+            accent
+          />
+        </div>
+
       </div>
     </section>
   );
 }
 
-function Feature({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
+function Feature({ icon, title, desc, image, accent }: { icon: React.ReactNode; title: string; desc: string; image?: string; accent?: boolean }) {
   return (
-    <div className="surface-elevated p-6">
-      <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-brand text-white shadow-glow">
+    <div className={`surface-elevated p-6 ${accent ? "border-2 border-[color:var(--accent-orange)]/40" : ""}`}>
+      <div className={`inline-flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-glow ${accent ? "bg-[color:var(--accent-orange)]" : "bg-gradient-brand"}`}>
         {icon}
       </div>
       <h3 className="mt-4 text-lg font-semibold">{title}</h3>
       <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{desc}</p>
+      {image && (
+        <div className="mt-5 flex justify-center">
+          <img
+            src={image}
+            alt="Carte physique FlexCard"
+            className="w-full max-w-[280px] rounded-xl shadow-elev"
+            style={{ transform: "rotate(-3deg)" }}
+            loading="lazy"
+          />
+        </div>
+      )}
     </div>
   );
 }
+
 
 /* ----- Témoignages ----- */
 function TestimonialsSection() {
