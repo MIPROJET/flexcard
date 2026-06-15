@@ -50,7 +50,7 @@ function ImprimeurPage() {
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="FX-XXXX-XXXX-XXXX"
             className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-4 text-center text-xl font-bold tracking-widest outline-none focus:ring-brand uppercase"
-            maxLength={16}
+            maxLength={20}
           />
           {error && <div className="mt-2 text-sm text-destructive">{error}</div>}
           <button className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand px-5 py-3 text-sm font-semibold text-white shadow-glow">

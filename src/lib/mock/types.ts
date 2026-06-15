@@ -6,6 +6,8 @@ export type GalleryItem = {
   id: string;
   category: "photos" | "affiches" | "visuels" | "videos" | "actualites";
   url?: string;
+  /** "image" | "video" — pour la galerie médias */
+  mediaType?: "image" | "video";
   caption?: string;
   text?: string; // for actualites
   createdAt: number;
@@ -40,6 +42,8 @@ export type Profile = {
   description?: string; // 580 max
   avatarUrl?: string;
   coverUrl?: string;
+  /** Type de couverture : image (par défaut) ou vidéo (max 30s, 100Mo, lecture en boucle). */
+  coverType?: "image" | "video";
   phones: Phone[];
   publicEmail?: string;
   website?: string;

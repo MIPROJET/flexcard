@@ -40,23 +40,7 @@ const KIND_OPTIONS: { kind: AccountKind; label: string; desc: string; icon: Reac
   },
 ];
 
-const SECTORS_BY_KIND: Record<AccountKind, string[]> = {
-  particulier: [
-    "Tech & Innovation", "Architecture & BTP", "Photo & Vidéo", "Conseil & Formation",
-    "Droit & Juridique", "Musique & Événementiel", "Santé & Bien-être", "Finance & Banque",
-    "Éducation", "Marketing & Communication", "Mode & Beauté", "Autre",
-  ],
-  informel: [
-    "Restauration & Food", "Coiffure & Esthétique", "Couture & Mode", "Mécanique & Auto",
-    "Menuiserie & Bois", "Maçonnerie", "Plomberie / Électricité", "Commerce de détail",
-    "Élevage / Agriculture", "Transport / Taxi", "Pâtisserie / Vente plats", "Autre",
-  ],
-  entreprise: [
-    "Tech & Innovation", "Finance & Banque", "Industrie / Manufacturing", "Commerce & Distribution",
-    "BTP & Immobilier", "Conseil & Services", "Santé & Pharmacie", "Éducation & Formation",
-    "Médias & Communication", "Transport & Logistique", "Énergie & Mines", "Autre",
-  ],
-};
+import { SECTORS_BY_KIND } from "@/lib/mock/sectors";
 
 function AuthPage() {
   const navigate = useNavigate();

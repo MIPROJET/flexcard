@@ -1,15 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useApp, useCurrentProfile } from "@/lib/mock/store";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { detectOperator, normalizePhone, slugify, validatePhonesAgainstRules } from "@/lib/mock/utils";
-import { Save, Plus, X } from "lucide-react";
+import { Save, Plus, X, Camera, Film, Upload, Trash2 } from "lucide-react";
 import { PhoneInput } from "@/components/flex/PhoneInput";
+import { toast } from "sonner";
 
-const SECTORS = [
-  "Tech & Innovation", "Architecture & BTP", "Photo & Vidéo", "Conseil & Formation",
-  "Droit & Juridique", "Musique & Événementiel", "Restauration & Food", "Mode & Beauté",
-  "Santé & Bien-être", "Finance & Banque", "Commerce & Distribution", "Éducation", "Autre",
-];
+import { ALL_SECTORS as SECTORS } from "@/lib/mock/sectors";
 
 export const Route = createFileRoute("/_authenticated/profile")({ 
   ssr: false,component: ProfilePage });
@@ -25,6 +22,9 @@ function ProfilePage() {
   const setSocial = (k: keyof typeof draft.socials, v: string) =>
     setDraft({ ...draft, socials: { ...draft.socials, [k]: v || undefined } });
 
+  const avatarInput = useRef<HTMLInputElement>(null);
+  const coverInput = useRef<HTMLInputElement>(null);
+
   const addPhone = () => {
     const op = detectOperator(phoneInput);
     if (op === "Inconnu") return alert("Préfixe inconnu (accepté: 01/05/07 +225)");
@@ -34,10 +34,53 @@ function ProfilePage() {
     set("phones", next); setPhoneInput("");
   };
 
+  const fileToDataURL = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result));
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+
+  const handleAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith("image/")) return toast.error("Format image uniquement");
+    if (f.size > 5 * 1024 * 1024) return toast.error("Photo trop lourde (5 Mo max)");
+    const url = await fileToDataURL(f);
+    setDraft((d) => ({ ...d, avatarUrl: url }));
+    toast.success("Photo de profil chargée — pense à enregistrer");
+  };
+
+  const handleCover = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const isVideo = f.type.startsWith("video/");
+    const isImage = f.type.startsWith("image/");
+    if (!isImage && !isVideo) return toast.error("Format image ou vidéo uniquement");
+    if (isImage && f.size > 8 * 1024 * 1024) return toast.error("Image trop lourde (8 Mo max)");
+    if (isVideo && f.size > 100 * 1024 * 1024) return toast.error("Vidéo trop lourde (100 Mo max)");
+    if (isVideo) {
+      // contrôle durée 30s max
+      const ok = await new Promise<boolean>((resolve) => {
+        const v = document.createElement("video");
+        v.preload = "metadata";
+        v.onloadedmetadata = () => resolve(v.duration <= 30.5);
+        v.onerror = () => resolve(false);
+        v.src = URL.createObjectURL(f);
+      });
+      if (!ok) return toast.error("Vidéo trop longue (30 secondes max).");
+    }
+    const url = await fileToDataURL(f);
+    setDraft((d) => ({ ...d, coverUrl: url, coverType: isVideo ? "video" : "image" }));
+    toast.success(`Couverture ${isVideo ? "vidéo" : "image"} chargée`);
+  };
+
   const save = () => {
     const slug = slugify(`${draft.firstName}-${draft.lastName}`) || me.id;
     update({ ...draft, slug });
     setSaved(true);
+    toast.success("Profil enregistré");
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -49,6 +92,70 @@ function ProfilePage() {
           <Save className="h-4 w-4" /> {saved ? "Enregistré ✓" : "Enregistrer"}
         </button>
       </header>
+
+      <Section title="Photo de profil & couverture">
+        <div className="grid gap-6 sm:grid-cols-[160px_1fr]">
+          {/* Avatar */}
+          <div>
+            <label className="text-sm font-medium">Photo de profil</label>
+            <div className="mt-2 relative h-32 w-32 overflow-hidden rounded-full border-2 border-dashed border-border bg-secondary">
+              {draft.avatarUrl ? (
+                <img src={draft.avatarUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="grid h-full w-full place-items-center text-muted-foreground">
+                  <Camera className="h-8 w-8" />
+                </div>
+              )}
+            </div>
+            <input ref={avatarInput} type="file" accept="image/*" className="hidden" onChange={handleAvatar} />
+            <div className="mt-2 flex gap-1">
+              <button onClick={() => avatarInput.current?.click()} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg bg-primary px-2 py-1.5 text-xs font-semibold text-white">
+                <Upload className="h-3 w-3" /> Charger
+              </button>
+              {draft.avatarUrl && (
+                <button onClick={() => set("avatarUrl", undefined)} className="rounded-lg border border-border bg-card px-2 py-1.5 text-destructive">
+                  <Trash2 className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Cover */}
+          <div>
+            <label className="text-sm font-medium">Couverture (image ou vidéo 30s max, lecture en boucle)</label>
+            <div className="mt-2 relative aspect-[16/7] w-full overflow-hidden rounded-2xl border-2 border-dashed border-border bg-secondary">
+              {draft.coverUrl ? (
+                draft.coverType === "video" ? (
+                  <video src={draft.coverUrl} className="h-full w-full object-cover" autoPlay loop muted playsInline />
+                ) : (
+                  <img src={draft.coverUrl} alt="" className="h-full w-full object-cover" />
+                )
+              ) : (
+                <div className="grid h-full w-full place-items-center text-muted-foreground">
+                  <div className="text-center">
+                    <Film className="h-8 w-8 mx-auto" />
+                    <p className="mt-2 text-xs">Image (8 Mo max) ou vidéo (100 Mo, 30s max)</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <input ref={coverInput} type="file" accept="image/*,video/mp4,video/webm,video/quicktime" className="hidden" onChange={handleCover} />
+            <div className="mt-2 flex gap-2">
+              <button onClick={() => coverInput.current?.click()} className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white">
+                <Upload className="h-3 w-3" /> Charger couverture
+              </button>
+              {draft.coverUrl && (
+                <button onClick={() => setDraft((d) => ({ ...d, coverUrl: undefined, coverType: undefined }))} className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-1.5 text-xs text-destructive">
+                  <Trash2 className="h-3 w-3" /> Retirer
+                </button>
+              )}
+            </div>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Astuce pros : les agents communication, créatifs, artisans peuvent uploader une vidéo courte de leur savoir-faire.
+            </p>
+          </div>
+        </div>
+      </Section>
 
       <Section title="Identité">
         <div className="grid gap-4 sm:grid-cols-2">

@@ -20,8 +20,22 @@ function initials(p: Profile) {
 }
 
 function coverBg(p: Profile) {
-  if (p.coverUrl) return `url(${p.coverUrl}) center/cover no-repeat`;
+  if (p.coverUrl && p.coverType !== "video") return `url(${p.coverUrl}) center/cover no-repeat`;
   return `linear-gradient(135deg, ${p.palette.primary}, ${p.palette.accent})`;
+}
+
+/** Vidéo de couverture (autoplay, loop, muted) — affichée par PublicCardPage. */
+export function CoverVideo({ url, className = "" }: { url: string; className?: string }) {
+  return (
+    <video
+      src={url}
+      autoPlay
+      loop
+      muted
+      playsInline
+      className={`h-full w-full object-cover ${className}`}
+    />
+  );
 }
 
 /* ----------------------------- Building blocks ----------------------------- */

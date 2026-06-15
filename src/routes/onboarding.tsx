@@ -14,11 +14,7 @@ export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
 });
 
-const SECTORS = [
-  "Tech & Innovation", "Architecture & BTP", "Photo & Vidéo", "Conseil & Formation",
-  "Droit & Juridique", "Musique & Événementiel", "Restauration & Food", "Mode & Beauté",
-  "Santé & Bien-être", "Finance & Banque", "Commerce & Distribution", "Éducation", "Autre",
-];
+import { ALL_SECTORS as SECTORS } from "@/lib/mock/sectors";
 
 function OnboardingPage() {
   const me = useCurrentProfile();
