@@ -24,7 +24,7 @@ function Page() {
           </section>
           <section>
             <h2 className="text-xl font-semibold">Propriété intellectuelle</h2>
-            <p>Logo, marque, nom commercial « FlexCard » et slogan « Une carte. Mille connexions. » sont la propriété exclusive d'MiPROJET. Toute reproduction est interdite sans autorisation écrite.</p>
+            <p>Logo, marque, nom commercial « FlexCard » et slogan « Une carte. Mille connexions. » sont la propriété exclusive de MiPROJET. Toute reproduction est interdite sans autorisation écrite.</p>
           </section>
           <section>
             <h2 className="text-xl font-semibold">Responsabilité</h2>
