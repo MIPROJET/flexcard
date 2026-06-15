@@ -62,7 +62,7 @@ function AboutPage() {
         </div>
 
         <div className="mt-16 text-center text-sm text-muted-foreground">
-          FlexCard est un produit IKNov · © 2026 · Une carte. Mille connexions.
+          FlexCard est un produit MiPROJET · © 2026 · Une carte. Mille connexions.
         </div>
       </section>
       <PublicFooter />

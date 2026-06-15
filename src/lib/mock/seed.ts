@@ -21,11 +21,11 @@ function p(partial: Partial<Profile> & Pick<Profile, "id" | "email" | "firstName
 const profiles: Profile[] = [
   p({
     id: "u1", slug: "inocent-koffi", email: "inocent@flexcard.app",
-    firstName: "Inocent", lastName: "Koffi", title: "Fondateur", company: "IKNov",
+    firstName: "Inocent", lastName: "Koffi", title: "Fondateur", company: "MiPROJET",
     sector: "Tech & Innovation", description: "Bâtisseur de FlexCard. Au croisement du design, du produit et de l'Afrique qui code.",
-    publicEmail: "contact@iknov.africa", website: "https://iknov.africa", city: "Abidjan",
+    publicEmail: "contact@miprojet.africa", website: "https://miprojet.africa", city: "Abidjan",
     phones: [{ number: "+225 07 11 22 33 44", operator: "Orange" }, { number: "+225 05 88 77 66 55", operator: "MTN" }],
-    socials: { whatsapp: "+22507112233", linkedin: "inocent-koffi", twitter: "iknov_africa" },
+    socials: { whatsapp: "+22507112233", linkedin: "inocent-koffi", twitter: "miprojet_africa" },
     templateId: "vkard-cover",
     palette: { primary: "#1d4ed8", accent: "#22d3ee", ink: "#0b1a3a" },
     hasPremium: true, premiumCode: "FX-IKN0-V202-6FLX",

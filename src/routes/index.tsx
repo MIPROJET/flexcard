@@ -223,7 +223,7 @@ function DemoCard() {
         <div>
           <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Démo</div>
           <div className="mt-1 text-base font-semibold">Voir une carte FlexCard</div>
-          <div className="text-sm text-muted-foreground">Inocent Koffi · IKNov</div>
+          <div className="text-sm text-muted-foreground">Inocent Koffi · MiPROJET</div>
         </div>
         <ArrowRight className="h-5 w-5 text-primary transition group-hover:translate-x-1" />
       </div>

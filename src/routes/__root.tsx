@@ -52,7 +52,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "theme-color", content: "#1d4ed8" },
       { title: "FlexCard — Une carte. Mille connexions." },
       { name: "description", content: "Carte de visite digitale dynamique, partage par QR code, annuaire intelligent. Made in Africa." },
-      { name: "author", content: "IKNov" },
+      { name: "author", content: "MiPROJET" },
       { property: "og:title", content: "FlexCard — Une carte. Mille connexions." },
       { property: "og:description", content: "Carte de visite digitale dynamique, partage par QR code, annuaire intelligent. Made in Africa." },
       { property: "og:type", content: "website" },

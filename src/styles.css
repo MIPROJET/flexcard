@@ -94,13 +94,10 @@
   --input: oklch(0.94 0.012 245);
   --ring: oklch(0.65 0.18 250);
 
-  /* Gradients & shadows — navy → electric blue → orange */
-  --gradient-brand: linear-gradient(135deg, oklch(0.22 0.08 265) 0%, oklch(0.55 0.2 250) 55%, oklch(0.76 0.16 70) 100%);
-  --gradient-hero: radial-gradient(ellipse at top, oklch(0.65 0.18 250 / 0.18), transparent 60%),
-                   radial-gradient(ellipse at bottom right, oklch(0.76 0.16 70 / 0.12), transparent 60%);
-  --gradient-mesh: radial-gradient(at 20% 10%, oklch(0.78 0.14 240 / 0.35), transparent 50%),
-                   radial-gradient(at 80% 0%, oklch(0.22 0.08 265 / 0.25), transparent 50%),
-                   radial-gradient(at 40% 90%, oklch(0.76 0.16 70 / 0.22), transparent 50%);
+  /* Couleurs solides (sans dégradé) — bleu électrique / navy / orange */
+  --gradient-brand: var(--primary);
+  --gradient-hero: none;
+  --gradient-mesh: none;
 
 
   --shadow-sm: 0 1px 2px oklch(0.4 0.1 260 / 0.06);
@@ -170,19 +167,31 @@
 /* ===== Custom utilities ===== */
 
 @utility bg-gradient-brand {
-  background-image: var(--gradient-brand);
+  background-color: var(--primary);
+  background-image: none;
+  color: #fff;
+}
+@utility bg-navy {
+  background-color: var(--navy);
+  color: #fff;
+}
+@utility bg-accent-orange {
+  background-color: var(--accent-orange);
+  color: #fff;
+}
+@utility text-navy {
+  color: var(--navy);
 }
 @utility bg-gradient-hero {
-  background-image: var(--gradient-hero);
+  background-color: color-mix(in oklab, var(--primary) 4%, var(--background));
 }
 @utility bg-gradient-mesh {
-  background-image: var(--gradient-mesh);
+  background-color: color-mix(in oklab, var(--primary) 3%, var(--background));
 }
 @utility text-gradient-brand {
-  background-image: var(--gradient-brand);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--navy);
+  background-image: none;
+  -webkit-text-fill-color: var(--navy);
 }
 @utility shadow-card {
   box-shadow: var(--shadow-card);
@@ -210,8 +219,8 @@
 }
 @utility grid-noise {
   background-image:
-    linear-gradient(color-mix(in oklab, var(--color-primary) 8%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in oklab, var(--color-primary) 8%, transparent) 1px, transparent 1px);
+    linear-gradient(color-mix(in oklab, var(--color-primary) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--color-primary) 6%, transparent) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
