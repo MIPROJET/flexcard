@@ -106,3 +106,20 @@ function DirectoryPage() {
     </div>
   );
 }
+
+function DirectorySearch({ initial }: { initial: string }) {
+  const [value, setValue] = useState(initial);
+  const navigate = useNavigate();
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        navigate({ to: "/directory", search: { q: value.trim() } });
+      }}
+      className="mt-6 flex items-center gap-2 rounded-2xl border border-input bg-background p-2"
+    >
+      <PhoneInput value={value} onChange={setValue} placeholder="07 12 34 56 78" className="flex-1" />
+      <button className="shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">Voir</button>
+    </form>
+  );
+}
