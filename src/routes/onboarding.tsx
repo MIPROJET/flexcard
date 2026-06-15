@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Navigate } from "@tanstack/react-router";
 import { useApp, useCurrentProfile } from "@/lib/mock/store";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { detectOperator, normalizePhone, slugify, validatePhonesAgainstRules, isPersonalEmail } from "@/lib/mock/utils";
 import { TEMPLATE_DEFS, PALETTE_PRESETS } from "@/lib/mock/templates";
 import { BusinessCard } from "@/components/flex/BusinessCard";
