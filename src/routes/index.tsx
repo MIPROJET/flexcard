@@ -5,8 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import {
   ScanLine, Search, ArrowRight, Sparkles, QrCode, Zap, Globe, Users, Crown,
   Mic, Keyboard, User, Store, Building2, Gift, TrendingUp, ShieldCheck,
-  Check, X, MapPin, Star,
+  Check, X, MapPin, Star, CreditCard, Coins,
 } from "lucide-react";
+import cardImg from "@/assets/flexcard-card.jpg.asset.json";
+
 import { fmt } from "@/lib/mock/utils";
 
 export const Route = createFileRoute("/")({
