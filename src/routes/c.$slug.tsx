@@ -10,7 +10,7 @@ export const Route = createFileRoute("/c/$slug")({
   ssr: false,head: ({ params }) => ({
     meta: [
       { title: `${params.slug} — FlexCard` },
-      { name: "description", content: "Carte de visite numérique FlexCard." },
+      { name: "description", content: "Carte de visite digitale FlexCard." },
       { property: "og:title", content: `${params.slug} sur FlexCard` },
       { property: "og:description", content: "Une carte. Mille connexions." },
     ],
