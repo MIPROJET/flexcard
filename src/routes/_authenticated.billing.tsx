@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useApp, useCurrentProfile } from "@/lib/mock/store";
-import { Check, Crown, Building2, Sparkles } from "lucide-react";
+import { Check, Crown, Building2, Sparkles, Wallet } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const PARTICULIER_PLANS = [
   { id: "free", name: "Gratuit", price: "0 F", period: "à vie", features: ["1 carte digitale", "QR code permanent", "Annuaire prospects", "Galerie limitée"], cta: "Actuel" },
