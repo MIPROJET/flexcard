@@ -6,6 +6,7 @@ import { TEMPLATE_DEFS, PALETTE_PRESETS } from "@/lib/mock/templates";
 import { BusinessCard } from "@/components/flex/BusinessCard";
 import { Logo } from "@/components/flex/Logo";
 import { ArrowRight, ArrowLeft, Sparkles, Check } from "lucide-react";
+import { PhoneInput } from "@/components/flex/PhoneInput";
 
 export const Route = createFileRoute("/onboarding")({
   
@@ -137,12 +138,8 @@ function OnboardingPage() {
               <div>
                 <label className="text-sm font-medium">Numéros de téléphone</label>
                 <div className="mt-1.5 flex gap-2">
-                  <input
-                    value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)}
-                    placeholder="+225 07 12 34 56 78"
-                    className="flex-1 rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-brand"
-                  />
-                  <button onClick={addPhone} className="rounded-xl bg-gradient-brand px-4 text-sm font-semibold text-white shadow-glow">Ajouter</button>
+                  <PhoneInput value={phoneInput} onChange={setPhoneInput} placeholder="07 12 34 56 78" className="flex-1" />
+                  <button onClick={addPhone} className="shrink-0 rounded-xl bg-primary px-4 text-sm font-semibold text-white shadow-glow">Ajouter</button>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Opérateur détecté : <strong>{phoneInput ? detectOperator(phoneInput) : "—"}</strong>

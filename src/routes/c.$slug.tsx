@@ -3,6 +3,7 @@ import { useProfileBySlug, useApp } from "@/lib/mock/store";
 import { BusinessCard } from "@/components/flex/BusinessCard";
 import { Logo } from "@/components/flex/Logo";
 import { Download, Save, Share2, ImagePlus, Megaphone, Newspaper } from "lucide-react";
+import { PhoneInput } from "@/components/flex/PhoneInput";
 import { useState } from "react";
 
 export const Route = createFileRoute("/c/$slug")({
@@ -101,11 +102,7 @@ function PublicCardPage() {
                 placeholder="Ton nom (optionnel)"
                 className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-brand"
               />
-              <input
-                value={linkPhone} onChange={(e) => setLinkPhone(e.target.value)}
-                placeholder="+225 07 12 34 56 78"
-                className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-brand"
-              />
+              <PhoneInput value={linkPhone} onChange={setLinkPhone} placeholder="07 12 34 56 78" />
               <button
                 onClick={() => {
                   if (linkPhone.length < 6) return;
