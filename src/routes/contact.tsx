@@ -10,7 +10,7 @@ export const Route = createFileRoute("/contact")({
       { title: "Contact — FlexCard" },
       { name: "description", content: "Une question, un partenariat, un besoin entreprise ? Écris-nous." },
       { property: "og:title", content: "Contact — FlexCard" },
-      { property: "og:description", content: "L'équipe MiPROJET te répond rapidement." },
+      { property: "og:description", content: "L'équipe FlexCard te répond rapidement." },
     ],
   }),
   component: ContactPage,
@@ -25,7 +25,7 @@ function ContactPage() {
         <div className="grid gap-12 lg:grid-cols-2">
           <div>
             <h1 className="text-4xl font-black sm:text-5xl">
-              Parle à <span className="text-gradient-brand">MiPROJET</span>
+              Parle à <span className="text-gradient-brand">FlexCard</span>
             </h1>
             <p className="mt-4 text-muted-foreground max-w-md">
               Question, partenariat, besoin entreprise sur-mesure — on répond sous 24h ouvrées.
