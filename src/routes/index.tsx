@@ -177,7 +177,7 @@ function HomePage() {
       <TestimonialsSection />
 
       {/* ============ CTA FINAL ============ */}
-      <section className="mx-auto my-12 max-w-6xl px-4 sm:px-6">
+      <section className="mx-auto my-10 max-w-6xl px-4 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-brand p-10 text-white shadow-elev sm:p-16">
           <div className="absolute inset-0 grid-noise opacity-20 pointer-events-none" />
           <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-center">
@@ -246,7 +246,7 @@ function CreateCardSection() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+    <section className="mx-auto max-w-7xl px-4 py-12 sm:py-16 sm:px-6">
       <div className="mb-10 text-center">
         <h2 className="text-3xl font-bold sm:text-4xl">Crée ta carte en 2 minutes</h2>
         <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
@@ -336,7 +336,7 @@ function ProfilesSection() {
   ];
 
   return (
-    <section className="border-y border-border/60 bg-gradient-to-b from-secondary/30 via-background to-background py-20">
+    <section className="border-y border-border/60 bg-gradient-to-b from-secondary/30 via-background to-background py-12 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold sm:text-4xl">Qui peut utiliser FlexCard ?</h2>
@@ -381,7 +381,7 @@ function ReferralSection() {
   ];
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+    <section className="mx-auto max-w-7xl px-4 py-12 sm:py-16 sm:px-6">
       <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-semibold text-success">
@@ -461,7 +461,7 @@ function WhySection() {
   ];
 
   return (
-    <section className="border-y border-border/60 bg-secondary/40 py-20">
+    <section className="border-y border-border/60 bg-secondary/40 py-12 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold sm:text-4xl">Pourquoi passer au digital ?</h2>
@@ -560,7 +560,7 @@ function TestimonialsSection() {
     { name: "Esther G.", role: "Pâtissière · San-Pédro", text: "Les commandes arrivent direct sur mon WhatsApp depuis la carte. Bien plus simple qu'Instagram." },
   ];
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+    <section className="mx-auto max-w-7xl px-4 py-12 sm:py-16 sm:px-6">
       <div className="mb-10 text-center">
         <h2 className="text-3xl font-bold sm:text-4xl">Ce qu'en disent les premiers utilisateurs</h2>
       </div>
