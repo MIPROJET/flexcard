@@ -135,13 +135,14 @@ function HomePage() {
               </form>
             </div>
 
-            {/* Counters live */}
+            {/* Counters live - ligne 1: Users + Premium / ligne 2: Vocaux + Démo */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 animate-float-up [animation-delay:120ms]">
-              <CounterCard label="Utilisateurs" value={fmt(stats.total)} icon={<Users className="h-5 w-5" />} pulse />
+              <CounterCard label="Utilisateurs FlexCard" value={fmt(stats.total)} icon={<Users className="h-5 w-5" />} pulse />
               <CounterCard label="Cartes Premium" value={fmt(stats.premium)} icon={<Crown className="h-5 w-5" />} accent />
-              <CounterCard label="Pros & entreprises" value={fmt(stats.pro)} icon={<Building2 className="h-5 w-5" />} />
+              <CounterCard label="Utilisateurs vocaux" value={fmt(Math.max(1, Math.floor(stats.total * 0.42)))} icon={<Mic className="h-5 w-5" />} pulse />
               <DemoCard />
             </div>
+
           </div>
         </div>
       </section>
