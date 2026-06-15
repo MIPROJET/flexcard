@@ -1,9 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useApp } from "@/lib/mock/store";
 import { PublicHeader, PublicFooter } from "@/components/flex/PublicHeader";
-import { ArrowRight, Users, Search } from "lucide-react";
-import { useMemo } from "react";
+import { ArrowRight, Users } from "lucide-react";
+import { useMemo, useState } from "react";
 import { z } from "zod";
+import { PhoneInput } from "@/components/flex/PhoneInput";
 
 const searchSchema = z.object({ q: z.string().optional() });
 
@@ -49,15 +50,8 @@ function DirectoryPage() {
             </div>
           </div>
 
-          <form action="/directory" className="mt-6 flex items-center gap-2 rounded-2xl border border-input bg-background p-2">
-            <Search className="ml-2 h-4 w-4 text-muted-foreground" />
-            <input
-              name="q" defaultValue={phone}
-              placeholder="Ton numéro (+225…)"
-              className="flex-1 bg-transparent px-2 py-2 text-sm outline-none"
-            />
-            <button className="rounded-xl bg-gradient-brand px-4 py-2 text-sm font-semibold text-white">Voir</button>
-          </form>
+          <DirectorySearch initial={phone} />
+
         </div>
 
         {!phone && (
