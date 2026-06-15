@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "FlexCard — Une carte. Mille connexions." },
-      { name: "description", content: "La carte de visite numérique d'Afrique. Particuliers, informels, entreprises. Interface vocale pour tous. Partage instantané par QR code." },
+      { name: "description", content: "La carte de visite digitale d'Afrique. Particuliers, informels, entreprises. Interface vocale pour tous. Partage instantané par QR code." },
       { property: "og:title", content: "FlexCard — Une carte. Mille connexions." },
       { property: "og:description", content: "La première plateforme africaine d'identité professionnelle et de networking intelligent." },
     ],
@@ -73,7 +73,7 @@ function HomePage() {
                 <span className="text-gradient-brand">Mille connexions.</span>
               </h1>
               <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-                La carte de visite numérique pour <strong>tous</strong> les acteurs économiques d'Afrique :
+                La carte de visite digitale pour <strong>tous</strong> les acteurs économiques d'Afrique :
                 particuliers, vendeuses de marché, artisans, entreprises. Même sans savoir lire ni écrire — grâce à l'interface vocale.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -167,7 +167,7 @@ function HomePage() {
           <div className="absolute inset-0 grid-noise opacity-20 pointer-events-none" />
           <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-center">
             <div>
-              <h3 className="text-3xl font-bold sm:text-4xl">Prêt à passer au numérique ?</h3>
+              <h3 className="text-3xl font-bold sm:text-4xl">Prêt à passer au digital ?</h3>
               <p className="mt-3 max-w-xl opacity-90">
                 Crée ton compte en 30 secondes. Email + OTP, pas de mot de passe.
                 Carte premium imprimable à <strong>1 000 F</strong>, achat unique à vie.
@@ -460,7 +460,7 @@ function WhySection() {
     <section className="border-y border-border/60 bg-secondary/40 py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl">Pourquoi passer au numérique ?</h2>
+          <h2 className="text-3xl font-bold sm:text-4xl">Pourquoi passer au digital ?</h2>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
             La carte papier coûte cher, se perd et se périme. FlexCard, c'est l'inverse.
           </p>
@@ -485,7 +485,7 @@ function WhySection() {
             <div className="relative">
               <div className="flex items-center gap-2 text-success">
                 <Check className="h-5 w-5" />
-                <h3 className="text-lg font-bold">FlexCard numérique</h3>
+                <h3 className="text-lg font-bold">FlexCard digitale</h3>
               </div>
               <ul className="mt-4 space-y-3 text-sm">
                 {digital.map((x) => (

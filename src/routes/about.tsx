@@ -36,7 +36,7 @@ function AboutPage() {
             Et toutes les entreprises qui veulent une identité professionnelle cohérente et toujours à jour.
           </Block>
           <Block icon={<Heart className="h-5 w-5" />} title="Pour quoi ?">
-            Éliminer la barrière d'accès au networking. Le compte gratuit est complet : carte numérique,
+            Éliminer la barrière d'accès au networking. Le compte gratuit est complet : carte digitale,
             QR code, partage instantané. La version Premium imprimable n'est qu'à 1 000 F, à vie.
           </Block>
           <Block icon={<Rocket className="h-5 w-5" />} title="Roadmap">

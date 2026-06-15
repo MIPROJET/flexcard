@@ -1,5 +1,5 @@
 /**
- * 8 vrais templates de carte de visite numérique mobile,
+ * 8 vrais templates de carte de visite digitale mobile,
  * inspirés des leaders du marché (VKard, Swapkaart, Cartly, Teamwork.Co, BeWell...).
  * Chaque template est une mise en page complète (cover, avatar, boutons, social, QR).
  * Combinés à 9 palettes = 72 variations visuelles.

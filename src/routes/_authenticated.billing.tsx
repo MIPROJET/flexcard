@@ -4,7 +4,7 @@ import { Check, Crown, Building2, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 const PARTICULIER_PLANS = [
-  { id: "free", name: "Gratuit", price: "0 F", period: "à vie", features: ["1 carte numérique", "QR code permanent", "Annuaire prospects", "Galerie limitée"], cta: "Actuel" },
+  { id: "free", name: "Gratuit", price: "0 F", period: "à vie", features: ["1 carte digitale", "QR code permanent", "Annuaire prospects", "Galerie limitée"], cta: "Actuel" },
   { id: "boost", name: "Boost visibilité", price: "500 F", period: "/ mois", features: ["Apparition en tête d'annuaire", "Badge boost"], cta: "Activer" },
   { id: "gallery", name: "Galerie étendue", price: "1 000 F", period: "/ an", features: ["Vidéos activées", "Plus de visuels", "Actualités illimitées"], cta: "Activer" },
 ];

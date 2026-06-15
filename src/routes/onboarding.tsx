@@ -166,7 +166,7 @@ function OnboardingPage() {
                   <Sparkles className="h-4 w-4" /> Ton compte gratuit inclut
                 </div>
                 <ul className="mt-2 ml-6 list-disc text-sm text-muted-foreground space-y-1">
-                  <li>1 carte de visite numérique avec QR code</li>
+                  <li>1 carte de visite digitale avec QR code</li>
                   <li>Mise à jour en temps réel chez tes contacts</li>
                   <li>2 photos, 1 affiche, 1 visuel, 1 actualité dans la galerie</li>
                   <li>Annuaire des pros qui te scannent</li>

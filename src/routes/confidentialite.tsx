@@ -18,7 +18,7 @@ function Page() {
         <div className="prose prose-neutral mt-10 max-w-none space-y-6 text-sm leading-relaxed text-foreground/90">
           <section>
             <h2 className="text-xl font-semibold">1. Données collectées</h2>
-            <p>FlexCard collecte uniquement les données nécessaires à la création et au partage de votre carte de visite numérique : nom, prénom, titre, secteur, photo de profil, numéro(s) de téléphone, email, liens réseaux sociaux, localisation déclarée.</p>
+            <p>FlexCard collecte uniquement les données nécessaires à la création et au partage de votre carte de visite digitale : nom, prénom, titre, secteur, photo de profil, numéro(s) de téléphone, email, liens réseaux sociaux, localisation déclarée.</p>
           </section>
           <section>
             <h2 className="text-xl font-semibold">2. Utilisation</h2>
