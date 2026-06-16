@@ -60,8 +60,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "FlexCard — Une carte. Mille connexions." },
       { name: "twitter:description", content: "Carte de visite digitale dynamique, partage par QR code, annuaire intelligent. Made in Africa." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/3VjDFmgN6QPG6TPzwFF2CGB45Vh2/social-images/social-1781540789340-FlexCard_Proto.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/3VjDFmgN6QPG6TPzwFF2CGB45Vh2/social-images/social-1781540789340-FlexCard_Proto.webp" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/3VjDFmgN6QPG6TPzwFF2CGB45Vh2/social-images/social-1781571493465-FlexCard_Logo.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/3VjDFmgN6QPG6TPzwFF2CGB45Vh2/social-images/social-1781571493465-FlexCard_Logo.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
