@@ -528,6 +528,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_my_org_premium_code: { Args: { _org_id: string }; Returns: string }
+      get_my_profile_sensitive: {
+        Args: never
+        Returns: {
+          email: string
+          premium_code: string
+          referral_code: string
+          referred_by: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
