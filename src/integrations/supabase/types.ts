@@ -14,16 +14,547 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          ip_hash: string | null
+          metadata: Json | null
+          profile_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          ip_hash?: string | null
+          metadata?: Json | null
+          profile_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          ip_hash?: string | null
+          metadata?: Json | null
+          profile_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery: {
+        Row: {
+          caption: string | null
+          category: Database["public"]["Enums"]["gallery_category"]
+          created_at: string
+          id: string
+          media_type: Database["public"]["Enums"]["media_type"] | null
+          position: number
+          profile_id: string
+          text_content: string | null
+          url: string | null
+        }
+        Insert: {
+          caption?: string | null
+          category: Database["public"]["Enums"]["gallery_category"]
+          created_at?: string
+          id?: string
+          media_type?: Database["public"]["Enums"]["media_type"] | null
+          position?: number
+          profile_id: string
+          text_content?: string | null
+          url?: string | null
+        }
+        Update: {
+          caption?: string | null
+          category?: Database["public"]["Enums"]["gallery_category"]
+          created_at?: string
+          id?: string
+          media_type?: Database["public"]["Enums"]["media_type"] | null
+          position?: number
+          profile_id?: string
+          text_content?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          has_premium_pack: boolean
+          id: string
+          logo_url: string | null
+          name: string
+          owner_id: string
+          plan: Database["public"]["Enums"]["plan_kind"]
+          premium_code: string | null
+          sector: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          has_premium_pack?: boolean
+          id?: string
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          plan?: Database["public"]["Enums"]["plan_kind"]
+          premium_code?: string | null
+          sector?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          has_premium_pack?: boolean
+          id?: string
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          plan?: Database["public"]["Enums"]["plan_kind"]
+          premium_code?: string | null
+          sector?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organizations_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount_xof: number
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          method: string
+          org_id: string | null
+          profile_id: string
+          reference: string | null
+          status: string
+        }
+        Insert: {
+          amount_xof: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          method?: string
+          org_id?: string | null
+          profile_id: string
+          reference?: string | null
+          status?: string
+        }
+        Update: {
+          amount_xof?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          method?: string
+          org_id?: string | null
+          profile_id?: string
+          reference?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      phones: {
+        Row: {
+          created_at: string
+          id: string
+          number: string
+          operator: Database["public"]["Enums"]["operator_kind"]
+          position: number
+          profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          number: string
+          operator?: Database["public"]["Enums"]["operator_kind"]
+          position?: number
+          profile_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          number?: string
+          operator?: Database["public"]["Enums"]["operator_kind"]
+          position?: number
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phones_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          boost_until: string | null
+          city: string | null
+          company: string | null
+          country_code: string | null
+          cover_type: Database["public"]["Enums"]["media_type"] | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          email: string
+          first_name: string
+          has_premium: boolean
+          id: string
+          kind: Database["public"]["Enums"]["account_kind"]
+          last_name: string
+          org_id: string | null
+          palette: Json
+          premium_code: string | null
+          public_email: string | null
+          referral_code: string | null
+          referred_by: string | null
+          sector: string | null
+          slug: string
+          socials: Json
+          template_id: string
+          title: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          boost_until?: string | null
+          city?: string | null
+          company?: string | null
+          country_code?: string | null
+          cover_type?: Database["public"]["Enums"]["media_type"] | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          email: string
+          first_name?: string
+          has_premium?: boolean
+          id: string
+          kind?: Database["public"]["Enums"]["account_kind"]
+          last_name?: string
+          org_id?: string | null
+          palette?: Json
+          premium_code?: string | null
+          public_email?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
+          sector?: string | null
+          slug: string
+          socials?: Json
+          template_id?: string
+          title?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          boost_until?: string | null
+          city?: string | null
+          company?: string | null
+          country_code?: string | null
+          cover_type?: Database["public"]["Enums"]["media_type"] | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string
+          first_name?: string
+          has_premium?: boolean
+          id?: string
+          kind?: Database["public"]["Enums"]["account_kind"]
+          last_name?: string
+          org_id?: string | null
+          palette?: Json
+          premium_code?: string | null
+          public_email?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
+          sector?: string | null
+          slug?: string
+          socials?: Json
+          template_id?: string
+          title?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_org_fk"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prospects: {
+        Row: {
+          contact_email: string | null
+          contact_name: string | null
+          first_scan_at: string
+          id: string
+          last_visit_at: string
+          profile_id: string
+          scanner_phone: string
+          visits: number
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_name?: string | null
+          first_scan_at?: string
+          id?: string
+          last_visit_at?: string
+          profile_id: string
+          scanner_phone: string
+          visits?: number
+        }
+        Update: {
+          contact_email?: string | null
+          contact_name?: string | null
+          first_scan_at?: string
+          id?: string
+          last_visit_at?: string
+          profile_id?: string
+          scanner_phone?: string
+          visits?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prospects_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          commission_xof: number
+          created_at: string
+          id: string
+          level: string | null
+          referred_id: string
+          referrer_id: string
+        }
+        Insert: {
+          commission_xof?: number
+          created_at?: string
+          id?: string
+          level?: string | null
+          referred_id: string
+          referrer_id: string
+        }
+        Update: {
+          commission_xof?: number
+          created_at?: string
+          id?: string
+          level?: string | null
+          referred_id?: string
+          referrer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          profile_id: string | null
+          status: string
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          profile_id?: string | null
+          status?: string
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          profile_id?: string | null
+          status?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          granted_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          admin_note: string | null
+          amount_xof: number
+          id: string
+          processed_at: string | null
+          profile_id: string
+          requested_at: string
+          status: string
+          wave_number: string
+        }
+        Insert: {
+          admin_note?: string | null
+          amount_xof: number
+          id?: string
+          processed_at?: string | null
+          profile_id: string
+          requested_at?: string
+          status?: string
+          wave_number: string
+        }
+        Update: {
+          admin_note?: string | null
+          amount_xof?: number
+          id?: string
+          processed_at?: string | null
+          profile_id?: string
+          requested_at?: string
+          status?: string
+          wave_number?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawals_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      account_kind: "particulier" | "informel" | "entreprise"
+      app_role: "admin" | "moderator" | "imprimeur" | "user"
+      gallery_category:
+        | "photos"
+        | "affiches"
+        | "visuels"
+        | "videos"
+        | "actualites"
+      media_type: "image" | "video"
+      operator_kind: "MTN" | "Orange" | "Moov" | "Fixe" | "Inconnu"
+      plan_kind:
+        | "free"
+        | "starter"
+        | "team10"
+        | "team20"
+        | "team50"
+        | "team100"
+        | "unlimited"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +681,27 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      account_kind: ["particulier", "informel", "entreprise"],
+      app_role: ["admin", "moderator", "imprimeur", "user"],
+      gallery_category: [
+        "photos",
+        "affiches",
+        "visuels",
+        "videos",
+        "actualites",
+      ],
+      media_type: ["image", "video"],
+      operator_kind: ["MTN", "Orange", "Moov", "Fixe", "Inconnu"],
+      plan_kind: [
+        "free",
+        "starter",
+        "team10",
+        "team20",
+        "team50",
+        "team100",
+        "unlimited",
+      ],
+    },
   },
 } as const
