@@ -11,6 +11,7 @@ import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 import logoAsset from "@/assets/flexcard-logo.png.asset.json";
+import { safeHttpUrl, vcardEscape } from "@/lib/safe";
 
 export const Route = createFileRoute("/c/$slug")({
   ssr: false,
@@ -26,21 +27,22 @@ export const Route = createFileRoute("/c/$slug")({
 });
 
 function buildVCard(p: any): string {
+  const safeWebsite = safeHttpUrl(p.website);
   const lines = [
     "BEGIN:VCARD",
     "VERSION:3.0",
-    `N:${p.lastName};${p.firstName};;;`,
-    `FN:${p.firstName} ${p.lastName}`,
-    p.title ? `TITLE:${p.title}` : "",
-    p.company ? `ORG:${p.company}` : "",
-    ...p.phones.map((ph: any) => `TEL;TYPE=cell:${ph.number.replace(/\s/g, "")}`),
-    p.publicEmail ? `EMAIL;TYPE=INTERNET:${p.publicEmail}` : "",
-    p.website ? `URL:${p.website}` : "",
-    p.city ? `ADR;TYPE=WORK:;;;${p.city};;;` : "",
-    `NOTE:${(p.description ?? "").slice(0, 240)}`,
+    `N:${vcardEscape(p.lastName)};${vcardEscape(p.firstName)};;;`,
+    `FN:${vcardEscape(`${p.firstName} ${p.lastName}`)}`,
+    p.title ? `TITLE:${vcardEscape(p.title)}` : "",
+    p.company ? `ORG:${vcardEscape(p.company)}` : "",
+    ...p.phones.map((ph: any) => `TEL;TYPE=cell:${vcardEscape(ph.number.replace(/\s/g, ""))}`),
+    p.publicEmail ? `EMAIL;TYPE=INTERNET:${vcardEscape(p.publicEmail)}` : "",
+    safeWebsite ? `URL:${vcardEscape(safeWebsite)}` : "",
+    p.city ? `ADR;TYPE=WORK:;;;${vcardEscape(p.city)};;;` : "",
+    `NOTE:${vcardEscape((p.description ?? "").slice(0, 240))}`,
     "END:VCARD",
   ].filter(Boolean);
-  return lines.join("\n");
+  return lines.join("\r\n");
 }
 
 function PublicCardPage() {
@@ -122,7 +124,7 @@ function PublicCardPage() {
             {tel && <ActionBtn href={`tel:${tel}`} label="Appel" icon={<Phone className="h-5 w-5" />} color={profile.palette.primary} />}
             {wa && <ActionBtn href={`https://wa.me/${wa}`} label="WhatsApp" icon={<MessageCircle className="h-5 w-5" />} color="#25D366" />}
             {profile.publicEmail && <ActionBtn href={`mailto:${profile.publicEmail}`} label="Email" icon={<Mail className="h-5 w-5" />} color={profile.palette.ink} />}
-            {profile.website && <ActionBtn href={profile.website} label="Web" icon={<Globe className="h-5 w-5" />} color={profile.palette.accent} />}
+            {safeHttpUrl(profile.website) && <ActionBtn href={safeHttpUrl(profile.website)!} label="Web" icon={<Globe className="h-5 w-5" />} color={profile.palette.accent} />}
             {profile.socials.linkedin && <ActionBtn href={`https://linkedin.com/in/${profile.socials.linkedin}`} label="LinkedIn" icon={<Linkedin className="h-5 w-5" />} color="#0A66C2" />}
             {profile.socials.instagram && <ActionBtn href={`https://instagram.com/${profile.socials.instagram}`} label="Insta" icon={<Instagram className="h-5 w-5" />} color="#E1306C" />}
             {profile.socials.facebook && <ActionBtn href={`https://facebook.com/${profile.socials.facebook}`} label="Facebook" icon={<Facebook className="h-5 w-5" />} color="#1877F2" />}
