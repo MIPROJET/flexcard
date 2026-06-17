@@ -52,6 +52,63 @@ export type Database = {
           },
         ]
       }
+      contact_links: {
+        Row: {
+          contact_email: string | null
+          contact_name: string | null
+          created_at: string
+          id: string
+          last_synced_at: string
+          profile_id: string
+          saved_at: string
+          scanner_phone: string
+          scanner_profile_id: string | null
+          updated_at: string
+          vcard_downloaded_at: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_name?: string | null
+          created_at?: string
+          id?: string
+          last_synced_at?: string
+          profile_id: string
+          saved_at?: string
+          scanner_phone: string
+          scanner_profile_id?: string | null
+          updated_at?: string
+          vcard_downloaded_at?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          contact_name?: string | null
+          created_at?: string
+          id?: string
+          last_synced_at?: string
+          profile_id?: string
+          saved_at?: string
+          scanner_phone?: string
+          scanner_profile_id?: string | null
+          updated_at?: string
+          vcard_downloaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_links_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_links_scanner_profile_id_fkey"
+            columns: ["scanner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gallery: {
         Row: {
           caption: string | null
@@ -346,9 +403,12 @@ export type Database = {
           contact_name: string | null
           first_scan_at: string
           id: string
+          last_synced_at: string
           last_visit_at: string
           profile_id: string
           scanner_phone: string
+          scanner_profile_id: string | null
+          vcard_downloaded_at: string | null
           visits: number
         }
         Insert: {
@@ -356,9 +416,12 @@ export type Database = {
           contact_name?: string | null
           first_scan_at?: string
           id?: string
+          last_synced_at?: string
           last_visit_at?: string
           profile_id: string
           scanner_phone: string
+          scanner_profile_id?: string | null
+          vcard_downloaded_at?: string | null
           visits?: number
         }
         Update: {
@@ -366,9 +429,12 @@ export type Database = {
           contact_name?: string | null
           first_scan_at?: string
           id?: string
+          last_synced_at?: string
           last_visit_at?: string
           profile_id?: string
           scanner_phone?: string
+          scanner_profile_id?: string | null
+          vcard_downloaded_at?: string | null
           visits?: number
         }
         Relationships: [
@@ -379,32 +445,48 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "prospects_scanner_profile_id_fkey"
+            columns: ["scanner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       referrals: {
         Row: {
+          activated_at: string | null
           commission_xof: number
           created_at: string
           id: string
           level: string | null
           referred_id: string
           referrer_id: string
+          status: string
+          updated_at: string
         }
         Insert: {
+          activated_at?: string | null
           commission_xof?: number
           created_at?: string
           id?: string
           level?: string | null
           referred_id: string
           referrer_id: string
+          status?: string
+          updated_at?: string
         }
         Update: {
+          activated_at?: string | null
           commission_xof?: number
           created_at?: string
           id?: string
           level?: string | null
           referred_id?: string
           referrer_id?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -538,12 +620,37 @@ export type Database = {
           referred_by: string
         }[]
       }
+      get_referral_wallet: {
+        Args: { _profile_id?: string }
+        Returns: {
+          balance_xof: number
+          filleuls: number
+          filleuls_actifs: number
+          level: string
+          profile_id: string
+          referral_code: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      register_contact_exchange: {
+        Args: {
+          _contact_email?: string
+          _contact_name?: string
+          _profile_id: string
+          _scanner_phone: string
+          _scanner_profile_id?: string
+        }
+        Returns: {
+          contact_link_id: string
+          prospect_id: string
+          visits: number
+        }[]
       }
     }
     Enums: {
