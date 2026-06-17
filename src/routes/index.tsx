@@ -9,7 +9,9 @@ import {
 } from "lucide-react";
 import cardImg from "@/assets/flexcard-card.jpg.asset.json";
 import commissionImg from "@/assets/flexcard-commission.png.asset.json";
+import inocentAvatar from "@/assets/inocent-koffi-avatar.jpg.asset.json";
 import { PhoneInput, splitDial } from "@/components/flex/PhoneInput";
+import { PremiumCardNFCPair, PremiumCardNFC } from "@/components/flex/PremiumCardNFC";
 
 import { fmt } from "@/lib/mock/utils";
 
@@ -159,8 +161,26 @@ function HomePage() {
             </div>
 
           </div>
+
+          {/* Carte démo réelle — Inocent Koffi */}
+          <Link
+            to="/c/$slug"
+            params={{ slug: "inocent-koffi" }}
+            className="mt-8 flex items-center gap-4 rounded-2xl border border-border bg-card/80 backdrop-blur p-4 shadow-card hover:shadow-elev transition group max-w-2xl"
+          >
+            <img src={inocentAvatar.url} alt="Inocent Koffi" className="h-14 w-14 rounded-xl object-cover ring-2 ring-primary/20" />
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Démo</div>
+              <div className="text-base font-bold truncate">Voir une carte FlexCard</div>
+              <div className="text-sm text-muted-foreground truncate">Inocent KOFFI · IKNov</div>
+            </div>
+            <ArrowRight className="h-5 w-5 text-primary transition group-hover:translate-x-1" />
+          </Link>
         </div>
       </section>
+
+      {/* ============ CARTE PHYSIQUE NFC ============ */}
+      <NfcPhysicalSection />
 
       {/* ============ CRÉER MA CARTE — 2 options ============ */}
       <CreateCardSection />
