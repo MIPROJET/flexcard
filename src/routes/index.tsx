@@ -9,7 +9,9 @@ import {
 } from "lucide-react";
 import cardImg from "@/assets/flexcard-card.jpg.asset.json";
 import commissionImg from "@/assets/flexcard-commission.png.asset.json";
+import inocentAvatar from "@/assets/inocent-koffi-avatar.jpg.asset.json";
 import { PhoneInput, splitDial } from "@/components/flex/PhoneInput";
+import { PremiumCardNFCPair, PremiumCardNFC } from "@/components/flex/PremiumCardNFC";
 
 import { fmt } from "@/lib/mock/utils";
 
@@ -159,8 +161,26 @@ function HomePage() {
             </div>
 
           </div>
+
+          {/* Carte démo réelle — Inocent Koffi */}
+          <Link
+            to="/c/$slug"
+            params={{ slug: "inocent-koffi" }}
+            className="mt-8 flex items-center gap-4 rounded-2xl border border-border bg-card/80 backdrop-blur p-4 shadow-card hover:shadow-elev transition group max-w-2xl"
+          >
+            <img src={inocentAvatar.url} alt="Inocent Koffi" className="h-14 w-14 rounded-xl object-cover ring-2 ring-primary/20" />
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Démo</div>
+              <div className="text-base font-bold truncate">Voir une carte FlexCard</div>
+              <div className="text-sm text-muted-foreground truncate">Inocent KOFFI · IKNov</div>
+            </div>
+            <ArrowRight className="h-5 w-5 text-primary transition group-hover:translate-x-1" />
+          </Link>
         </div>
       </section>
+
+      {/* ============ CARTE PHYSIQUE NFC ============ */}
+      <NfcPhysicalSection />
 
       {/* ============ CRÉER MA CARTE — 2 options ============ */}
       <CreateCardSection />
@@ -231,6 +251,63 @@ function CounterCard({
     </div>
   );
 }
+
+
+/* ----- Carte physique NFC ----- */
+function NfcPhysicalSection() {
+  return (
+    <section className="border-y border-border/60 bg-gradient-to-b from-background via-secondary/30 to-background py-12 sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr]">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
+              <Zap className="h-3.5 w-3.5" /> Nouveau · Carte NFC
+            </div>
+            <h2 className="mt-4 text-3xl font-bold sm:text-5xl leading-tight">
+              Une carte <span className="text-navy">physique.</span><br />
+              Mille <span style={{ color: "var(--accent-orange)" }}>connexions.</span>
+            </h2>
+            <p className="mt-5 text-base text-muted-foreground sm:text-lg max-w-xl">
+              Une seule carte imprimée <strong>à vie</strong>. QR code gravé + puce NFC,
+              scannable par n'importe quel téléphone. Connectez autant de prospects que vous voulez.
+              Économisez jusqu'à <strong>99%</strong> sur vos frais d'impression.
+            </p>
+            <ul className="mt-6 space-y-2 text-sm">
+              {[
+                "QR haute correction d'erreur — fonctionne même imprimé sur tissu",
+                "Puce NFC : tap & share, aucune app à installer",
+                "Charte graphique automatique depuis ton logo",
+                "Code unique imprimeur — réimpression à vie",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-2">
+                  <Check className="h-4 w-4 mt-0.5 text-success shrink-0" /> {f}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link to="/premium" className="inline-flex items-center gap-2 rounded-full bg-gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-glow">
+                <CreditCard className="h-4 w-4" /> Activer ma carte NFC — 1 000 F
+              </Link>
+              <Link to="/imprimeur" className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold hover:bg-secondary">
+                Je suis imprimeur
+              </Link>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <PremiumCardNFCPair />
+            <p className="text-center text-xs text-muted-foreground">
+              Recto NFC · Verso logo FlexCard — design final, prêt à imprimer
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
 
 
 /* ----- Section "Créer ma carte" ----- */

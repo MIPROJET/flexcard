@@ -62,6 +62,7 @@ function VocalOnboardingPage() {
   if (!me) return <Navigate to="/auth" search={{ kind: undefined, ref }} />;
 
   const [stepIdx, setStepIdx] = useState(0);
+  const [started, setStarted] = useState(false);
   const [data, setData] = useState({
     refCode: ref ?? "",
     firstName: me.firstName, lastName: me.lastName,
@@ -78,10 +79,54 @@ function VocalOnboardingPage() {
 
   const step = STEPS[stepIdx];
 
-  // Speak prompt on step change
+  // Speak prompt on step change — only after user has clicked "Commencer"
   useEffect(() => {
+    if (!started) return;
     speak(step.prompt);
-  }, [stepIdx, step.prompt]);
+  }, [stepIdx, step.prompt, started]);
+
+  // Écran d'accueil pour débloquer audio + micro (gestes utilisateur requis par les navigateurs)
+  if (!started) {
+    return (
+      <div className="min-h-screen bg-gradient-mesh grid place-items-center px-4">
+        <div className="surface-elevated max-w-md w-full p-8 text-center">
+          <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-brand text-white shadow-glow animate-pulse-ring">
+            <Mic className="h-8 w-8" />
+          </div>
+          <h1 className="mt-5 text-2xl font-bold">Création vocale</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Je vais vous poser des questions à voix haute. Vous répondez à voix haute.
+            Cliquez sur « Commencer » pour activer le son et le microphone.
+          </p>
+          <button
+            onClick={async () => {
+              try {
+                // Demande explicite de permission micro AVANT de démarrer
+                if (navigator.mediaDevices?.getUserMedia) {
+                  await navigator.mediaDevices.getUserMedia({ audio: true });
+                }
+              } catch {
+                toast.error("Microphone refusé", { description: "Vous pouvez quand même taper vos réponses." });
+              }
+              // Débloque le speechSynthesis (geste utilisateur obligatoire)
+              try {
+                const u = new SpeechSynthesisUtterance(" ");
+                u.volume = 0; window.speechSynthesis.speak(u);
+              } catch {}
+              setStarted(true);
+            }}
+            className="mt-6 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-brand px-5 py-4 text-base font-bold text-white shadow-glow"
+          >
+            <Mic className="h-5 w-5" /> Commencer
+          </button>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Compatible Chrome, Edge, Safari récent. Sur Firefox, tape tes réponses.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
 
   const next = () => setStepIdx((i) => Math.min(STEPS.length - 1, i + 1));
   const prev = () => setStepIdx((i) => Math.max(0, i - 1));
