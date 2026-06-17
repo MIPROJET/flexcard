@@ -1,5 +1,6 @@
 import { QRCodeSVG } from "qrcode.react";
 import type { Profile } from "@/lib/mock/types";
+import { safeHttpUrl } from "@/lib/safe";
 import {
   Phone, Mail, Globe, MessageCircle, Linkedin, Instagram, Facebook, Twitter,
   Music2, Download, MapPin, QrCode, Share2, UserPlus, Send, Repeat,
@@ -108,12 +109,15 @@ function ContactList({ p, dark = false }: { p: Profile; dark?: boolean }) {
           <span className={`flex-1 truncate text-sm font-medium ${txt}`}>{p.publicEmail}</span>
         </a>
       )}
-      {p.website && (
-        <a href={p.website} target="_blank" rel="noreferrer" className={row}>
-          <span className={iconCls}><Globe className="h-4 w-4" /></span>
-          <span className={`flex-1 truncate text-sm font-medium ${txt}`}>{p.website.replace(/^https?:\/\//, "")}</span>
-        </a>
-      )}
+      {(() => {
+        const w = safeHttpUrl(p.website);
+        return w ? (
+          <a href={w} target="_blank" rel="noopener noreferrer" className={row}>
+            <span className={iconCls}><Globe className="h-4 w-4" /></span>
+            <span className={`flex-1 truncate text-sm font-medium ${txt}`}>{w.replace(/^https?:\/\//, "")}</span>
+          </a>
+        ) : null;
+      })()}
       {p.city && (
         <div className={row}>
           <span className={iconCls}><MapPin className="h-4 w-4" /></span>
