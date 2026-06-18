@@ -1,4 +1,6 @@
 import type { Profile, Organization, AppState } from "./types";
+import inocentAvatar from "@/assets/inocent-koffi-avatar.jpg.asset.json";
+import inocentCover from "@/assets/inocent-koffi-cover.png.asset.json";
 
 const now = Date.now();
 const days = (n: number) => now - n * 86400_000;
@@ -24,29 +26,46 @@ function p(partial: Partial<Profile> & Pick<Profile, "id" | "email" | "firstName
 }
 
 const profiles: Profile[] = [
-  // 1. Fondateur
+  // 1. Fondateur — Inocent KOFFI (compte démo réel)
   p({
-    id: "u1", slug: "inocent-koffi", email: "inocent@flexcard.app",
-    firstName: "Inocent", lastName: "Koffi", title: "Fondateur", company: "MiPROJET",
-    sector: "Tech & Innovation", description: "Bâtisseur de FlexCard. Au croisement du design, du produit et de l'Afrique qui code.",
-    publicEmail: "contact@miprojet.africa", website: "https://miprojet.africa", city: "Abidjan",
-    phones: [{ number: "+225 07 59 60 87 00", operator: "Orange" }, { number: "+225 05 88 77 66 55", operator: "MTN" }],
-    socials: { whatsapp: "+22507596087", linkedin: "inocent-koffi", twitter: "miprojet_africa" },
-    avatarUrl: AVATAR("inocent"), coverUrl: COVER("photo-1551434678-e076c223a692"),
-    templateId: "vkard-cover",
-    palette: { primary: "#1d4ed8", accent: "#22d3ee", ink: "#0b1a3a" },
-    hasPremium: true, premiumCode: "FX-IKN0-V202-6FLX",
+    id: "u1", slug: "inocent-koffi", email: "inocent.koffi@ivoireprojet.com",
+    firstName: "Inocent", lastName: "KOFFI",
+    title: "Gérant AgriCapital · Initiateur FlexCard · Développeur Web",
+    company: "AgriCapital SARL",
+    kind: "entreprise",
+    sector: "Agriculture & Tech",
+    description: "Initiateur de FlexCard — la carte de visite digitale d'Afrique. Gérant d'AgriCapital, projet d'investissement dans le palmier à huile et les cultures industrielles en Côte d'Ivoire. Développeur web passionné, je conçois des solutions numériques utiles, accessibles et fidèles à la réalité du terrain africain.",
+    publicEmail: "inocent.koffi@ivoireprojet.com",
+    website: "https://ikoffi.agricapital.ci",
+    city: "Daloa, Côte d'Ivoire",
+    phones: [
+      { number: "+225 07 59 56 60 87", operator: "Orange" },
+      { number: "+225 01 71 29 65 72", operator: "MTN" },
+      { number: "+225 05 56 49 44 67", operator: "Moov" },
+    ],
+    socials: {
+      whatsapp: "+2250759566087",
+      linkedin: "inocent-k-4a08b7159",
+      facebook: "inocent.koffi.2025",
+    },
+    avatarUrl: inocentAvatar.url,
+    coverUrl: inocentCover.url,
+    coverType: "image",
+    templateId: "premium-nfc",
+    palette: { primary: "#1d4ed8", accent: "#f59e0b", ink: "#0a1a3a" },
+    hasPremium: true, premiumCode: "FX-IKNV-2026-PREM",
     gallery: [
-      { id: "g1", category: "photos", url: PHOTO("photo-1556761175-5973dc0f32e7"), mediaType: "image", createdAt: days(20) },
-      { id: "g2", category: "photos", url: PHOTO("photo-1521737711867-e3b97375f902"), mediaType: "image", createdAt: days(15) },
-      { id: "g3", category: "actualites", text: "FlexCard arrive officiellement en Afrique de l'Ouest en 2026 ! 🚀", createdAt: days(5) },
+      { id: "g1", category: "actualites", text: "FlexCard arrive officiellement en Afrique de l'Ouest — 2026. 🚀", createdAt: days(5) },
+      { id: "g2", category: "actualites", text: "AgriCapital — campagne d'investisseurs sur le palmier à huile.", createdAt: days(10) },
     ],
-    prospects: [
-      { phone: "+225 05 12 34 56 78", contactName: "Aïcha B.", firstScanAt: days(12), visits: 4, lastVisitAt: days(1) },
-      { phone: "+225 07 88 99 00 11", contactName: "Mamadou D.", firstScanAt: days(8), visits: 2, lastVisitAt: days(2) },
-      { phone: "+225 01 22 33 44 55", contactName: "Léa K.", firstScanAt: days(4), visits: 1, lastVisitAt: days(4) },
-    ],
-    createdAt: days(60),
+    prospects: Array.from({ length: 50 }).map((_, i) => ({
+      phone: `+22507${String(10000000 + i * 13579).slice(0, 8)}`,
+      contactName: ["Kouadio Marc", "Aya Fatou", "Konan Jean", "Touré Mariam", "Coulibaly Ibrahim", "Bamba Awa", "Ouattara Salif", "Koné Aminata", "Traoré Moussa", "Soro Kadidja"][i % 10],
+      firstScanAt: days(60 - i),
+      visits: 1 + (i % 8),
+      lastVisitAt: days(Math.max(0, 14 - (i % 14))),
+    })),
+    createdAt: days(120),
   }),
   // 2. Photographe (couverture vidéo bouclée hosted Coverr)
   p({
