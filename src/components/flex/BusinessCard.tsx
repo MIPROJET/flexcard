@@ -1,9 +1,10 @@
 import { QRCodeSVG } from "qrcode.react";
 import type { Profile } from "@/lib/mock/types";
 import { safeHttpUrl } from "@/lib/safe";
+import logoOfficial from "@/assets/flexcard-logo-official.png.asset.json";
 import {
   Phone, Mail, Globe, MessageCircle, Linkedin, Instagram, Facebook, Twitter,
-  Music2, Download, MapPin, QrCode, Share2, UserPlus, Send, Repeat,
+  Music2, Download, MapPin, QrCode, Share2, UserPlus, Send, Repeat, Crown, Wifi,
 } from "lucide-react";
 
 type Props = {
@@ -414,6 +415,53 @@ function TplBlueHeader({ p, url, variant }: { p: Profile; url: string; variant: 
   );
 }
 
+function TplPremiumNFC({ p, url, variant }: { p: Profile; url: string; variant: "preview" | "full" | "print" }) {
+  return (
+    <PhoneFrame variant={variant}>
+      {/* Bandeau navy premium */}
+      <div className="relative h-[42%] w-full overflow-hidden" style={{ background: `linear-gradient(135deg, ${p.palette.ink} 0%, ${p.palette.primary} 100%)` }}>
+        {p.coverUrl && (
+          <img src={p.coverUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />
+        )}
+        <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, transparent 0%, ${p.palette.ink}cc 100%)` }} />
+        {/* Badges premium */}
+        <div className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-amber-400/95 px-2.5 py-1 text-[10px] font-bold text-amber-950 shadow">
+          <Crown className="h-3 w-3" /> PREMIUM
+        </div>
+        <div className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur">
+          <Wifi className="h-3 w-3" /> NFC
+        </div>
+        <div className="absolute bottom-3 left-4 right-4 flex items-end gap-3">
+          <Avatar p={p} size={72} ring="ring-3 ring-amber-300" />
+          <div className="min-w-0 flex-1 text-white drop-shadow">
+            <div className="text-base font-extrabold leading-tight truncate">{p.firstName} {p.lastName}</div>
+            <div className="text-[11px] opacity-90 truncate">{p.title}</div>
+            {p.company && <div className="text-[10px] opacity-75 truncate">{p.company}</div>}
+          </div>
+        </div>
+      </div>
+      <div className="px-4 pb-4 pt-3 bg-white">
+        <div className="flex items-center justify-center gap-2">
+          <CircleAction icon={<Phone className="h-4 w-4" />} label="Tel" color={p.palette.primary} />
+          <CircleAction icon={<Mail className="h-4 w-4" />} label="Mail" color={p.palette.ink} />
+          <CircleAction icon={<MessageCircle className="h-4 w-4" />} label="WA" color="#25D366" />
+          <CircleAction icon={<Globe className="h-4 w-4" />} label="Web" color={p.palette.accent} />
+          <CircleAction icon={<Share2 className="h-4 w-4" />} label="Partager" color={p.palette.ink} />
+        </div>
+        {p.description && (
+          <p className="mt-3 text-center text-[11px] leading-relaxed text-slate-600 line-clamp-3">{p.description}</p>
+        )}
+        <div className="mt-3 flex items-center justify-between rounded-2xl p-2.5" style={{ background: `${p.palette.primary}10` }}>
+          <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: p.palette.ink }}>Carte officielle</div>
+          <img src={logoOfficial.url} alt="FlexCard" className="h-5 w-auto" />
+        </div>
+        <div className="mt-3"><AddToContactsButton color={p.palette.primary} /></div>
+        <div className="mt-2 text-center text-[9px] uppercase tracking-widest text-slate-400">{p.premiumCode}</div>
+      </div>
+    </PhoneFrame>
+  );
+}
+
 /* --------------------------------- Renderer -------------------------------- */
 
 const RENDERERS: Record<string, (args: { p: Profile; url: string; variant: "preview" | "full" | "print" }) => React.ReactElement> = {
@@ -425,6 +473,8 @@ const RENDERERS: Record<string, (args: { p: Profile; url: string; variant: "prev
   "tilted-block": TplTiltedBlock,
   "cartly-night": TplCartlyNight,
   "blue-header": TplBlueHeader,
+  "premium-nfc": TplPremiumNFC,
+  "vkard-premium-nfc": TplPremiumNFC,
 };
 
 export function BusinessCard({ profile, variant = "preview", publicUrl }: Props) {

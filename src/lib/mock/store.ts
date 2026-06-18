@@ -105,7 +105,7 @@ export const useApp = create<AppState & Actions>()(
       resetAll: () => set({ ...seedState }),
     }),
     {
-      name: "flexcard-mock-v4",
+      name: "flexcard-mock-v6",
       storage: createJSONStorage(() => (typeof window === "undefined" ? undefined as any : localStorage)),
       partialize: (s) => ({
         profiles: s.profiles,

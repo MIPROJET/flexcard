@@ -5,6 +5,7 @@
  * Combinés à 9 palettes = 72 variations visuelles.
  */
 export const TEMPLATE_DEFS = [
+  { id: "premium-nfc", name: "Premium NFC", desc: "Carte officielle FlexCard premium : navy + or, badge NFC, logo gravé." },
   { id: "vkard-cover", name: "Cover Story", desc: "Photo de couverture pleine largeur, avatar centré, fiche élégante." },
   { id: "swap-classic", name: "Swap Classic", desc: "Cover paysage + avatar circulaire, lignes contact, bouton bleu." },
   { id: "teamwork-dramatic", name: "Dramatic", desc: "Portrait pleine hauteur noir & blanc, titre éditorial." },
