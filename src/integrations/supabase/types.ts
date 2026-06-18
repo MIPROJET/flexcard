@@ -638,6 +638,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      register_analytics_event: {
+        Args: { _event_type: string; _metadata?: Json; _profile_id: string }
+        Returns: undefined
+      }
       register_contact_exchange: {
         Args: {
           _contact_email?: string
