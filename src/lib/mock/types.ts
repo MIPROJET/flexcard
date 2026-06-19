@@ -22,9 +22,27 @@ export type SocialLinks = {
   twitter?: string;
 };
 
-export type AccountKind = "particulier" | "informel" | "entreprise";
+export type AccountKind =
+  | "particulier"
+  | "informel"
+  | "entreprise"
+  | "coordinateur"
+  | "commercial"
+  | "partenaire";
 
-export type Plan = "free" | "starter" | "team10" | "team20" | "team50" | "team100" | "unlimited";
+export type Plan =
+  | "free"
+  | "vocal"
+  | "starter"
+  | "pro_particulier"
+  | "team10"
+  | "team20"
+  | "team50"
+  | "team100"
+  | "unlimited";
+
+export type UserRole = "user" | "admin" | "coordinator" | "commercial" | "partner";
+export type PayoutMethod = "wave" | "orange_money" | "mtn_momo";
 
 export type Profile = {
   id: string;
@@ -57,6 +75,12 @@ export type Profile = {
   boostUntil?: number;
   prospects: ProspectLink[];
   createdAt: number;
+  // CDC V4 — rôles & commissions
+  role?: UserRole;
+  managedAgentIds?: string[];     // pour coordinateur
+  commissionRate?: number;        // pour partenaire/commercial (0–1)
+  payoutMethod?: PayoutMethod;
+  payoutAccount?: string;         // numéro Wave/OM/MOMO
 };
 
 export type ProspectLink = {
