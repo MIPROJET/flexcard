@@ -100,6 +100,26 @@ export const SECTORS_BY_KIND: Record<AccountKind, string[]> = {
     "Administration / Collectivité",
     "Autre",
   ],
+  coordinateur: [
+    "Coordination commerciale",
+    "Animation de réseau",
+    "Gestion d'équipe terrain",
+    "Autre",
+  ],
+  commercial: [
+    "Vente directe",
+    "Démarchage entreprises",
+    "Animation point de vente",
+    "Téléprospection",
+    "Autre",
+  ],
+  partenaire: [
+    "Imprimeur",
+    "Distributeur",
+    "Apporteur d'affaires",
+    "Intégrateur",
+    "Autre",
+  ],
 };
 
 /** Liste plate utilisée par les formulaires d'onboarding / édition. */
