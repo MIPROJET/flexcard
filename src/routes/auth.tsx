@@ -153,12 +153,12 @@ function AuthPage() {
               </div>
               <div className="mt-6 rounded-2xl border border-dashed border-border bg-background/60 p-4">
                 <div className="flex items-center gap-2 text-sm font-semibold">
-                  <Mic className="h-4 w-4 text-accent-orange" /> Vous ne savez pas lire ni écrire ?
+                  <Mic className="h-4 w-4 text-[color:var(--accent-orange)]" /> Vous ne savez pas lire ni écrire ?
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">L'interface vocale crée votre carte pour vous.</p>
                 <button
                   onClick={() => navigate({ to: "/onboarding/vocal" })}
-                  className="mt-3 inline-flex items-center gap-2 rounded-xl bg-accent-orange px-4 py-2 text-sm font-semibold text-white shadow-glow"
+                  className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent-orange)] px-4 py-2 text-sm font-semibold text-white shadow-glow"
                 >
                   <Mic className="h-4 w-4" /> Créer ma carte à la voix
                 </button>
@@ -215,7 +215,7 @@ function AuthPage() {
                 <Field label="Ville" value={city} onChange={setCity} />
                 <div>
                   <label className="text-sm font-medium flex items-center gap-1.5">
-                    <Gift className="h-3.5 w-3.5 text-accent-orange" /> Code parrain (optionnel)
+                    <Gift className="h-3.5 w-3.5 text-[color:var(--accent-orange)]" /> Code parrain (optionnel)
                   </label>
                   <input
                     value={refCode}
@@ -282,7 +282,7 @@ function AuthPage() {
 
           <div className="surface-elevated p-6 sm:p-8">
             <div className="flex items-center gap-2 text-sm font-semibold">
-              <Sparkles className="h-4 w-4 text-accent-orange" /> Comptes réels
+              <Sparkles className="h-4 w-4 text-[color:var(--accent-orange)]" /> Comptes réels
             </div>
             <ul className="mt-3 space-y-2 text-xs text-muted-foreground">
               <li>• <strong>admin@flexcard.pro</strong> — admin (mot de passe)</li>
