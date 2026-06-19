@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TarifsRouteImport } from './routes/tarifs'
+import { Route as SecuriteRouteImport } from './routes/securite'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
@@ -38,6 +39,11 @@ import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticate
 const TarifsRoute = TarifsRouteImport.update({
   id: '/tarifs',
   path: '/tarifs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SecuriteRoute = SecuriteRouteImport.update({
+  id: '/securite',
+  path: '/securite',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ParrainageRoute = ParrainageRouteImport.update({
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
+  '/securite': typeof SecuriteRoute
   '/tarifs': typeof TarifsRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
+  '/securite': typeof SecuriteRoute
   '/tarifs': typeof TarifsRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -226,6 +234,7 @@ export interface FileRoutesById {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
+  '/securite': typeof SecuriteRoute
   '/tarifs': typeof TarifsRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/onboarding'
     | '/parrainage'
+    | '/securite'
     | '/tarifs'
     | '/billing'
     | '/dashboard'
@@ -280,6 +290,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/onboarding'
     | '/parrainage'
+    | '/securite'
     | '/tarifs'
     | '/billing'
     | '/dashboard'
@@ -307,6 +318,7 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/onboarding'
     | '/parrainage'
+    | '/securite'
     | '/tarifs'
     | '/_authenticated/billing'
     | '/_authenticated/dashboard'
@@ -335,6 +347,7 @@ export interface RootRouteChildren {
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   OnboardingRoute: typeof OnboardingRouteWithChildren
   ParrainageRoute: typeof ParrainageRoute
+  SecuriteRoute: typeof SecuriteRoute
   TarifsRoute: typeof TarifsRoute
   CSlugRoute: typeof CSlugRoute
   PrintCodeRoute: typeof PrintCodeRoute
@@ -347,6 +360,13 @@ declare module '@tanstack/react-router' {
       path: '/tarifs'
       fullPath: '/tarifs'
       preLoaderRoute: typeof TarifsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/securite': {
+      id: '/securite'
+      path: '/securite'
+      fullPath: '/securite'
+      preLoaderRoute: typeof SecuriteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/parrainage': {
@@ -573,6 +593,7 @@ const rootRouteChildren: RootRouteChildren = {
   MentionsLegalesRoute: MentionsLegalesRoute,
   OnboardingRoute: OnboardingRouteWithChildren,
   ParrainageRoute: ParrainageRoute,
+  SecuriteRoute: SecuriteRoute,
   TarifsRoute: TarifsRoute,
   CSlugRoute: CSlugRoute,
   PrintCodeRoute: PrintCodeRoute,
