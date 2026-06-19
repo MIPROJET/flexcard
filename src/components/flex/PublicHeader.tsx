@@ -57,14 +57,23 @@ export function PublicHeader() {
             );
           })}
         </nav>
-        <div className="hidden md:block">
-          {me ? (
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:opacity-95"
-            >
-              Mon tableau de bord
-            </Link>
+        <div className="hidden md:flex items-center gap-2">
+          {signedIn ? (
+            <>
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:opacity-95"
+              >
+                Mon tableau de bord
+              </Link>
+              <button
+                onClick={signOut}
+                title="Se déconnecter"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary"
+              >
+                <LogOut className="h-4 w-4" /> Quitter
+              </button>
+            </>
           ) : (
             <Link
               to="/auth"
@@ -95,12 +104,20 @@ export function PublicHeader() {
             </Link>
           ))}
           <Link
-            to={me ? "/dashboard" : "/auth"}
+            to={signedIn ? "/dashboard" : "/auth"}
             onClick={() => setOpen(false)}
             className="block rounded-lg bg-gradient-brand px-3 py-2 text-center text-base font-semibold text-white"
           >
-            {me ? "Mon tableau de bord" : "Créer ma carte"}
+            {signedIn ? "Mon tableau de bord" : "Créer ma carte"}
           </Link>
+          {signedIn && (
+            <button
+              onClick={() => { setOpen(false); signOut(); }}
+              className="w-full mt-2 block rounded-lg border border-border px-3 py-2 text-center text-sm font-semibold text-muted-foreground"
+            >
+              Se déconnecter
+            </button>
+          )}
         </div>
       )}
     </header>
