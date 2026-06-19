@@ -182,14 +182,14 @@ function HomePage() {
       {/* ============ CARTE PHYSIQUE NFC ============ */}
       <NfcPhysicalSection />
 
+      {/* ============ PARRAINAGE — déplacé au-dessus de "Qui peut utiliser" ============ */}
+      <ReferralSection />
+
       {/* ============ CRÉER MA CARTE — 2 options ============ */}
       <CreateCardSection />
 
       {/* ============ QUI PEUT UTILISER FLEXCARD ============ */}
       <ProfilesSection />
-
-      {/* ============ PARRAINAGE ============ */}
-      <ReferralSection />
 
       {/* ============ POURQUOI FLEXCARD - COMPARAISON ============ */}
       <WhySection />
@@ -205,7 +205,7 @@ function HomePage() {
             <div>
               <h3 className="text-3xl font-bold sm:text-4xl">Prêt à passer au digital ?</h3>
               <p className="mt-3 max-w-xl opacity-90">
-                Crée ton compte en 30 secondes. Email + OTP, pas de mot de passe.
+                Crée ton compte en 30 secondes. Email + lien magique, pas de mot de passe.
                 Carte premium imprimable à <strong>1 000 F</strong>, achat unique à vie.
               </p>
             </div>

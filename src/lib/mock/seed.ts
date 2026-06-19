@@ -28,14 +28,14 @@ function p(partial: Partial<Profile> & Pick<Profile, "id" | "email" | "firstName
 const profiles: Profile[] = [
   // 1. Fondateur — Inocent KOFFI (compte démo réel)
   p({
-    id: "u1", slug: "inocent-koffi", email: "inocent.koffi@ivoireprojet.com",
+    id: "u1", slug: "inocent-koffi", email: "inocent.koffi@agricapital.ci",
     firstName: "Inocent", lastName: "KOFFI",
-    title: "Gérant AgriCapital · Initiateur FlexCard · Développeur Web",
-    company: "AgriCapital SARL",
+    title: "Fondateur AgriCapital · Initiateur FlexCard · Développeur Web",
+    company: "AgriCapital",
     kind: "entreprise",
-    sector: "Agriculture & Tech",
-    description: "Initiateur de FlexCard — la carte de visite digitale d'Afrique. Gérant d'AgriCapital, projet d'investissement dans le palmier à huile et les cultures industrielles en Côte d'Ivoire. Développeur web passionné, je conçois des solutions numériques utiles, accessibles et fidèles à la réalité du terrain africain.",
-    publicEmail: "inocent.koffi@ivoireprojet.com",
+    sector: "Finance & Agriculture",
+    description: "Fondateur d'AgriCapital — financement intelligent pour l'agriculture africaine. Initiateur de FlexCard, la carte de visite digitale d'Afrique. Développeur web, je conçois des solutions numériques utiles, accessibles et fidèles à la réalité du terrain.",
+    publicEmail: "inocent.koffi@agricapital.ci",
     website: "https://ikoffi.agricapital.ci",
     city: "Daloa, Côte d'Ivoire",
     phones: [

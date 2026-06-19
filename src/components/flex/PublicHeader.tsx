@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Logo } from "./Logo";
-import { useCurrentProfile } from "@/lib/mock/store";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useCurrentProfile, useApp } from "@/lib/mock/store";
+import { supabase } from "@/integrations/supabase/client";
+import { Menu, X, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const links = [
   { to: "/", label: "Accueil" },
@@ -18,6 +19,21 @@ export function PublicHeader() {
   const me = useCurrentProfile();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setHasSession(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setHasSession(!!s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    useApp.setState({ currentProfileId: null });
+    window.location.href = "/";
+  };
+
+  const signedIn = hasSession || !!me;
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 glass">
@@ -41,14 +57,23 @@ export function PublicHeader() {
             );
           })}
         </nav>
-        <div className="hidden md:block">
-          {me ? (
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:opacity-95"
-            >
-              Mon tableau de bord
-            </Link>
+        <div className="hidden md:flex items-center gap-2">
+          {signedIn ? (
+            <>
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:opacity-95"
+              >
+                Mon tableau de bord
+              </Link>
+              <button
+                onClick={signOut}
+                title="Se déconnecter"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary"
+              >
+                <LogOut className="h-4 w-4" /> Quitter
+              </button>
+            </>
           ) : (
             <Link
               to="/auth"
@@ -79,12 +104,20 @@ export function PublicHeader() {
             </Link>
           ))}
           <Link
-            to={me ? "/dashboard" : "/auth"}
+            to={signedIn ? "/dashboard" : "/auth"}
             onClick={() => setOpen(false)}
             className="block rounded-lg bg-gradient-brand px-3 py-2 text-center text-base font-semibold text-white"
           >
-            {me ? "Mon tableau de bord" : "Créer ma carte"}
+            {signedIn ? "Mon tableau de bord" : "Créer ma carte"}
           </Link>
+          {signedIn && (
+            <button
+              onClick={() => { setOpen(false); signOut(); }}
+              className="w-full mt-2 block rounded-lg border border-border px-3 py-2 text-center text-sm font-semibold text-muted-foreground"
+            >
+              Se déconnecter
+            </button>
+          )}
         </div>
       )}
     </header>
