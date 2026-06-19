@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Logo } from "./Logo";
-import { useCurrentProfile } from "@/lib/mock/store";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useCurrentProfile, useApp } from "@/lib/mock/store";
+import { supabase } from "@/integrations/supabase/client";
+import { Menu, X, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const links = [
   { to: "/", label: "Accueil" },
@@ -18,6 +19,21 @@ export function PublicHeader() {
   const me = useCurrentProfile();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setHasSession(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setHasSession(!!s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    useApp.setState({ currentProfileId: null });
+    window.location.href = "/";
+  };
+
+  const signedIn = hasSession || !!me;
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 glass">

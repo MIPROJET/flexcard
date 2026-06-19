@@ -1,16 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PublicHeader } from "@/components/flex/PublicHeader";
-import { useApp } from "@/lib/mock/store";
-import { DEMO_ACCOUNTS } from "@/lib/mock/seed";
+import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { Mail, KeyRound, ArrowRight, ArrowLeft, CheckCircle2, User2, User, Store, Building2, Gift, Mic } from "lucide-react";
+import { Mail, KeyRound, ArrowRight, ArrowLeft, CheckCircle2, User, Store, Building2, Gift, Mic, Sparkles, ShieldCheck } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import type { AccountKind } from "@/lib/mock/types";
+import { SECTORS_BY_KIND } from "@/lib/mock/sectors";
 
 const searchSchema = z.object({
   ref: z.string().optional(),
-  kind: z.enum(["particulier", "informel", "entreprise"]).optional(),
+  kind: z.enum(["particulier", "informel", "entreprise", "coordinateur", "commercial", "partenaire"]).optional(),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -20,84 +20,104 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-type Step = "kind" | "form" | "otp";
+type Step = "kind" | "form" | "sent";
 
 const KIND_OPTIONS: { kind: AccountKind; label: string; desc: string; icon: React.ReactNode; tone: string }[] = [
-  {
-    kind: "particulier", label: "Particulier", tone: "from-primary/15 to-primary/5 border-primary/40",
+  { kind: "particulier", label: "Particulier", tone: "from-primary/15 to-primary/5 border-primary/40",
     desc: "Salarié, freelance, étudiant, indépendant. Carte digitale + QR code.",
-    icon: <User className="h-6 w-6" />,
-  },
-  {
-    kind: "informel", label: "Activité informelle", tone: "from-warning/15 to-warning/5 border-warning/40",
+    icon: <User className="h-6 w-6" /> },
+  { kind: "informel", label: "Activité informelle", tone: "from-warning/15 to-warning/5 border-warning/40",
     desc: "Boutique, atelier, vendeuse, artisan. WhatsApp prioritaire, géoloc, photos.",
-    icon: <Store className="h-6 w-6" />,
-  },
-  {
-    kind: "entreprise", label: "Entreprise / Organisation", tone: "from-accent-orange/15 to-accent-orange/5 border-accent-orange/40",
+    icon: <Store className="h-6 w-6" /> },
+  { kind: "entreprise", label: "Entreprise / Organisation", tone: "from-accent-orange/15 to-accent-orange/5 border-accent-orange/40",
     desc: "Équipe avec charte graphique, jusqu'à 100+ employés, gestion centralisée.",
-    icon: <Building2 className="h-6 w-6" />,
-  },
+    icon: <Building2 className="h-6 w-6" /> },
+  { kind: "coordinateur", label: "Coordinateur réseau", tone: "from-success/15 to-success/5 border-success/40",
+    desc: "Encadre une équipe d'agents commerciaux, suit objectifs et commissions.",
+    icon: <Sparkles className="h-6 w-6" /> },
+  { kind: "commercial", label: "Agent commercial", tone: "from-primary/10 to-accent/5 border-primary/30",
+    desc: "Vend FlexCard sur le terrain. Commissions sur chaque carte vendue.",
+    icon: <Gift className="h-6 w-6" /> },
+  { kind: "partenaire", label: "Partenaire / Imprimeur", tone: "from-accent-orange/10 to-warning/5 border-accent-orange/30",
+    desc: "Imprimeur, distributeur, apporteur d'affaires. Accès portail dédié.",
+    icon: <ShieldCheck className="h-6 w-6" /> },
 ];
-
-import { SECTORS_BY_KIND } from "@/lib/mock/sectors";
 
 function AuthPage() {
   const navigate = useNavigate();
   const { ref, kind: urlKind } = Route.useSearch();
-  const requestOtp = useApp((s) => s.requestOtp);
-  const verifyOtp = useApp((s) => s.verifyOtp);
-  const updateCurrent = useApp((s) => s.updateCurrent);
 
   const [step, setStep] = useState<Step>("kind");
   const [kind, setKind] = useState<AccountKind>(urlKind ?? "particulier");
 
-  // Common
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [sector, setSector] = useState(SECTORS_BY_KIND.particulier[0]);
   const [refCode, setRefCode] = useState(ref ?? "");
-
-  // Per-kind specific
-  const [title, setTitle] = useState("");
-  const [company, setCompany] = useState("");
-  const [activity, setActivity] = useState("");
   const [city, setCity] = useState("Abidjan");
-  const [address, setAddress] = useState("");
+  const [activity, setActivity] = useState("");
+  const [company, setCompany] = useState("");
+  const [title, setTitle] = useState("");
 
-  const [otp, setOtp] = useState("");
+  // Admin password panel
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPwd, setAdminPwd] = useState("");
+  const [adminBusy, setAdminBusy] = useState(false);
+
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => { if (urlKind) { setKind(urlKind); setStep("form"); } }, [urlKind]);
   useEffect(() => { setSector(SECTORS_BY_KIND[kind][0]); }, [kind]);
 
+  // If user is already logged in, redirect to dashboard
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user) navigate({ to: "/dashboard" });
+    });
+  }, [navigate]);
+
   const chooseKind = (k: AccountKind) => { setKind(k); setStep("form"); };
 
-  const submitForm = (e: React.FormEvent) => {
+  const submitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.includes("@")) { setError("Email invalide"); return; }
     if (!firstName.trim() || !lastName.trim()) { setError("Nom et prénom requis"); return; }
-    setError("");
-    requestOtp(email);
-    toast.success("Code envoyé !", { description: `Pour la démo : 123456`, duration: 6000 });
-    setStep("otp");
+    setError(""); setBusy(true);
+    const { error: err } = await supabase.auth.signInWithOtp({
+      email: email.trim().toLowerCase(),
+      options: {
+        emailRedirectTo: `${window.location.origin}/dashboard`,
+        data: {
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          kind,
+          sector,
+          city,
+          title: title || activity,
+          company: company || activity,
+          ref_code: refCode || null,
+        },
+      },
+    });
+    setBusy(false);
+    if (err) { setError(err.message); return; }
+    toast.success("Lien magique envoyé !", { description: "Ouvre ton email et clique sur le lien pour te connecter. Pas de code à saisir." });
+    setStep("sent");
   };
 
-  const submitOtp = (e: React.FormEvent) => {
+  const adminSignin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const profile = verifyOtp(email, otp);
-    if (!profile) { setError("Code invalide. Pour la démo : 123456"); return; }
-    // Apply selected kind + pre-filled fields if it's a fresh account
-    updateCurrent({
-      kind, firstName, lastName, sector,
-      title: title || (kind === "informel" ? activity : ""),
-      company: kind === "entreprise" ? company : (kind === "informel" ? activity : company),
-      city, description: kind === "informel" && address ? address : undefined,
+    setError(""); setAdminBusy(true);
+    const { error: err } = await supabase.auth.signInWithPassword({
+      email: adminEmail.trim().toLowerCase(),
+      password: adminPwd,
     });
-    toast.success(`Bienvenue ${firstName} !`, { description: refCode ? `Parrain enregistré: ${refCode}` : "Profil créé." });
-    if (!profile.firstName && !firstName) navigate({ to: "/onboarding" });
-    else navigate({ to: "/onboarding" });
+    setAdminBusy(false);
+    if (err) { setError(err.message); return; }
+    toast.success("Connecté");
+    navigate({ to: "/dashboard" });
   };
 
   return (
@@ -106,7 +126,7 @@ function AuthPage() {
       <section className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.2fr_1fr]">
         <div className="surface-elevated p-6 sm:p-10">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-            <KeyRound className="h-3.5 w-3.5" /> Sans mot de passe · OTP par email
+            <KeyRound className="h-3.5 w-3.5" /> Sans mot de passe · Lien magique par email
           </div>
 
           {step === "kind" && (
@@ -152,10 +172,10 @@ function AuthPage() {
                 <ArrowLeft className="h-3.5 w-3.5" /> Changer de profil
               </button>
               <h1 className="mt-3 text-2xl font-bold sm:text-3xl">
-                Inscription · {KIND_OPTIONS.find((o) => o.kind === kind)!.label}
+                {KIND_OPTIONS.find((o) => o.kind === kind)!.label}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                On t'envoie un code à 6 chiffres par email pour valider ton inscription.
+                Tu reçois un <strong>lien magique</strong> par email. Un clic et tu es connecté — aucun mot de passe, aucun code à saisir.
               </p>
 
               <form onSubmit={submitForm} className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -172,14 +192,17 @@ function AuthPage() {
                 {kind === "informel" && (
                   <>
                     <Field label="Activité / Métier *" value={activity} onChange={setActivity} placeholder="ex. Couturière, Coiffeur" required />
-                    <Field label="Adresse précise *" value={address} onChange={setAddress} placeholder="Quartier, repère" required />
+                    <Field label="Adresse / Repère" value={city} onChange={setCity} />
                   </>
                 )}
-                {kind === "entreprise" && (
+                {(kind === "entreprise" || kind === "partenaire") && (
                   <>
                     <Field label="Raison sociale *" value={company} onChange={setCompany} required />
-                    <Field label="Fonction du dirigeant" value={title} onChange={setTitle} placeholder="ex. Directeur Général" />
+                    <Field label="Fonction" value={title} onChange={setTitle} placeholder="ex. Directeur" />
                   </>
+                )}
+                {(kind === "coordinateur" || kind === "commercial") && (
+                  <Field label="Zone / Secteur géographique" value={title} onChange={setTitle} placeholder="ex. Abidjan Sud" className="sm:col-span-2" />
                 )}
 
                 <SelectField
@@ -203,74 +226,70 @@ function AuthPage() {
                 </div>
 
                 {error && <div className="text-sm text-destructive sm:col-span-2">{error}</div>}
-                <button className="sm:col-span-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand px-5 py-3 text-sm font-semibold text-white shadow-glow">
-                  Recevoir mon code OTP <ArrowRight className="h-4 w-4" />
+                <button disabled={busy} className="sm:col-span-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand px-5 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-50">
+                  {busy ? "Envoi en cours…" : <>Recevoir mon lien magique <ArrowRight className="h-4 w-4" /></>}
                 </button>
               </form>
             </>
           )}
 
-          {step === "otp" && (
+          {step === "sent" && (
             <>
               <button onClick={() => setStep("form")} className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-3.5 w-3.5" /> Retour
               </button>
-              <h1 className="mt-3 text-2xl font-bold sm:text-3xl">Vérifie ton email</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Code envoyé à <strong>{email}</strong>. Pour la démo : <strong>123456</strong>.
-              </p>
-              <form onSubmit={submitOtp} className="mt-6 space-y-4">
-                <input
-                  inputMode="numeric" pattern="[0-9]*" maxLength={6} autoFocus
-                  value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                  className="w-full rounded-xl border border-input bg-background px-4 py-4 text-center text-2xl font-bold tracking-[0.5em] outline-none focus:ring-brand"
-                  placeholder="••••••"
-                />
-                {error && <div className="text-sm text-destructive">{error}</div>}
-                <button className="w-full rounded-xl bg-gradient-brand px-5 py-3 text-sm font-semibold text-white shadow-glow">
-                  Valider mon inscription
-                </button>
-                <div className="rounded-xl bg-secondary/60 p-3 text-xs text-muted-foreground">
-                  <CheckCircle2 className="inline h-3.5 w-3.5 mr-1 text-success" />
-                  Mode démo — code universel : <strong>123456</strong>
+              <div className="mt-6 grid place-items-center text-center">
+                <div className="grid h-16 w-16 place-items-center rounded-2xl bg-success/10 text-success">
+                  <Mail className="h-8 w-8" />
                 </div>
-              </form>
+                <h1 className="mt-4 text-2xl font-bold sm:text-3xl">Vérifie ton email</h1>
+                <p className="mt-2 max-w-md text-sm text-muted-foreground">
+                  Nous avons envoyé un lien magique à <strong>{email}</strong>.<br />
+                  Ouvre l'email et clique sur le lien — tu seras connecté automatiquement.
+                  <br /><span className="text-xs">Aucun mot de passe, aucun code à saisir, ni maintenant ni plus tard.</span>
+                </p>
+                <div className="mt-6 rounded-xl bg-secondary/60 p-3 text-xs text-muted-foreground max-w-md">
+                  <CheckCircle2 className="inline h-3.5 w-3.5 mr-1 text-success" />
+                  Une fois connecté, ta session reste active : tu n'auras plus à te reconnecter sur cet appareil.
+                </div>
+              </div>
             </>
           )}
         </div>
 
-        <div className="surface-elevated p-6 sm:p-8">
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <User2 className="h-4 w-4 text-primary" /> Comptes de démonstration
+        <div className="space-y-4">
+          <div className="surface-elevated p-6 sm:p-8">
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <ShieldCheck className="h-4 w-4 text-primary" /> Connexion administrateur
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">Réservé aux comptes admin (email + mot de passe).</p>
+            <form onSubmit={adminSignin} className="mt-4 space-y-3">
+              <input
+                type="email" value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)}
+                placeholder="admin@flexcard.pro"
+                className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-brand"
+              />
+              <input
+                type="password" value={adminPwd} onChange={(e) => setAdminPwd(e.target.value)}
+                placeholder="Mot de passe"
+                className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-brand"
+              />
+              <button disabled={adminBusy} className="w-full rounded-xl bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-glow disabled:opacity-50">
+                {adminBusy ? "Connexion…" : "Se connecter"}
+              </button>
+            </form>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Clique sur un compte pour ouvrir directement l'OTP.</p>
-          <ul className="mt-4 max-h-[520px] overflow-y-auto divide-y divide-border/60">
-            {DEMO_ACCOUNTS.map((a) => (
-              <li key={a.email}>
-                <button
-                  type="button"
-                  onClick={() => { setEmail(a.email); setFirstName(a.name.split(" ")[0] || ""); setLastName(a.name.split(" ").slice(1).join(" ") || ""); setKind(a.kind); setStep("otp"); requestOtp(a.email); toast.success("Code envoyé", { description: "Démo : 123456" }); }}
-                  className="flex w-full items-start gap-3 px-2 py-3 text-left hover:bg-secondary/60 rounded-lg"
-                >
-                  <div className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-brand text-xs font-bold text-white">
-                    {a.name.split(" ").map((p) => p[0]).join("").slice(0, 2)}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold truncate">{a.name}</span>
-                      {a.kind === "entreprise" && (
-                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">ENTREPRISE</span>
-                      )}
-                      {a.kind === "informel" && (
-                        <span className="rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-semibold text-warning">INFORMEL</span>
-                      )}
-                    </div>
-                    <div className="text-xs text-muted-foreground truncate">{a.title} · {a.email}</div>
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
+
+          <div className="surface-elevated p-6 sm:p-8">
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <Sparkles className="h-4 w-4 text-accent-orange" /> Comptes réels
+            </div>
+            <ul className="mt-3 space-y-2 text-xs text-muted-foreground">
+              <li>• <strong>admin@flexcard.pro</strong> — admin (mot de passe)</li>
+              <li>• <strong>inocent.koffi@agricapital.ci</strong> — utilisateur (lien magique)</li>
+            </ul>
+            <p className="mt-3 text-xs">Pour les autres utilisateurs : saisis ton email à gauche, reçois ton lien magique, et clique. C'est tout.</p>
+          </div>
         </div>
       </section>
     </div>
