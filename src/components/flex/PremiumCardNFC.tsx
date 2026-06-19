@@ -1,4 +1,4 @@
-import logoOfficial from "@/assets/flexcard-logo-official.png.asset.json";
+import logoOfficial from "@/assets/flexcard-logo-back.png.asset.json";
 
 /**
  * Carte premium NFC — fidèle au prototype fourni.
