@@ -1,6 +1,14 @@
 # Plan SQL FlexCard CDC V4 — Refonte espace pro, /me, vocal standalone, imprimeur QR-relais
 
-> **À exécuter dans Supabase SQL Editor.** Ce fichier contient TOUT le SQL nécessaire pour que les nouvelles routes UI fonctionnent : `/me`, `/ma-carte`, parcours vocal standalone, demande de rôles pro, imprimeur relais (QR pré-générés + activation).
+> **À exécuter dans Supabase SQL Editor.** Ce fichier contient TOUT le SQL nécessaire. ⚠️ **Étendre d'abord l'enum `app_role`** car il ne contient actuellement que `admin / moderator / imprimeur / user` — il manque `coordinator` et `commercial`.
+
+```sql
+ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'coordinator';
+ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'commercial';
+-- 'imprimeur' existe déjà → on l'utilise pour 'partenaire'
+```
+
+> Dans le SQL ci-dessous, `'partner'::public.app_role` est en réalité `'imprimeur'::public.app_role` (l'enum existant). Adapter si copier-coller manuel.
 
 ---
 
