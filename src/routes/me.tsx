@@ -230,7 +230,7 @@ function RequestModal({ kind, onClose }: { kind: RoleKind; onClose: () => void }
     setError(""); setBusy(true);
 
     // Appel d'une RPC publique qui hash le password et insère dans role_requests (SQL fourni dans plan.md).
-    const { error: err } = await supabase.rpc("submit_role_request", {
+    const { error: err } = await (supabase as any).rpc("submit_role_request", {
       _kind: kind,
       _email: email.trim().toLowerCase(),
       _password: pwd,

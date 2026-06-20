@@ -14,6 +14,8 @@ import { Route as SecuriteRouteImport } from './routes/securite'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as MeRouteImport } from './routes/me'
+import { Route as MaCarteRouteImport } from './routes/ma-carte'
 import { Route as ImprimeurRouteImport } from './routes/imprimeur'
 import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -59,6 +61,16 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   id: '/mentions-legales',
   path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeRoute = MeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaCarteRoute = MaCarteRouteImport.update({
+  id: '/ma-carte',
+  path: '/ma-carte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImprimeurRoute = ImprimeurRouteImport.update({
@@ -175,6 +187,8 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
   '/imprimeur': typeof ImprimeurRoute
+  '/ma-carte': typeof MaCarteRoute
+  '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
@@ -202,6 +216,8 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
   '/imprimeur': typeof ImprimeurRoute
+  '/ma-carte': typeof MaCarteRoute
+  '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
@@ -231,6 +247,8 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
   '/imprimeur': typeof ImprimeurRoute
+  '/ma-carte': typeof MaCarteRoute
+  '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
@@ -260,6 +278,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/directory'
     | '/imprimeur'
+    | '/ma-carte'
+    | '/me'
     | '/mentions-legales'
     | '/onboarding'
     | '/parrainage'
@@ -287,6 +307,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/directory'
     | '/imprimeur'
+    | '/ma-carte'
+    | '/me'
     | '/mentions-legales'
     | '/onboarding'
     | '/parrainage'
@@ -315,6 +337,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/directory'
     | '/imprimeur'
+    | '/ma-carte'
+    | '/me'
     | '/mentions-legales'
     | '/onboarding'
     | '/parrainage'
@@ -344,6 +368,8 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DirectoryRoute: typeof DirectoryRoute
   ImprimeurRoute: typeof ImprimeurRoute
+  MaCarteRoute: typeof MaCarteRoute
+  MeRoute: typeof MeRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   OnboardingRoute: typeof OnboardingRouteWithChildren
   ParrainageRoute: typeof ParrainageRoute
@@ -388,6 +414,20 @@ declare module '@tanstack/react-router' {
       path: '/mentions-legales'
       fullPath: '/mentions-legales'
       preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/me': {
+      id: '/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ma-carte': {
+      id: '/ma-carte'
+      path: '/ma-carte'
+      fullPath: '/ma-carte'
+      preLoaderRoute: typeof MaCarteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/imprimeur': {
@@ -590,6 +630,8 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DirectoryRoute: DirectoryRoute,
   ImprimeurRoute: ImprimeurRoute,
+  MaCarteRoute: MaCarteRoute,
+  MeRoute: MeRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   OnboardingRoute: OnboardingRouteWithChildren,
   ParrainageRoute: ParrainageRoute,

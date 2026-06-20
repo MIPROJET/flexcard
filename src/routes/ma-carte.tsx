@@ -52,7 +52,7 @@ function MaCartePage() {
     setError(""); setBusy(true);
 
     // RPC publique : find_card_by_email (SECURITY DEFINER) — voir plan.md
-    const { data, error: err } = await supabase.rpc("find_card_by_email", {
+    const { data, error: err } = await (supabase as any).rpc("find_card_by_email", {
       _email: email.trim().toLowerCase(),
     });
     setBusy(false);
