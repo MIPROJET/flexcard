@@ -51,11 +51,6 @@ function AuthPage() {
   const [company, setCompany] = useState("");
   const [title, setTitle] = useState("");
 
-  // Admin password panel
-  const [adminEmail, setAdminEmail] = useState("");
-  const [adminPwd, setAdminPwd] = useState("");
-  const [adminBusy, setAdminBusy] = useState(false);
-
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -94,21 +89,9 @@ function AuthPage() {
     });
     setBusy(false);
     if (err) { setError(err.message); return; }
+    try { localStorage.setItem("flexcard:last_email", email.trim().toLowerCase()); } catch {}
     toast.success("Lien magique envoyé !", { description: "Ouvre ton email et clique sur le lien pour te connecter. Pas de code à saisir." });
     setStep("sent");
-  };
-
-  const adminSignin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(""); setAdminBusy(true);
-    const { error: err } = await supabase.auth.signInWithPassword({
-      email: adminEmail.trim().toLowerCase(),
-      password: adminPwd,
-    });
-    setAdminBusy(false);
-    if (err) { setError(err.message); return; }
-    toast.success("Connecté");
-    navigate({ to: "/dashboard" });
   };
 
   return (

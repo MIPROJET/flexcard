@@ -288,9 +288,6 @@ function NfcPhysicalSection() {
               <Link to="/premium" className="inline-flex items-center gap-2 rounded-full bg-gradient-brand px-6 py-3 text-sm font-semibold text-white shadow-glow">
                 <CreditCard className="h-4 w-4" /> Activer ma carte NFC — 1 000 F
               </Link>
-              <Link to="/imprimeur" className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold hover:bg-secondary">
-                Je suis imprimeur
-              </Link>
             </div>
           </div>
 

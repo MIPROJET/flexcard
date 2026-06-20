@@ -16,7 +16,6 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MaCarteRouteImport } from './routes/ma-carte'
-import { Route as ImprimeurRouteImport } from './routes/imprimeur'
 import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
@@ -71,11 +70,6 @@ const MeRoute = MeRouteImport.update({
 const MaCarteRoute = MaCarteRouteImport.update({
   id: '/ma-carte',
   path: '/ma-carte',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ImprimeurRoute = ImprimeurRouteImport.update({
-  id: '/imprimeur',
-  path: '/imprimeur',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DirectoryRoute = DirectoryRouteImport.update({
@@ -186,7 +180,6 @@ export interface FileRoutesByFullPath {
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
-  '/imprimeur': typeof ImprimeurRoute
   '/ma-carte': typeof MaCarteRoute
   '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
@@ -215,7 +208,6 @@ export interface FileRoutesByTo {
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
-  '/imprimeur': typeof ImprimeurRoute
   '/ma-carte': typeof MaCarteRoute
   '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
@@ -246,7 +238,6 @@ export interface FileRoutesById {
   '/confidentialite': typeof ConfidentialiteRoute
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
-  '/imprimeur': typeof ImprimeurRoute
   '/ma-carte': typeof MaCarteRoute
   '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
@@ -277,7 +268,6 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/contact'
     | '/directory'
-    | '/imprimeur'
     | '/ma-carte'
     | '/me'
     | '/mentions-legales'
@@ -306,7 +296,6 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/contact'
     | '/directory'
-    | '/imprimeur'
     | '/ma-carte'
     | '/me'
     | '/mentions-legales'
@@ -336,7 +325,6 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/contact'
     | '/directory'
-    | '/imprimeur'
     | '/ma-carte'
     | '/me'
     | '/mentions-legales'
@@ -367,7 +355,6 @@ export interface RootRouteChildren {
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   ContactRoute: typeof ContactRoute
   DirectoryRoute: typeof DirectoryRoute
-  ImprimeurRoute: typeof ImprimeurRoute
   MaCarteRoute: typeof MaCarteRoute
   MeRoute: typeof MeRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
@@ -428,13 +415,6 @@ declare module '@tanstack/react-router' {
       path: '/ma-carte'
       fullPath: '/ma-carte'
       preLoaderRoute: typeof MaCarteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/imprimeur': {
-      id: '/imprimeur'
-      path: '/imprimeur'
-      fullPath: '/imprimeur'
-      preLoaderRoute: typeof ImprimeurRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/directory': {
@@ -629,7 +609,6 @@ const rootRouteChildren: RootRouteChildren = {
   ConfidentialiteRoute: ConfidentialiteRoute,
   ContactRoute: ContactRoute,
   DirectoryRoute: DirectoryRoute,
-  ImprimeurRoute: ImprimeurRoute,
   MaCarteRoute: MaCarteRoute,
   MeRoute: MeRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
