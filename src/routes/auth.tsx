@@ -282,13 +282,11 @@ function AuthPage() {
 
           <div className="surface-elevated p-6 sm:p-8">
             <div className="flex items-center gap-2 text-sm font-semibold">
-              <Sparkles className="h-4 w-4 text-[color:var(--accent-orange)]" /> Comptes réels
+              <Sparkles className="h-4 w-4 text-[color:var(--accent-orange)]" /> Comment ça marche
             </div>
-            <ul className="mt-3 space-y-2 text-xs text-muted-foreground">
-              <li>• <strong>admin@flexcard.pro</strong> — admin (mot de passe)</li>
-              <li>• <strong>inocent.koffi@agricapital.ci</strong> — utilisateur (lien magique)</li>
-            </ul>
-            <p className="mt-3 text-xs">Pour les autres utilisateurs : saisis ton email à gauche, reçois ton lien magique, et clique. C'est tout.</p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Saisis ton email à gauche, reçois un lien magique, clique. Pas de mot de passe, pas de code OTP — ta session reste active sur cet appareil.
+            </p>
           </div>
         </div>
       </section>
