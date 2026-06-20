@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Logo } from "./Logo";
 import { useCurrentProfile, useApp } from "@/lib/mock/store";
 import { supabase } from "@/integrations/supabase/client";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, CreditCard } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const links = [
@@ -10,7 +10,6 @@ const links = [
   { to: "/tarifs", label: "Tarifs" },
   { to: "/parrainage", label: "Parrainage" },
   { to: "/directory", label: "Annuaire" },
-  { to: "/imprimeur", label: "Imprimeur" },
   { to: "/about", label: "À propos" },
   { to: "/contact", label: "Contact" },
 ];
@@ -75,12 +74,20 @@ export function PublicHeader() {
               </button>
             </>
           ) : (
-            <Link
-              to="/auth"
-              className="inline-flex items-center rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:opacity-95"
-            >
-              Créer ma carte
-            </Link>
+            <>
+              <Link
+                to="/ma-carte"
+                className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10"
+              >
+                <CreditCard className="h-4 w-4" /> Accéder à ma carte
+              </Link>
+              <Link
+                to="/auth"
+                className="inline-flex items-center rounded-full bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:opacity-95"
+              >
+                Créer ma carte
+              </Link>
+            </>
           )}
         </div>
         <button
@@ -103,6 +110,15 @@ export function PublicHeader() {
               {l.label}
             </Link>
           ))}
+          {!signedIn && (
+            <Link
+              to="/ma-carte"
+              onClick={() => setOpen(false)}
+              className="block rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-center text-base font-semibold text-primary"
+            >
+              Accéder à ma carte
+            </Link>
+          )}
           <Link
             to={signedIn ? "/dashboard" : "/auth"}
             onClick={() => setOpen(false)}
@@ -143,7 +159,7 @@ export function PublicFooter() {
               <li><Link to="/tarifs" className="hover:text-foreground">Tarifs</Link></li>
               <li><Link to="/parrainage" className="hover:text-foreground">Parrainage</Link></li>
               <li><Link to="/directory" className="hover:text-foreground">Annuaire</Link></li>
-              <li><Link to="/imprimeur" className="hover:text-foreground">Imprimeur</Link></li>
+              <li><Link to="/ma-carte" className="hover:text-foreground">Accéder à ma carte</Link></li>
               <li><Link to="/auth" className="hover:text-foreground">Créer ma carte</Link></li>
             </ul>
           </div>
