@@ -139,11 +139,11 @@ function PublicCardPage() {
   const tel = profile.phones[0]?.number.replace(/\s/g, "");
   const wa = profile.socials.whatsapp?.replace(/\D/g, "") || (tel?.replace(/\D/g, ""));
 
-  const photos = profile.gallery.filter((g) => g.category === "photos");
-  const affiches = profile.gallery.filter((g) => g.category === "affiches");
-  const visuels = profile.gallery.filter((g) => g.category === "visuels");
-  const videos = profile.gallery.filter((g) => g.category === "videos");
-  const news = profile.gallery.filter((g) => g.category === "actualites");
+  const photos = profile.gallery.filter((g: any) => g.category === "photos");
+  const affiches = profile.gallery.filter((g: any) => g.category === "affiches");
+  const visuels = profile.gallery.filter((g: any) => g.category === "visuels");
+  const videos = profile.gallery.filter((g: any) => g.category === "videos");
+  const news = profile.gallery.filter((g: any) => g.category === "actualites");
 
   const downloadVCard = () => {
     const blob = new Blob([buildVCard(profile)], { type: "text/vcard;charset=utf-8" });
@@ -223,7 +223,7 @@ function PublicCardPage() {
               <Newspaper className="h-4 w-4" /> Actualités
             </h3>
             <ul className="mt-4 space-y-3">
-              {news.map((n) => (
+              {news.map((n: any) => (
                 <li key={n.id} className="rounded-xl bg-secondary/60 p-3 text-sm">{n.text}</li>
               ))}
             </ul>
