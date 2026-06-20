@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useApp } from "@/lib/mock/store";
 import { useEffect, useMemo, useState } from "react";
 import { Logo } from "@/components/flex/Logo";
@@ -9,18 +9,7 @@ import {
 import { toast } from "sonner";
 import { fmt } from "@/lib/mock/utils";
 import { mockBalanceFor } from "@/lib/mock/referral";
-
-const ADMIN_KEY = "flexcard-admin";
-
-function isAdminLocal() {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem(ADMIN_KEY) === "1";
-}
-function setAdminLocal(v: boolean) {
-  if (typeof window === "undefined") return;
-  if (v) localStorage.setItem(ADMIN_KEY, "1");
-  else localStorage.removeItem(ADMIN_KEY);
-}
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -29,48 +18,55 @@ export const Route = createFileRoute("/admin")({
 });
 
 type Tab = "users" | "finance" | "support" | "modération" | "analytics" | "imprimeurs";
+type AccessState = "checking" | "granted" | "denied";
 
 function AdminPage() {
-  const [hasAccess, setHasAccess] = useState(false);
-  const [pass, setPass] = useState("");
+  const navigate = useNavigate();
+  const [access, setAccess] = useState<AccessState>("checking");
   const [tab, setTab] = useState<Tab>("users");
 
-  useEffect(() => { setHasAccess(isAdminLocal()); }, []);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: userRes } = await supabase.auth.getUser();
+      const user = userRes.user;
+      if (!user) { if (!cancelled) setAccess("denied"); return; }
+      const { data, error } = await supabase.rpc("has_role", {
+        _user_id: user.id,
+        _role: "admin",
+      });
+      if (cancelled) return;
+      if (error || !data) setAccess("denied");
+      else setAccess("granted");
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
-  if (!hasAccess) {
+  if (access === "checking") {
     return (
       <div className="min-h-screen grid place-items-center bg-gradient-mesh px-4">
-        <div className="surface-elevated p-8 max-w-md w-full">
-          <div className="flex items-center gap-3">
-            <Logo className="h-8" />
-            <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">ADMIN</span>
+        <div className="surface-elevated p-8 text-sm text-muted-foreground">Vérification des droits…</div>
+      </div>
+    );
+  }
+
+  if (access === "denied") {
+    return (
+      <div className="min-h-screen grid place-items-center bg-gradient-mesh px-4">
+        <div className="surface-elevated p-8 max-w-md w-full text-center">
+          <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-destructive/10 text-destructive">
+            <Shield className="h-6 w-6" />
           </div>
-          <h1 className="mt-4 text-2xl font-bold">Espace administrateur</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Accès réservé à l'équipe FlexCard.</p>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (pass === "flexcard2026") {
-                setAdminLocal(true); setHasAccess(true);
-                toast.success("Accès administrateur accordé");
-              } else {
-                toast.error("Mot de passe incorrect", { description: "Démo : flexcard2026" });
-              }
-            }}
-            className="mt-6 space-y-3"
+          <h1 className="mt-4 text-2xl font-bold">Accès refusé</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Cette section est réservée aux administrateurs. Connecte-toi avec un compte disposant du rôle admin.
+          </p>
+          <button
+            onClick={() => navigate({ to: "/auth" })}
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand px-5 py-3 text-sm font-semibold text-white shadow-glow"
           >
-            <input
-              type="password"
-              value={pass}
-              onChange={(e) => setPass(e.target.value)}
-              placeholder="Mot de passe administrateur"
-              className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-brand"
-            />
-            <button className="w-full rounded-xl bg-gradient-brand px-5 py-3 text-sm font-semibold text-white shadow-glow">
-              Accéder à l'admin
-            </button>
-            <p className="text-xs text-muted-foreground">Démo : <code className="bg-secondary px-1.5 py-0.5 rounded">flexcard2026</code></p>
-          </form>
+            Aller à la connexion
+          </button>
         </div>
       </div>
     );
@@ -85,10 +81,10 @@ function AdminPage() {
             <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">ADMIN</span>
           </div>
           <button
-            onClick={() => { setAdminLocal(false); setHasAccess(false); }}
+            onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/auth" }); }}
             className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold hover:bg-secondary"
           >
-            <LogOut className="h-3.5 w-3.5" /> Quitter l'admin
+            <LogOut className="h-3.5 w-3.5" /> Se déconnecter
           </button>
         </div>
       </header>
