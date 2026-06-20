@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useProfileBySlug, useApp } from "@/lib/mock/store";
 import { BusinessCard } from "@/components/flex/BusinessCard";
 import { Logo } from "@/components/flex/Logo";
@@ -7,11 +7,12 @@ import {
   Phone, MessageCircle, Mail, Globe, QrCode as QrIcon, Linkedin, Instagram, Facebook,
 } from "lucide-react";
 import { PhoneInput } from "@/components/flex/PhoneInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 import logoAsset from "@/assets/flexcard-logo.png.asset.json";
 import { safeHttpUrl, vcardEscape } from "@/lib/safe";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/c/$slug")({
   ssr: false,
@@ -47,12 +48,81 @@ function buildVCard(p: any): string {
 
 function PublicCardPage() {
   const { slug } = Route.useParams();
-  const profile = useProfileBySlug(slug);
+  const mockProfile = useProfileBySlug(slug);
+  const [dbProfile, setDbProfile] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
   const recordScan = useApp((s) => s.recordScan);
   const [linkOpen, setLinkOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [linkPhone, setLinkPhone] = useState("");
   const [linkName, setLinkName] = useState("");
+
+  // Charge le profil depuis Supabase ; fallback au mock si absent
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, slug, first_name, last_name, title, company, sector, description, avatar_url, cover_url, cover_type, public_email, website, city, socials, palette, has_premium, template_id")
+        .eq("slug", slug)
+        .maybeSingle();
+      if (cancelled) return;
+      if (data) {
+        // Récupère les téléphones
+        const { data: phones } = await supabase
+          .from("phones")
+          .select("number, operator")
+          .eq("profile_id", data.id);
+        // Récupère la galerie
+        const { data: gallery } = await supabase
+          .from("gallery")
+          .select("id, category, url, media_type, caption, text_content, created_at")
+          .eq("profile_id", data.id)
+          .order("created_at", { ascending: false });
+        setDbProfile({
+          id: data.id,
+          slug: data.slug,
+          firstName: data.first_name,
+          lastName: data.last_name,
+          title: data.title ?? "",
+          company: data.company ?? "",
+          sector: data.sector ?? "",
+          description: data.description ?? "",
+          avatarUrl: data.avatar_url ?? undefined,
+          coverUrl: data.cover_url ?? undefined,
+          coverType: (data.cover_type as any) ?? "image",
+          publicEmail: data.public_email ?? "",
+          website: data.website ?? "",
+          city: data.city ?? "",
+          socials: (data.socials as any) ?? {},
+          palette: (data.palette as any) ?? { primary: "#0066FF", accent: "#FF6B00", ink: "#0B1220" },
+          hasPremium: !!data.has_premium,
+          templateId: data.template_id ?? "neon",
+          phones: (phones ?? []).map((p: any) => ({ number: p.number, operator: p.operator })),
+          gallery: (gallery ?? []).map((g: any) => ({
+            id: g.id, category: g.category, url: g.url ?? undefined,
+            mediaType: g.media_type ?? undefined, caption: g.caption ?? undefined,
+            text: g.text_content ?? undefined, createdAt: new Date(g.created_at).getTime(),
+          })),
+          prospects: [],
+          email: "", kind: "particulier", createdAt: Date.now(),
+        });
+      }
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [slug]);
+
+  const profile: any = dbProfile ?? mockProfile;
+
+  if (loading && !mockProfile) {
+    return (
+      <div className="min-h-screen grid place-items-center">
+        <div className="text-sm text-muted-foreground">Chargement de la carte…</div>
+      </div>
+    );
+  }
 
   if (!profile) {
     return (
@@ -69,11 +139,11 @@ function PublicCardPage() {
   const tel = profile.phones[0]?.number.replace(/\s/g, "");
   const wa = profile.socials.whatsapp?.replace(/\D/g, "") || (tel?.replace(/\D/g, ""));
 
-  const photos = profile.gallery.filter((g) => g.category === "photos");
-  const affiches = profile.gallery.filter((g) => g.category === "affiches");
-  const visuels = profile.gallery.filter((g) => g.category === "visuels");
-  const videos = profile.gallery.filter((g) => g.category === "videos");
-  const news = profile.gallery.filter((g) => g.category === "actualites");
+  const photos = profile.gallery.filter((g: any) => g.category === "photos");
+  const affiches = profile.gallery.filter((g: any) => g.category === "affiches");
+  const visuels = profile.gallery.filter((g: any) => g.category === "visuels");
+  const videos = profile.gallery.filter((g: any) => g.category === "videos");
+  const news = profile.gallery.filter((g: any) => g.category === "actualites");
 
   const downloadVCard = () => {
     const blob = new Blob([buildVCard(profile)], { type: "text/vcard;charset=utf-8" });
@@ -153,7 +223,7 @@ function PublicCardPage() {
               <Newspaper className="h-4 w-4" /> Actualités
             </h3>
             <ul className="mt-4 space-y-3">
-              {news.map((n) => (
+              {news.map((n: any) => (
                 <li key={n.id} className="rounded-xl bg-secondary/60 p-3 text-sm">{n.text}</li>
               ))}
             </ul>

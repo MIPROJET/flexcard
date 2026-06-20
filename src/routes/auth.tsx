@@ -10,7 +10,7 @@ import { SECTORS_BY_KIND } from "@/lib/mock/sectors";
 
 const searchSchema = z.object({
   ref: z.string().optional(),
-  kind: z.enum(["particulier", "informel", "entreprise", "coordinateur", "commercial", "partenaire"]).optional(),
+  kind: z.enum(["particulier", "informel", "entreprise"]).optional(),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -32,15 +32,6 @@ const KIND_OPTIONS: { kind: AccountKind; label: string; desc: string; icon: Reac
   { kind: "entreprise", label: "Entreprise / Organisation", tone: "from-accent-orange/15 to-accent-orange/5 border-accent-orange/40",
     desc: "Équipe avec charte graphique, jusqu'à 100+ employés, gestion centralisée.",
     icon: <Building2 className="h-6 w-6" /> },
-  { kind: "coordinateur", label: "Coordinateur réseau", tone: "from-success/15 to-success/5 border-success/40",
-    desc: "Encadre une équipe d'agents commerciaux, suit objectifs et commissions.",
-    icon: <Sparkles className="h-6 w-6" /> },
-  { kind: "commercial", label: "Agent commercial", tone: "from-primary/10 to-accent/5 border-primary/30",
-    desc: "Vend FlexCard sur le terrain. Commissions sur chaque carte vendue.",
-    icon: <Gift className="h-6 w-6" /> },
-  { kind: "partenaire", label: "Partenaire / Imprimeur", tone: "from-accent-orange/10 to-warning/5 border-accent-orange/30",
-    desc: "Imprimeur, distributeur, apporteur d'affaires. Accès portail dédié.",
-    icon: <ShieldCheck className="h-6 w-6" /> },
 ];
 
 function AuthPage() {
@@ -59,11 +50,6 @@ function AuthPage() {
   const [activity, setActivity] = useState("");
   const [company, setCompany] = useState("");
   const [title, setTitle] = useState("");
-
-  // Admin password panel
-  const [adminEmail, setAdminEmail] = useState("");
-  const [adminPwd, setAdminPwd] = useState("");
-  const [adminBusy, setAdminBusy] = useState(false);
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -103,21 +89,9 @@ function AuthPage() {
     });
     setBusy(false);
     if (err) { setError(err.message); return; }
+    try { localStorage.setItem("flexcard:last_email", email.trim().toLowerCase()); } catch {}
     toast.success("Lien magique envoyé !", { description: "Ouvre ton email et clique sur le lien pour te connecter. Pas de code à saisir." });
     setStep("sent");
-  };
-
-  const adminSignin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(""); setAdminBusy(true);
-    const { error: err } = await supabase.auth.signInWithPassword({
-      email: adminEmail.trim().toLowerCase(),
-      password: adminPwd,
-    });
-    setAdminBusy(false);
-    if (err) { setError(err.message); return; }
-    toast.success("Connecté");
-    navigate({ to: "/dashboard" });
   };
 
   return (
@@ -195,14 +169,11 @@ function AuthPage() {
                     <Field label="Adresse / Repère" value={city} onChange={setCity} />
                   </>
                 )}
-                {(kind === "entreprise" || kind === "partenaire") && (
+                {kind === "entreprise" && (
                   <>
                     <Field label="Raison sociale *" value={company} onChange={setCompany} required />
                     <Field label="Fonction" value={title} onChange={setTitle} placeholder="ex. Directeur" />
                   </>
-                )}
-                {(kind === "coordinateur" || kind === "commercial") && (
-                  <Field label="Zone / Secteur géographique" value={title} onChange={setTitle} placeholder="ex. Abidjan Sud" className="sm:col-span-2" />
                 )}
 
                 <SelectField
@@ -260,33 +231,23 @@ function AuthPage() {
         <div className="space-y-4">
           <div className="surface-elevated p-6 sm:p-8">
             <div className="flex items-center gap-2 text-sm font-semibold">
-              <ShieldCheck className="h-4 w-4 text-primary" /> Connexion administrateur
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">Réservé aux comptes admin (email + mot de passe).</p>
-            <form onSubmit={adminSignin} className="mt-4 space-y-3">
-              <input
-                type="email" value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)}
-                placeholder="admin@flexcard.pro"
-                className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-brand"
-              />
-              <input
-                type="password" value={adminPwd} onChange={(e) => setAdminPwd(e.target.value)}
-                placeholder="Mot de passe"
-                className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-brand"
-              />
-              <button disabled={adminBusy} className="w-full rounded-xl bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-glow disabled:opacity-50">
-                {adminBusy ? "Connexion…" : "Se connecter"}
-              </button>
-            </form>
-          </div>
-
-          <div className="surface-elevated p-6 sm:p-8">
-            <div className="flex items-center gap-2 text-sm font-semibold">
               <Sparkles className="h-4 w-4 text-[color:var(--accent-orange)]" /> Comment ça marche
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
               Saisis ton email à gauche, reçois un lien magique, clique. Pas de mot de passe, pas de code OTP — ta session reste active sur cet appareil.
             </p>
+          </div>
+
+          <div className="surface-elevated p-6 sm:p-8">
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <ShieldCheck className="h-4 w-4 text-primary" /> Vous êtes pro du réseau ?
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Coordinateurs, agents commerciaux et imprimeurs relais ont un espace dédié.
+            </p>
+            <a href="/me" className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-glow">
+              Accéder à l'espace pro →
+            </a>
           </div>
         </div>
       </section>
