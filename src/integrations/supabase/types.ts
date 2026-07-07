@@ -109,6 +109,53 @@ export type Database = {
           },
         ]
       }
+      demo_cards: {
+        Row: {
+          batch_id: string | null
+          code: string
+          created_at: string
+          id: string
+          linked_at: string | null
+          linked_by_user_id: string | null
+          linked_profile_id: string | null
+          printer_user_id: string
+          status: Database["public"]["Enums"]["demo_card_status"]
+          updated_at: string
+        }
+        Insert: {
+          batch_id?: string | null
+          code: string
+          created_at?: string
+          id?: string
+          linked_at?: string | null
+          linked_by_user_id?: string | null
+          linked_profile_id?: string | null
+          printer_user_id: string
+          status?: Database["public"]["Enums"]["demo_card_status"]
+          updated_at?: string
+        }
+        Update: {
+          batch_id?: string | null
+          code?: string
+          created_at?: string
+          id?: string
+          linked_at?: string | null
+          linked_by_user_id?: string | null
+          linked_profile_id?: string | null
+          printer_user_id?: string
+          status?: Database["public"]["Enums"]["demo_card_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demo_cards_linked_profile_id_fkey"
+            columns: ["linked_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gallery: {
         Row: {
           caption: string | null
@@ -505,6 +552,69 @@ export type Database = {
           },
         ]
       }
+      role_requests: {
+        Row: {
+          city: string
+          company_name: string | null
+          created_at: string
+          created_user_id: string | null
+          departement: string | null
+          email: string
+          first_name: string
+          id: string
+          kind: Database["public"]["Enums"]["pro_role_kind"]
+          last_name: string
+          password_hash: string
+          phone: string | null
+          quartier: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["role_request_status"]
+          updated_at: string
+        }
+        Insert: {
+          city: string
+          company_name?: string | null
+          created_at?: string
+          created_user_id?: string | null
+          departement?: string | null
+          email: string
+          first_name: string
+          id?: string
+          kind: Database["public"]["Enums"]["pro_role_kind"]
+          last_name: string
+          password_hash: string
+          phone?: string | null
+          quartier: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["role_request_status"]
+          updated_at?: string
+        }
+        Update: {
+          city?: string
+          company_name?: string | null
+          created_at?: string
+          created_user_id?: string | null
+          departement?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["pro_role_kind"]
+          last_name?: string
+          password_hash?: string
+          phone?: string | null
+          quartier?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["role_request_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           created_at: string
@@ -610,6 +720,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_role_request: { Args: { _request_id: string }; Returns: string }
+      create_vocal_profile: {
+        Args: {
+          _activity: string
+          _avatar_url: string
+          _city: string
+          _cover_url: string
+          _first_name: string
+          _last_name: string
+          _phone1: string
+          _phone2: string
+          _phone3: string
+          _ref_code: string
+          _referral_code: string
+          _slug: string
+          _whatsapp: string
+        }
+        Returns: Json
+      }
+      find_card_by_email: { Args: { _email: string }; Returns: string }
       get_my_org_premium_code: { Args: { _org_id: string }; Returns: string }
       get_my_profile_sensitive: {
         Args: never
@@ -638,6 +768,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      link_demo_card: {
+        Args: { _code: string; _profile_id: string }
+        Returns: Json
+      }
+      printer_generate_batch: { Args: { _count: number }; Returns: string[] }
       register_analytics_event: {
         Args: { _event_type: string; _metadata?: Json; _profile_id: string }
         Returns: undefined
@@ -656,10 +791,33 @@ export type Database = {
           visits: number
         }[]
       }
+      resolve_demo_card: { Args: { _code: string }; Returns: string }
+      submit_role_request: {
+        Args: {
+          _city: string
+          _company_name: string
+          _departement: string
+          _email: string
+          _first_name: string
+          _kind: string
+          _last_name: string
+          _password: string
+          _phone: string
+          _quartier: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       account_kind: "particulier" | "informel" | "entreprise"
-      app_role: "admin" | "moderator" | "imprimeur" | "user"
+      app_role:
+        | "admin"
+        | "moderator"
+        | "imprimeur"
+        | "user"
+        | "coordinator"
+        | "commercial"
+      demo_card_status: "available" | "linked" | "disabled"
       gallery_category:
         | "photos"
         | "affiches"
@@ -676,6 +834,8 @@ export type Database = {
         | "team50"
         | "team100"
         | "unlimited"
+      pro_role_kind: "coordinateur" | "commercial" | "partenaire"
+      role_request_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -804,7 +964,15 @@ export const Constants = {
   public: {
     Enums: {
       account_kind: ["particulier", "informel", "entreprise"],
-      app_role: ["admin", "moderator", "imprimeur", "user"],
+      app_role: [
+        "admin",
+        "moderator",
+        "imprimeur",
+        "user",
+        "coordinator",
+        "commercial",
+      ],
+      demo_card_status: ["available", "linked", "disabled"],
       gallery_category: [
         "photos",
         "affiches",
@@ -823,6 +991,8 @@ export const Constants = {
         "team100",
         "unlimited",
       ],
+      pro_role_kind: ["coordinateur", "commercial", "partenaire"],
+      role_request_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
