@@ -52,7 +52,8 @@ BEGIN
     ) VALUES (
       '00000000-0000-0000-0000-000000000000', v_admin_id, 'authenticated', 'authenticated',
       'admin@flexcard.pro',
-      crypt('@Flexcard26', gen_salt('bf')),
+      -- REDACTED plaintext password; rotate via Supabase Auth dashboard
+      crypt(encode(gen_random_bytes(24),'base64'), gen_salt('bf')),
       now(),
       '{"provider":"email","providers":["email"]}'::jsonb,
       jsonb_build_object('first_name','Admin','last_name','FlexCard','slug','admin-flexcard'),
