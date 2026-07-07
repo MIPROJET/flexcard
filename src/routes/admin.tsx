@@ -30,7 +30,10 @@ function AdminPage() {
     (async () => {
       const { data: userRes } = await supabase.auth.getUser();
       const user = userRes.user;
-      if (!user) { if (!cancelled) setAccess("denied"); return; }
+      if (!user) {
+        if (!cancelled) navigate({ to: "/auth", search: { redirect: "/admin" } as any });
+        return;
+      }
       const { data, error } = await supabase.rpc("has_role", {
         _user_id: user.id,
         _role: "admin",
@@ -40,7 +43,7 @@ function AdminPage() {
       else setAccess("granted");
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [navigate]);
 
   if (access === "checking") {
     return (
