@@ -102,6 +102,7 @@ type StepDef = {
   field?: "name" | "phone1" | "phone2" | "phone3" | "activity" | "city" | "whatsapp" | "ref";
   optional?: boolean;
   isPhoto?: "avatar" | "cover";
+  isGallery?: boolean;
   isInfo?: boolean;
 };
 
@@ -118,8 +119,10 @@ const STEPS: StepDef[] = [
   { key: "review", isInfo: true },
   { key: "avatar", isPhoto: "avatar" },
   { key: "cover", isPhoto: "cover", optional: true },
+  { key: "gallery", isGallery: true, optional: true },
   { key: "done", isInfo: true },
 ];
+
 
 function speak(text: string, lang: string = "fr-FR") {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
