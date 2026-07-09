@@ -222,18 +222,17 @@ function RequestModal({ kind, onClose }: { kind: RoleKind; onClose: () => void }
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.includes("@")) return setError("Email invalide");
-    if (pwd.length < 8) return setError("Mot de passe : 8 caractères minimum");
     if (!firstName.trim() || !lastName.trim()) return setError("Nom et prénom requis");
     if (!city.trim() || !quartier.trim()) return setError("Ville et quartier requis");
     if (kind === "coordinateur" && !departement) return setError("Département requis");
     if (kind === "partenaire" && !companyName.trim()) return setError("Nom de l'imprimerie/structure requis");
     setError(""); setBusy(true);
 
-    // Appel d'une RPC publique qui hash le password et insère dans role_requests (SQL fourni dans plan.md).
+    // Aucun mot de passe côté client : l'admin provisionne le compte et envoie
+    // un mot de passe temporaire par email lors de l'approbation.
     const { error: err } = await (supabase as any).rpc("submit_role_request", {
       _kind: kind,
       _email: email.trim().toLowerCase(),
-      _password: pwd,
       _first_name: firstName.trim(),
       _last_name: lastName.trim(),
       _phone: phone.trim(),
