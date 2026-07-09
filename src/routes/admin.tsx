@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Logo } from "@/components/flex/Logo";
 import {
   Shield, Search, Users, Wallet, LifeBuoy, Flag, BarChart3, Printer, LogOut,
-  Crown, Ban, CheckCircle2, AlertTriangle, Eye,
+  Crown, Ban, CheckCircle2, AlertTriangle, Eye, UserPlus, Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fmt } from "@/lib/mock/utils";
@@ -13,12 +13,12 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Admin FlexCard" }] }),
+  head: () => ({ meta: [{ title: "Espace Équipe — FlexCard" }] }),
   component: AdminPage,
 });
 
-type Tab = "users" | "finance" | "support" | "modération" | "analytics" | "imprimeurs";
-type AccessState = "checking" | "granted" | "denied";
+type Tab = "users" | "team" | "finance" | "support" | "modération" | "analytics" | "imprimeurs";
+type AccessState = "checking" | "granted";
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -34,13 +34,16 @@ function AdminPage() {
         if (!cancelled) navigate({ to: "/auth", search: { redirect: "/admin" } as any });
         return;
       }
-      const { data, error } = await supabase.rpc("has_role", {
-        _user_id: user.id,
-        _role: "admin",
-      });
+      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
       if (cancelled) return;
-      if (error || !data) setAccess("denied");
-      else setAccess("granted");
+      if (!isAdmin) {
+        // Not part of the team — bounce back to the auth screen (Espace Équipe uniquement)
+        toast.error("Espace réservé à l'équipe FlexCard");
+        await supabase.auth.signOut();
+        navigate({ to: "/auth", search: { redirect: "/admin" } as any });
+        return;
+      }
+      setAccess("granted");
     })();
     return () => { cancelled = true; };
   }, [navigate]);
@@ -53,27 +56,6 @@ function AdminPage() {
     );
   }
 
-  if (access === "denied") {
-    return (
-      <div className="min-h-screen grid place-items-center bg-gradient-mesh px-4">
-        <div className="surface-elevated p-8 max-w-md w-full text-center">
-          <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-destructive/10 text-destructive">
-            <Shield className="h-6 w-6" />
-          </div>
-          <h1 className="mt-4 text-2xl font-bold">Accès refusé</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Cette section est réservée aux administrateurs. Connecte-toi avec un compte disposant du rôle admin.
-          </p>
-          <button
-            onClick={() => navigate({ to: "/auth" })}
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand px-5 py-3 text-sm font-semibold text-white shadow-glow"
-          >
-            Aller à la connexion
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-mesh">
@@ -96,6 +78,7 @@ function AdminPage() {
         <aside className="hidden md:flex w-56 shrink-0 flex-col gap-1 border-r border-border/60 bg-sidebar/80 px-3 py-6 min-h-[calc(100vh-3.5rem)] sticky top-14">
           {([
             ["users", Users, "Utilisateurs"],
+            ["team", Shield, "Équipe interne"],
             ["finance", Wallet, "Finance"],
             ["support", LifeBuoy, "Support"],
             ["modération", Flag, "Modération"],
@@ -114,12 +97,14 @@ function AdminPage() {
 
         <main className="flex-1 min-w-0 px-4 py-8 sm:px-8">
           {tab === "users" && <UsersPanel />}
+          {tab === "team" && <TeamPanel />}
           {tab === "finance" && <FinancePanel />}
           {tab === "support" && <SupportPanel />}
           {tab === "modération" && <ModPanel />}
           {tab === "analytics" && <AnalyticsPanel />}
           {tab === "imprimeurs" && <PrintersPanel />}
         </main>
+
       </div>
     </div>
   );
