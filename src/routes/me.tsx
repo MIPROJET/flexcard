@@ -285,7 +285,7 @@ function RequestModal({ kind, onClose }: { kind: RoleKind; onClose: () => void }
               <Field label="Prénom *" value={firstName} onChange={setFirstName} required />
               <Field label="Nom *" value={lastName} onChange={setLastName} required />
               <Field label="Email *" type="email" value={email} onChange={setEmail} required className="sm:col-span-2" icon={<Mail className="h-3.5 w-3.5" />} />
-              <Field label="Mot de passe (8+) *" type="password" value={pwd} onChange={setPwd} required minLength={8} className="sm:col-span-2" icon={<KeyRound className="h-3.5 w-3.5" />} />
+              {/* Le mot de passe est généré par l'admin lors de l'approbation et envoyé par email. */}
               <Field label="Téléphone (WhatsApp)" value={phone} onChange={setPhone} placeholder="07 12 34 56 78" className="sm:col-span-2" />
 
               {kind === "coordinateur" && (
