@@ -421,7 +421,7 @@ function TplPremiumNFC({ p, url, variant }: { p: Profile; url: string; variant: 
       {/* Bandeau navy premium */}
       <div className="relative h-[42%] w-full overflow-hidden" style={{ background: `linear-gradient(135deg, ${p.palette.ink} 0%, ${p.palette.primary} 100%)` }}>
         {p.coverUrl && (
-          <img src={p.coverUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />
+          <img src={p.coverUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-70" />
         )}
         <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, transparent 0%, ${p.palette.ink}cc 100%)` }} />
         {/* Badges premium */}
