@@ -277,7 +277,7 @@ function RequestModal({ kind, onClose }: { kind: RoleKind; onClose: () => void }
             </div>
             <h2 className="mt-3 text-xl font-bold">Formulaire de demande</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Une fois validée par l'admin, vous vous connecterez avec ces identifiants.
+              L'admin vous enverra un mot de passe temporaire par email après validation.
             </p>
 
             <form onSubmit={submit} className="mt-5 grid gap-3 sm:grid-cols-2">
