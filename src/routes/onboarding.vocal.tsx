@@ -194,7 +194,9 @@ function VocalOnboardingPage() {
         langDef.ttsLang,
       ), 9000);
     }
-  }, [stepIdx, prompt, started, step.key, langDef, myReferral, data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepIdx, started, langDef]);
+
 
 
   // ============ ÉCRAN 1 : Sélection de langue ============
