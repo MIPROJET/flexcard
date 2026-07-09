@@ -207,7 +207,6 @@ function MePage() {
 function RequestModal({ kind, onClose }: { kind: RoleKind; onClose: () => void }) {
   const role = ROLES.find((r) => r.kind === kind)!;
   const [email, setEmail] = useState("");
-  const [pwd, setPwd] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -222,18 +221,17 @@ function RequestModal({ kind, onClose }: { kind: RoleKind; onClose: () => void }
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.includes("@")) return setError("Email invalide");
-    if (pwd.length < 8) return setError("Mot de passe : 8 caractères minimum");
     if (!firstName.trim() || !lastName.trim()) return setError("Nom et prénom requis");
     if (!city.trim() || !quartier.trim()) return setError("Ville et quartier requis");
     if (kind === "coordinateur" && !departement) return setError("Département requis");
     if (kind === "partenaire" && !companyName.trim()) return setError("Nom de l'imprimerie/structure requis");
     setError(""); setBusy(true);
 
-    // Appel d'une RPC publique qui hash le password et insère dans role_requests (SQL fourni dans plan.md).
+    // Aucun mot de passe côté client : l'admin provisionne le compte et envoie
+    // un mot de passe temporaire par email lors de l'approbation.
     const { error: err } = await (supabase as any).rpc("submit_role_request", {
       _kind: kind,
       _email: email.trim().toLowerCase(),
-      _password: pwd,
       _first_name: firstName.trim(),
       _last_name: lastName.trim(),
       _phone: phone.trim(),
@@ -279,14 +277,14 @@ function RequestModal({ kind, onClose }: { kind: RoleKind; onClose: () => void }
             </div>
             <h2 className="mt-3 text-xl font-bold">Formulaire de demande</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Une fois validée par l'admin, vous vous connecterez avec ces identifiants.
+              L'admin vous enverra un mot de passe temporaire par email après validation.
             </p>
 
             <form onSubmit={submit} className="mt-5 grid gap-3 sm:grid-cols-2">
               <Field label="Prénom *" value={firstName} onChange={setFirstName} required />
               <Field label="Nom *" value={lastName} onChange={setLastName} required />
               <Field label="Email *" type="email" value={email} onChange={setEmail} required className="sm:col-span-2" icon={<Mail className="h-3.5 w-3.5" />} />
-              <Field label="Mot de passe (8+) *" type="password" value={pwd} onChange={setPwd} required minLength={8} className="sm:col-span-2" icon={<KeyRound className="h-3.5 w-3.5" />} />
+              {/* Le mot de passe est généré par l'admin lors de l'approbation et envoyé par email. */}
               <Field label="Téléphone (WhatsApp)" value={phone} onChange={setPhone} placeholder="07 12 34 56 78" className="sm:col-span-2" />
 
               {kind === "coordinateur" && (

@@ -564,7 +564,6 @@ export type Database = {
           id: string
           kind: Database["public"]["Enums"]["pro_role_kind"]
           last_name: string
-          password_hash: string
           phone: string | null
           quartier: string
           rejection_reason: string | null
@@ -584,7 +583,6 @@ export type Database = {
           id?: string
           kind: Database["public"]["Enums"]["pro_role_kind"]
           last_name: string
-          password_hash: string
           phone?: string | null
           quartier: string
           rejection_reason?: string | null
@@ -604,7 +602,6 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["pro_role_kind"]
           last_name?: string
-          password_hash?: string
           phone?: string | null
           quartier?: string
           rejection_reason?: string | null
@@ -791,6 +788,10 @@ export type Database = {
           visits: number
         }[]
       }
+      request_withdrawal: {
+        Args: { _amount_xof: number; _wave_number: string }
+        Returns: string
+      }
       resolve_demo_card: { Args: { _code: string }; Returns: string }
       submit_role_request: {
         Args: {
@@ -801,7 +802,6 @@ export type Database = {
           _first_name: string
           _kind: string
           _last_name: string
-          _password: string
           _phone: string
           _quartier: string
         }
