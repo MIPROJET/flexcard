@@ -42,8 +42,10 @@ const PROMPTS: Record<Lang, Record<string, string>> = {
     review: "Je vais vous relire toutes vos informations. Si tout est juste, cliquez sur valider.",
     avatar: "Cliquez sur la zone bleue qui clignote pour ajouter votre photo de profil.",
     cover: "Cliquez sur la zone bleue pour ajouter une photo de votre boutique ou de votre atelier.",
+    gallery: "Avez-vous d'autres photos à ajouter ? Vous pouvez ajouter jusqu'à cinq photos de vos produits ou de votre travail. Ce n'est pas obligatoire.",
     done: "Tout est parfait ! Votre carte FlexCard est prête. Voici votre code de parrainage.",
   },
+
   dioula: {
     welcome: "I ni ce ! Bienvenue sur FlexCard. C'est votre carte de visite, gratuite. Mɔgɔ dɔ ye i welela wa ?",
     ref: "Code parrain ye chiffres wɔɔrɔ : i ka di. Ni i ma sɔrɔ, fɔ « ayi ».",
