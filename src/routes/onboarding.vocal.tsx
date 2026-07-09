@@ -42,8 +42,10 @@ const PROMPTS: Record<Lang, Record<string, string>> = {
     review: "Je vais vous relire toutes vos informations. Si tout est juste, cliquez sur valider.",
     avatar: "Cliquez sur la zone bleue qui clignote pour ajouter votre photo de profil.",
     cover: "Cliquez sur la zone bleue pour ajouter une photo de votre boutique ou de votre atelier.",
+    gallery: "Avez-vous d'autres photos à ajouter ? Vous pouvez ajouter jusqu'à cinq photos de vos produits ou de votre travail. Ce n'est pas obligatoire.",
     done: "Tout est parfait ! Votre carte FlexCard est prête. Voici votre code de parrainage.",
   },
+
   dioula: {
     welcome: "I ni ce ! Bienvenue sur FlexCard. C'est votre carte de visite, gratuite. Mɔgɔ dɔ ye i welela wa ?",
     ref: "Code parrain ye chiffres wɔɔrɔ : i ka di. Ni i ma sɔrɔ, fɔ « ayi ».",
@@ -57,6 +59,7 @@ const PROMPTS: Record<Lang, Record<string, string>> = {
     review: "An b'a fɔ tugun, ka segin a kan. Ni bɛɛ ka ɲi, jate.",
     avatar: "Digɛ photo yɔrɔ kan walisa ka i ja don.",
     cover: "Digɛ yɔrɔ kan walisa ka i ka magasin / atelier ja don.",
+    gallery: "I ka ja wɛrɛw b'i bolo wa ? I bɛ se ka ja duuru (5) fara. A tɛ wajibi.",
     done: "A bɛɛ ka ɲi ! I ka FlexCard labɛnna. Filɛ i ka code parrain.",
   },
   nouchi: {
@@ -72,6 +75,7 @@ const PROMPTS: Record<Lang, Record<string, string>> = {
     review: "On recap tout. Si c'est bon, tu valides.",
     avatar: "Tape la zone qui clignote pour mettre ta photo.",
     cover: "Tape la zone pour mettre la photo de ton magasin / atelier.",
+    gallery: "T'as d'autres photos à ajouter ? Jusqu'à 5 photos de tes affaires. C'est pas obligé.",
     done: "C'est bon ! Ta FlexCard est dakpa (prête). Voilà ton code parrain.",
   },
   baoule: {
@@ -87,15 +91,18 @@ const PROMPTS: Record<Lang, Record<string, string>> = {
     review: "An kɛnan i ndɛ kpa. Sɛ ɔ ti kpa, valide.",
     avatar: "Klɛ zone bleue su naan i foto ka wlu.",
     cover: "Klɛ zone bleue naan i magasin foto ka wlu.",
+    gallery: "I le foto uflɛ ka wlu? Ɔ nyu (5) kpa. Ɔ nin obligatoire.",
     done: "Ɔ ti kpa! I FlexCard yɛ tin. I code parrain yɛ ɔ.",
   },
 };
+
 
 type StepDef = {
   key: keyof typeof PROMPTS.fr;
   field?: "name" | "phone1" | "phone2" | "phone3" | "activity" | "city" | "whatsapp" | "ref";
   optional?: boolean;
   isPhoto?: "avatar" | "cover";
+  isGallery?: boolean;
   isInfo?: boolean;
 };
 
@@ -112,8 +119,10 @@ const STEPS: StepDef[] = [
   { key: "review", isInfo: true },
   { key: "avatar", isPhoto: "avatar" },
   { key: "cover", isPhoto: "cover", optional: true },
+  { key: "gallery", isGallery: true, optional: true },
   { key: "done", isInfo: true },
 ];
+
 
 function speak(text: string, lang: string = "fr-FR") {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
@@ -148,7 +157,9 @@ function VocalOnboardingPage() {
     whatsapp: "",
     avatarUrl: me?.avatarUrl ?? "",
     coverUrl: me?.coverUrl ?? "",
+    gallery: [] as string[],
   });
+
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [myReferral] = useState<string>(genReferralCode());
@@ -162,12 +173,31 @@ function VocalOnboardingPage() {
   useEffect(() => {
     if (!started || !langDef) return;
     speak(prompt, langDef.ttsLang);
-    // À l'étape done, annoncer le code parrain chiffre par chiffre
+    // Étape review : relire chaque champ avec une pause pour validation
+    if (step.key === "review") {
+      const lines: string[] = [];
+      if (data.firstName || data.lastName) lines.push(`Votre nom est : ${data.firstName} ${data.lastName}.`);
+      if (data.activity) lines.push(`Votre activité est : ${data.activity}.`);
+      if (data.city) lines.push(`Vous travaillez à : ${data.city}.`);
+      if (data.phone1) lines.push(`Votre premier numéro est : ${data.phone1.split("").join(" ")}.`);
+      if (data.phone2) lines.push(`Votre deuxième numéro est : ${data.phone2.split("").join(" ")}.`);
+      if (data.phone3) lines.push(`Votre troisième numéro est : ${data.phone3.split("").join(" ")}.`);
+      if (data.whatsapp) lines.push(`Votre WhatsApp est : ${data.whatsapp.split("").join(" ")}.`);
+      setTimeout(() => speak(lines.join(" "), langDef.ttsLang), 2500);
+    }
+    // Étape done : annoncer le code parrain + expliquer partager / inviter / commander
     if (step.key === "done") {
       const spaced = myReferral.split("").join(", ");
       setTimeout(() => speak(`Votre code de parrainage est : ${spaced}. Répétez-le : ${spaced}.`, langDef.ttsLang), 2500);
+      setTimeout(() => speak(
+        "Voici comment utiliser votre carte. Un : appuyez sur le bouton vert « Partager » pour envoyer votre carte par WhatsApp. Deux : appuyez sur le bouton « Inviter un filleul » pour partager votre code et gagner une commission. Trois : commandez votre carte physique FlexCard QR pour cinq cents francs, valable à vie.",
+        langDef.ttsLang,
+      ), 9000);
     }
-  }, [stepIdx, prompt, started, step.key, langDef, myReferral]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepIdx, started, langDef]);
+
+
 
   // ============ ÉCRAN 1 : Sélection de langue ============
   if (!lang) {
@@ -312,6 +342,18 @@ function VocalOnboardingPage() {
     setTimeout(() => next(), 600);
   };
 
+  const handleGalleryPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setData((d) => {
+      const room = Math.max(0, 5 - d.gallery.length);
+      const added = files.slice(0, room).map((f) => URL.createObjectURL(f));
+      return { ...d, gallery: [...d.gallery, ...added] };
+    });
+  };
+  const removeGalleryAt = (i: number) => setData((d) => ({ ...d, gallery: d.gallery.filter((_, k) => k !== i) }));
+
+
   const finish = async () => {
     const phones = [data.phone1, data.phone2, data.phone3]
       .filter(Boolean)
@@ -334,11 +376,21 @@ function VocalOnboardingPage() {
         coverUrl: data.coverUrl || undefined,
         slug,
         hasPremium: true,
+        gallery: data.gallery.map((url, i) => ({
+          id: `vg-${i}-${Date.now()}`,
+          category: "photos" as const,
+          mediaType: "image" as const,
+          url,
+          caption: "",
+          createdAt: Date.now(),
+        })),
+
       });
       toast.success("Carte FlexCard activée !");
       navigate({ to: "/dashboard" });
       return;
     }
+
 
     // 2) Mode standalone : crée le profil via RPC publique (voir plan.md create_vocal_profile)
     try {
@@ -449,6 +501,37 @@ function VocalOnboardingPage() {
             </div>
           )}
 
+          {step.isGallery && (
+            <div className="mt-6">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                {data.gallery.map((url, i) => (
+                  <div key={i} className="relative aspect-square overflow-hidden rounded-xl border border-border">
+                    <img src={url} alt={`gal-${i}`} className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeGalleryAt(i)}
+                      className="absolute top-1 right-1 grid h-6 w-6 place-items-center rounded-full bg-black/60 text-white text-xs"
+                      aria-label="Retirer"
+                    >×</button>
+                  </div>
+                ))}
+                {data.gallery.length < 5 && (
+                  <label className="grid aspect-square cursor-pointer place-items-center rounded-xl border-4 border-dashed border-primary/60 bg-primary/5 text-primary transition hover:bg-primary/10">
+                    <div className="text-center">
+                      <Camera className="mx-auto h-6 w-6" />
+                      <div className="mt-1 text-[10px] font-semibold">Ajouter ({data.gallery.length}/5)</div>
+                    </div>
+                    <input type="file" accept="image/*" multiple capture="environment" className="hidden" onChange={handleGalleryPick} />
+                  </label>
+                )}
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Jusqu'à 5 photos de vos produits, plats, coiffures, réalisations… (facultatif)
+              </p>
+            </div>
+          )}
+
+
           {step.field && (
             <div className="mt-6">
               <div className="flex flex-wrap items-center gap-3">
@@ -552,7 +635,8 @@ function stepTitle(k: string): string {
     phone1: "Téléphone principal", phone2: "Second numéro", phone3: "Troisième numéro",
     activity: "Votre activité", city: "Localisation", whatsapp: "WhatsApp",
     review: "Vérification", avatar: "Photo de profil", cover: "Photo du lieu",
-    done: "C'est terminé !",
+    gallery: "Galerie (optionnel)", done: "C'est terminé !",
+
   } as Record<string, string>)[k] || k;
 }
 
