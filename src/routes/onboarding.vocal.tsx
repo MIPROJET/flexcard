@@ -491,6 +491,37 @@ function VocalOnboardingPage() {
             </div>
           )}
 
+          {step.isGallery && (
+            <div className="mt-6">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                {data.gallery.map((url, i) => (
+                  <div key={i} className="relative aspect-square overflow-hidden rounded-xl border border-border">
+                    <img src={url} alt={`gal-${i}`} className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeGalleryAt(i)}
+                      className="absolute top-1 right-1 grid h-6 w-6 place-items-center rounded-full bg-black/60 text-white text-xs"
+                      aria-label="Retirer"
+                    >×</button>
+                  </div>
+                ))}
+                {data.gallery.length < 5 && (
+                  <label className="grid aspect-square cursor-pointer place-items-center rounded-xl border-4 border-dashed border-primary/60 bg-primary/5 text-primary transition hover:bg-primary/10">
+                    <div className="text-center">
+                      <Camera className="mx-auto h-6 w-6" />
+                      <div className="mt-1 text-[10px] font-semibold">Ajouter ({data.gallery.length}/5)</div>
+                    </div>
+                    <input type="file" accept="image/*" multiple capture="environment" className="hidden" onChange={handleGalleryPick} />
+                  </label>
+                )}
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Jusqu'à 5 photos de vos produits, plats, coiffures, réalisations… (facultatif)
+              </p>
+            </div>
+          )}
+
+
           {step.field && (
             <div className="mt-6">
               <div className="flex flex-wrap items-center gap-3">
