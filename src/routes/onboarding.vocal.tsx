@@ -625,7 +625,8 @@ function stepTitle(k: string): string {
     phone1: "Téléphone principal", phone2: "Second numéro", phone3: "Troisième numéro",
     activity: "Votre activité", city: "Localisation", whatsapp: "WhatsApp",
     review: "Vérification", avatar: "Photo de profil", cover: "Photo du lieu",
-    done: "C'est terminé !",
+    gallery: "Galerie (optionnel)", done: "C'est terminé !",
+
   } as Record<string, string>)[k] || k;
 }
 
