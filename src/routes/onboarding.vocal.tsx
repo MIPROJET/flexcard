@@ -342,6 +342,18 @@ function VocalOnboardingPage() {
     setTimeout(() => next(), 600);
   };
 
+  const handleGalleryPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setData((d) => {
+      const room = Math.max(0, 5 - d.gallery.length);
+      const added = files.slice(0, room).map((f) => URL.createObjectURL(f));
+      return { ...d, gallery: [...d.gallery, ...added] };
+    });
+  };
+  const removeGalleryAt = (i: number) => setData((d) => ({ ...d, gallery: d.gallery.filter((_, k) => k !== i) }));
+
+
   const finish = async () => {
     const phones = [data.phone1, data.phone2, data.phone3]
       .filter(Boolean)
