@@ -218,7 +218,7 @@ function TplTeamworkDramatic({ p, url, variant }: { p: Profile; url: string; var
   return (
     <PhoneFrame variant={variant}>
       <div className="absolute inset-0" style={{ background: p.avatarUrl ? `url(${p.avatarUrl}) center/cover` : `linear-gradient(180deg, ${p.palette.ink}, ${p.palette.primary})` }} />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,.2) 0%, rgba(0,0,0,.0) 30%, rgba(0,0,0,.85) 100%)" }} />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,.05) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,.55) 100%)" }} />
       <div className="absolute inset-x-0 top-1/2 px-5 text-white">
         <div className="text-[26px] font-black uppercase leading-none tracking-tight">{p.firstName}<br />{p.lastName}</div>
         <div className="mt-1 text-xs text-white/80">{p.title}</div>
