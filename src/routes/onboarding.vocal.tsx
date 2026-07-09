@@ -59,6 +59,7 @@ const PROMPTS: Record<Lang, Record<string, string>> = {
     review: "An b'a fɔ tugun, ka segin a kan. Ni bɛɛ ka ɲi, jate.",
     avatar: "Digɛ photo yɔrɔ kan walisa ka i ja don.",
     cover: "Digɛ yɔrɔ kan walisa ka i ka magasin / atelier ja don.",
+    gallery: "I ka ja wɛrɛw b'i bolo wa ? I bɛ se ka ja duuru (5) fara. A tɛ wajibi.",
     done: "A bɛɛ ka ɲi ! I ka FlexCard labɛnna. Filɛ i ka code parrain.",
   },
   nouchi: {
@@ -74,6 +75,7 @@ const PROMPTS: Record<Lang, Record<string, string>> = {
     review: "On recap tout. Si c'est bon, tu valides.",
     avatar: "Tape la zone qui clignote pour mettre ta photo.",
     cover: "Tape la zone pour mettre la photo de ton magasin / atelier.",
+    gallery: "T'as d'autres photos à ajouter ? Jusqu'à 5 photos de tes affaires. C'est pas obligé.",
     done: "C'est bon ! Ta FlexCard est dakpa (prête). Voilà ton code parrain.",
   },
   baoule: {
@@ -89,9 +91,11 @@ const PROMPTS: Record<Lang, Record<string, string>> = {
     review: "An kɛnan i ndɛ kpa. Sɛ ɔ ti kpa, valide.",
     avatar: "Klɛ zone bleue su naan i foto ka wlu.",
     cover: "Klɛ zone bleue naan i magasin foto ka wlu.",
+    gallery: "I le foto uflɛ ka wlu? Ɔ nyu (5) kpa. Ɔ nin obligatoire.",
     done: "Ɔ ti kpa! I FlexCard yɛ tin. I code parrain yɛ ɔ.",
   },
 };
+
 
 type StepDef = {
   key: keyof typeof PROMPTS.fr;
