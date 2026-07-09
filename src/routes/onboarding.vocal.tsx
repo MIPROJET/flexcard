@@ -173,12 +173,29 @@ function VocalOnboardingPage() {
   useEffect(() => {
     if (!started || !langDef) return;
     speak(prompt, langDef.ttsLang);
-    // À l'étape done, annoncer le code parrain chiffre par chiffre
+    // Étape review : relire chaque champ avec une pause pour validation
+    if (step.key === "review") {
+      const lines: string[] = [];
+      if (data.firstName || data.lastName) lines.push(`Votre nom est : ${data.firstName} ${data.lastName}.`);
+      if (data.activity) lines.push(`Votre activité est : ${data.activity}.`);
+      if (data.city) lines.push(`Vous travaillez à : ${data.city}.`);
+      if (data.phone1) lines.push(`Votre premier numéro est : ${data.phone1.split("").join(" ")}.`);
+      if (data.phone2) lines.push(`Votre deuxième numéro est : ${data.phone2.split("").join(" ")}.`);
+      if (data.phone3) lines.push(`Votre troisième numéro est : ${data.phone3.split("").join(" ")}.`);
+      if (data.whatsapp) lines.push(`Votre WhatsApp est : ${data.whatsapp.split("").join(" ")}.`);
+      setTimeout(() => speak(lines.join(" "), langDef.ttsLang), 2500);
+    }
+    // Étape done : annoncer le code parrain + expliquer partager / inviter / commander
     if (step.key === "done") {
       const spaced = myReferral.split("").join(", ");
       setTimeout(() => speak(`Votre code de parrainage est : ${spaced}. Répétez-le : ${spaced}.`, langDef.ttsLang), 2500);
+      setTimeout(() => speak(
+        "Voici comment utiliser votre carte. Un : appuyez sur le bouton vert « Partager » pour envoyer votre carte par WhatsApp. Deux : appuyez sur le bouton « Inviter un filleul » pour partager votre code et gagner une commission. Trois : commandez votre carte physique FlexCard QR pour cinq cents francs, valable à vie.",
+        langDef.ttsLang,
+      ), 9000);
     }
-  }, [stepIdx, prompt, started, step.key, langDef, myReferral]);
+  }, [stepIdx, prompt, started, step.key, langDef, myReferral, data]);
+
 
   // ============ ÉCRAN 1 : Sélection de langue ============
   if (!lang) {
