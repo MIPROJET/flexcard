@@ -157,7 +157,9 @@ function VocalOnboardingPage() {
     whatsapp: "",
     avatarUrl: me?.avatarUrl ?? "",
     coverUrl: me?.coverUrl ?? "",
+    gallery: [] as string[],
   });
+
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [myReferral] = useState<string>(genReferralCode());
