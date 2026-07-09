@@ -378,10 +378,13 @@ function VocalOnboardingPage() {
         hasPremium: true,
         gallery: data.gallery.map((url, i) => ({
           id: `vg-${i}-${Date.now()}`,
-          type: "photo" as const,
+          category: "photos" as const,
+          mediaType: "image" as const,
           url,
           caption: "",
+          createdAt: Date.now(),
         })),
+
       });
       toast.success("Carte FlexCard activée !");
       navigate({ to: "/dashboard" });
