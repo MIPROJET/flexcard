@@ -78,6 +78,7 @@ function AdminPage() {
         <aside className="hidden md:flex w-56 shrink-0 flex-col gap-1 border-r border-border/60 bg-sidebar/80 px-3 py-6 min-h-[calc(100vh-3.5rem)] sticky top-14">
           {([
             ["users", Users, "Utilisateurs"],
+            ["team", Shield, "Équipe interne"],
             ["finance", Wallet, "Finance"],
             ["support", LifeBuoy, "Support"],
             ["modération", Flag, "Modération"],
@@ -96,12 +97,14 @@ function AdminPage() {
 
         <main className="flex-1 min-w-0 px-4 py-8 sm:px-8">
           {tab === "users" && <UsersPanel />}
+          {tab === "team" && <TeamPanel />}
           {tab === "finance" && <FinancePanel />}
           {tab === "support" && <SupportPanel />}
           {tab === "modération" && <ModPanel />}
           {tab === "analytics" && <AnalyticsPanel />}
           {tab === "imprimeurs" && <PrintersPanel />}
         </main>
+
       </div>
     </div>
   );
