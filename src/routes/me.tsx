@@ -207,7 +207,6 @@ function MePage() {
 function RequestModal({ kind, onClose }: { kind: RoleKind; onClose: () => void }) {
   const role = ROLES.find((r) => r.kind === kind)!;
   const [email, setEmail] = useState("");
-  const [pwd, setPwd] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
