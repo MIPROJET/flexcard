@@ -1,7 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useApp } from "@/lib/mock/store";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { inviteTeamMember, listTeamMembers, revokeTeamRole } from "@/lib/team.functions";
 import { Logo } from "@/components/flex/Logo";
+
 import {
   Shield, Search, Users, Wallet, LifeBuoy, Flag, BarChart3, Printer, LogOut,
   Crown, Ban, CheckCircle2, AlertTriangle, Eye, UserPlus, Trash2,
@@ -336,3 +339,106 @@ function KPI({ label, value, sub }: { label: string; value: string; sub: string 
     </div>
   );
 }
+
+const TEAM_ROLES = [
+  { value: "admin", label: "Admin (accès total)" },
+  { value: "moderator", label: "Modérateur" },
+  { value: "commercial", label: "Commercial" },
+  { value: "coordinator", label: "Coordinateur" },
+  { value: "partner", label: "Partenaire" },
+  { value: "imprimeur", label: "Imprimeur" },
+] as const;
+
+function TeamPanel() {
+  const list = useServerFn(listTeamMembers);
+  const invite = useServerFn(inviteTeamMember);
+  const revoke = useServerFn(revokeTeamRole);
+  const [members, setMembers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", role: "commercial" as (typeof TEAM_ROLES)[number]["value"] });
+  const [busy, setBusy] = useState(false);
+  const [lastPwd, setLastPwd] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    try { setMembers((await list()) as any[]); } catch (e: any) { toast.error(e?.message ?? "Erreur"); }
+    setLoading(false);
+  }, [list]);
+
+  useEffect(() => { refresh(); }, [refresh]);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true); setLastPwd(null);
+    try {
+      const res: any = await invite({ data: form });
+      toast.success(`${form.firstName} ${form.lastName} ajouté(e) comme ${form.role}`);
+      if (res?.tempPassword) setLastPwd(res.tempPassword);
+      setForm({ firstName: "", lastName: "", email: "", role: "commercial" });
+      await refresh();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Impossible de créer le membre");
+    }
+    setBusy(false);
+  };
+
+  const del = async (userId: string, role: string) => {
+    if (!confirm(`Retirer le rôle ${role} ?`)) return;
+    try { await revoke({ data: { userId, role } }); toast.success("Rôle retiré"); await refresh(); }
+    catch (e: any) { toast.error(e?.message ?? "Erreur"); }
+  };
+
+  return (
+    <section>
+      <PanelHeader icon={<Shield className="h-5 w-5" />} title="Équipe interne FlexCard" sub="Créer des comptes staff avec rôles et accès" />
+
+      <form onSubmit={submit} className="mt-6 surface-elevated p-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <input required placeholder="Prénom" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm" />
+        <input required placeholder="Nom" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm" />
+        <input required type="email" placeholder="email@flexcard.pro" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm sm:col-span-2 lg:col-span-1" />
+        <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as any })} className="rounded-xl border border-input bg-background px-3 py-2.5 text-sm">
+          {TEAM_ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+        </select>
+        <button type="submit" disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-brand px-4 py-2.5 text-sm font-semibold text-white shadow-glow disabled:opacity-60">
+          <UserPlus className="h-4 w-4" /> {busy ? "Création…" : "Créer le compte"}
+        </button>
+      </form>
+
+      {lastPwd && (
+        <div className="mt-3 rounded-xl border border-warning/40 bg-warning/10 p-4 text-sm">
+          <div className="font-bold text-warning">Mot de passe temporaire (à communiquer une seule fois) :</div>
+          <code className="mt-1 block font-mono text-base">{lastPwd}</code>
+        </div>
+      )}
+
+      <h3 className="mt-8 text-sm font-bold uppercase tracking-wider text-muted-foreground">Membres actifs</h3>
+      <div className="mt-3 overflow-x-auto surface-elevated">
+        <table className="w-full text-sm">
+          <thead className="bg-secondary/50 text-left text-xs uppercase tracking-wider text-muted-foreground">
+            <tr><th className="px-4 py-3">Nom</th><th className="px-4 py-3">Email</th><th className="px-4 py-3">Rôle</th><th className="px-4 py-3">Depuis</th><th className="px-4 py-3">Action</th></tr>
+          </thead>
+          <tbody className="divide-y divide-border/60">
+            {loading ? (
+              <tr><td colSpan={5} className="px-4 py-6 text-center text-muted-foreground">Chargement…</td></tr>
+            ) : members.length === 0 ? (
+              <tr><td colSpan={5} className="px-4 py-6 text-center text-muted-foreground">Aucun membre équipe pour le moment.</td></tr>
+            ) : members.map((m: any) => (
+              <tr key={`${m.user_id}-${m.role}`}>
+                <td className="px-4 py-3 font-semibold">{m.profile ? `${m.profile.first_name ?? ""} ${m.profile.last_name ?? ""}`.trim() || "—" : "—"}</td>
+                <td className="px-4 py-3 text-xs">{m.profile?.email ?? "—"}</td>
+                <td className="px-4 py-3"><span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase text-primary">{m.role}</span></td>
+                <td className="px-4 py-3 text-xs text-muted-foreground">{m.granted_at ? new Date(m.granted_at).toLocaleDateString("fr-FR") : "—"}</td>
+                <td className="px-4 py-3">
+                  <button onClick={() => del(m.user_id, m.role)} className="inline-flex items-center gap-1 rounded-lg border border-destructive/40 bg-destructive/10 px-2 py-1 text-xs text-destructive hover:bg-destructive/20">
+                    <Trash2 className="h-3 w-3" /> Retirer
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+

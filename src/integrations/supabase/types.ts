@@ -817,6 +817,7 @@ export type Database = {
         | "user"
         | "coordinator"
         | "commercial"
+        | "partner"
       demo_card_status: "available" | "linked" | "disabled"
       gallery_category:
         | "photos"
@@ -971,6 +972,7 @@ export const Constants = {
         "user",
         "coordinator",
         "commercial",
+        "partner",
       ],
       demo_card_status: ["available", "linked", "disabled"],
       gallery_category: [
