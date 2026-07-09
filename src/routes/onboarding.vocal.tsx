@@ -376,11 +376,18 @@ function VocalOnboardingPage() {
         coverUrl: data.coverUrl || undefined,
         slug,
         hasPremium: true,
+        gallery: data.gallery.map((url, i) => ({
+          id: `vg-${i}-${Date.now()}`,
+          type: "photo" as const,
+          url,
+          caption: "",
+        })),
       });
       toast.success("Carte FlexCard activée !");
       navigate({ to: "/dashboard" });
       return;
     }
+
 
     // 2) Mode standalone : crée le profil via RPC publique (voir plan.md create_vocal_profile)
     try {
