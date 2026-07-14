@@ -163,6 +163,7 @@ function VocalOnboardingPage() {
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [myReferral] = useState<string>(genReferralCode());
+  const [uploading, setUploading] = useState(false);
   const recRef = useRef<any>(null);
 
   const step = STEPS[stepIdx];
