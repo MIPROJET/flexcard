@@ -623,9 +623,10 @@ function VocalOnboardingPage() {
           {step.key === "done" ? (
             <button
               onClick={finish}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-success px-5 py-4 text-base font-bold text-white shadow-glow"
+              disabled={uploading}
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-success px-5 py-4 text-base font-bold text-white shadow-glow disabled:opacity-60"
             >
-              <Check className="h-5 w-5" /> Activer ma carte FlexCard
+              <Check className="h-5 w-5" /> {uploading ? "Envoi des photos…" : "Activer ma carte FlexCard"}
             </button>
           ) : (
             <div className="mt-8 flex items-center justify-between gap-3">
