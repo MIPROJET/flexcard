@@ -718,24 +718,44 @@ export type Database = {
     }
     Functions: {
       approve_role_request: { Args: { _request_id: string }; Returns: string }
-      create_vocal_profile: {
-        Args: {
-          _activity: string
-          _avatar_url: string
-          _city: string
-          _cover_url: string
-          _first_name: string
-          _last_name: string
-          _phone1: string
-          _phone2: string
-          _phone3: string
-          _ref_code: string
-          _referral_code: string
-          _slug: string
-          _whatsapp: string
-        }
-        Returns: Json
-      }
+      create_vocal_profile:
+        | {
+            Args: {
+              _activity: string
+              _avatar_url: string
+              _city: string
+              _cover_url: string
+              _first_name: string
+              _last_name: string
+              _phone1: string
+              _phone2: string
+              _phone3: string
+              _ref_code: string
+              _referral_code: string
+              _slug: string
+              _whatsapp: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              _activity: string
+              _avatar_url: string
+              _city: string
+              _cover_url: string
+              _first_name: string
+              _gallery?: string[]
+              _last_name: string
+              _phone1: string
+              _phone2: string
+              _phone3: string
+              _ref_code: string
+              _referral_code: string
+              _slug: string
+              _whatsapp: string
+            }
+            Returns: Json
+          }
       find_card_by_email: { Args: { _email: string }; Returns: string }
       get_my_org_premium_code: { Args: { _org_id: string }; Returns: string }
       get_my_profile_sensitive: {
