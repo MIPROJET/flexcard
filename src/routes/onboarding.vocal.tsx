@@ -334,22 +334,55 @@ function VocalOnboardingPage() {
     setTranscript("");
   };
 
-  const handlePhotoPick = (field: "avatar" | "cover") => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    setData((d) => ({ ...d, [field === "avatar" ? "avatarUrl" : "coverUrl"]: url }));
-    setTimeout(() => next(), 600);
+  // Upload une image dans le bucket flexcard-public/vocal/... et renvoie une URL persistante
+  const uploadImage = async (file: File, kind: "avatar" | "cover" | "gallery"): Promise<string | null> => {
+    try {
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+      const path = `vocal/${kind}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from("flexcard-public").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || "image/jpeg",
+      });
+      if (error) throw error;
+      const { data: pub } = supabase.storage.from("flexcard-public").getPublicUrl(path);
+      return pub.publicUrl;
+    } catch (err: any) {
+      toast.error("Envoi de la photo impossible", { description: err?.message || "" });
+      return null;
+    }
   };
 
-  const handleGalleryPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [uploading, setUploading] = useState(false);
+
+  const handlePhotoPick = (field: "avatar" | "cover") => async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Aperçu local immédiat
+    const preview = URL.createObjectURL(file);
+    setData((d) => ({ ...d, [field === "avatar" ? "avatarUrl" : "coverUrl"]: preview }));
+    setUploading(true);
+    const url = await uploadImage(file, field);
+    setUploading(false);
+    if (url) {
+      setData((d) => ({ ...d, [field === "avatar" ? "avatarUrl" : "coverUrl"]: url }));
+    }
+    setTimeout(() => next(), 500);
+  };
+
+  const handleGalleryPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
-    setData((d) => {
-      const room = Math.max(0, 5 - d.gallery.length);
-      const added = files.slice(0, room).map((f) => URL.createObjectURL(f));
-      return { ...d, gallery: [...d.gallery, ...added] };
-    });
+    const room = Math.max(0, 5 - data.gallery.length);
+    const accepted = files.slice(0, room);
+    setUploading(true);
+    const uploaded: string[] = [];
+    for (const f of accepted) {
+      const url = await uploadImage(f, "gallery");
+      if (url) uploaded.push(url);
+    }
+    setUploading(false);
+    if (uploaded.length) setData((d) => ({ ...d, gallery: [...d.gallery, ...uploaded] }));
   };
   const removeGalleryAt = (i: number) => setData((d) => ({ ...d, gallery: d.gallery.filter((_, k) => k !== i) }));
 
@@ -362,6 +395,11 @@ function VocalOnboardingPage() {
         return { number: normalizePhone(raw), operator: op === "Inconnu" ? "Orange" as const : op };
       });
     const slug = slugify(`${data.firstName}-${data.lastName}-${data.phone1.slice(-4)}`) || `user-${Date.now()}`;
+
+    if (!data.firstName || !data.phone1) {
+      toast.error("Nom et téléphone principal obligatoires");
+      return;
+    }
 
     // 1) Si déjà connecté → MAJ profil local (mock store)
     if (me) {
@@ -384,16 +422,19 @@ function VocalOnboardingPage() {
           caption: "",
           createdAt: Date.now(),
         })),
-
       });
       toast.success("Carte FlexCard activée !");
       navigate({ to: "/dashboard" });
       return;
     }
 
-
-    // 2) Mode standalone : crée le profil via RPC publique (voir plan.md create_vocal_profile)
+    // 2) Mode standalone : RPC publique
     try {
+      // Filtrer les blob: (uploads échoués) — on n'envoie que des URLs persistantes
+      const safeAvatar = data.avatarUrl && !data.avatarUrl.startsWith("blob:") ? data.avatarUrl : null;
+      const safeCover = data.coverUrl && !data.coverUrl.startsWith("blob:") ? data.coverUrl : null;
+      const safeGallery = data.gallery.filter((u) => u && !u.startsWith("blob:"));
+
       const { data: result, error } = await (supabase as any).rpc("create_vocal_profile", {
         _slug: slug,
         _first_name: data.firstName,
@@ -406,13 +447,13 @@ function VocalOnboardingPage() {
         _whatsapp: data.whatsapp || null,
         _ref_code: data.refCode || null,
         _referral_code: myReferral,
-        _avatar_url: data.avatarUrl || null,
-        _cover_url: data.coverUrl || null,
+        _avatar_url: safeAvatar,
+        _cover_url: safeCover,
+        _gallery: safeGallery.length ? safeGallery : null,
       });
       if (error) throw error;
       const finalSlug = (result as any)?.slug ?? slug;
       toast.success("Carte FlexCard créée !");
-      // WhatsApp confirmation link (l'utilisateur peut envoyer la carte à lui-même)
       if (data.whatsapp) {
         const phone = data.whatsapp.replace(/\D/g, "");
         const cardUrl = `${window.location.origin}/c/${finalSlug}`;
