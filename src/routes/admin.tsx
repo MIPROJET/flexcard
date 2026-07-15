@@ -66,7 +66,7 @@ function AdminPage() {
             <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">ADMIN</span>
           </div>
           <button
-            onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/auth" }); }}
+            onClick={async () => { await supabase.auth.signOut(); setAccess("signin"); }}
             className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold hover:bg-secondary"
           >
             <LogOut className="h-3.5 w-3.5" /> Se déconnecter
