@@ -8,8 +8,13 @@ import { BusinessCard } from "@/components/flex/BusinessCard";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
+import { appendVocalLog, clearVocalLog, getVocalResumeHref, readVocalLog, type VocalLogEntry } from "@/lib/vocalDiagnostics";
 
-const searchSchema = z.object({ ref: z.string().optional() });
+const searchSchema = z.object({
+  ref: z.string().optional(),
+  resume: z.string().optional(),
+  source: z.string().optional(),
+});
 
 export const Route = createFileRoute("/onboarding/vocal")({
   ssr: false,
@@ -143,7 +148,8 @@ function VocalOnboardingPage() {
   const me = useCurrentProfile(); // peut être null en mode standalone
   const navigate = useNavigate();
   const update = useApp((s) => s.updateCurrent);
-  const { ref } = Route.useSearch();
+  const upsertProfile = useApp((s) => s.upsertProfile);
+  const { ref, resume, source } = Route.useSearch();
 
   const [lang, setLang] = useState<Lang | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
@@ -164,15 +170,39 @@ function VocalOnboardingPage() {
   const [transcript, setTranscript] = useState("");
   const [myReferral] = useState<string>(genReferralCode());
   const [uploading, setUploading] = useState(false);
+  const [flowError, setFlowError] = useState<{ message: string; nextAction: string } | null>(null);
+  const [runLog, setRunLog] = useState<VocalLogEntry[]>(() => readVocalLog());
   const recRef = useRef<any>(null);
 
   const step = STEPS[stepIdx];
   const langDef = lang ? LANGS.find((l) => l.code === lang)! : null;
   const prompt = lang ? PROMPTS[lang][step.key] : "";
 
+  const log = (level: "info" | "success" | "warning" | "error", stepName: string, message: string, nextAction?: string) => {
+    appendVocalLog({ level, step: stepName, message, nextAction });
+  };
+
+  const showError = (message: string, nextAction: string, stepName = step?.key ?? "initialisation") => {
+    setFlowError({ message, nextAction });
+    appendVocalLog({ level: "error", step: stepName, message, nextAction });
+  };
+
+  useEffect(() => {
+    const handler = (event: Event) => setRunLog(((event as CustomEvent<VocalLogEntry[]>).detail ?? readVocalLog()).slice(-12));
+    window.addEventListener("flexcard:vocal-log", handler);
+    appendVocalLog({
+      level: "info",
+      step: "chargement",
+      message: resume ? `Reprise du parcours vocal${source ? ` depuis ${source}` : ""}` : "Ouverture directe du parcours vocal",
+      nextAction: "Choisir une langue puis cliquer sur Commencer",
+    });
+    return () => window.removeEventListener("flexcard:vocal-log", handler);
+  }, [resume, source]);
+
   // Speak prompt on step change — only after user has clicked "Commencer"
   useEffect(() => {
     if (!started || !langDef) return;
+    appendVocalLog({ level: "info", step: step.key, message: `Étape ${stepIdx + 1}/${STEPS.length} affichée`, nextAction: prompt });
     speak(prompt, langDef.ttsLang);
     // Étape review : relire chaque champ avec une pause pour validation
     if (step.key === "review") {
@@ -219,7 +249,12 @@ function VocalOnboardingPage() {
               <button
                 key={l.code}
                 onMouseEnter={() => speak(l.nativeLabel, l.ttsLang)}
-                onClick={() => { setLang(l.code); speak(l.nativeLabel, l.ttsLang); }}
+                onClick={() => {
+                  setFlowError(null);
+                  log("success", "langue", `Langue sélectionnée : ${l.label}`, "Cliquer sur Commencer pour activer micro et son");
+                  setLang(l.code);
+                  speak(l.nativeLabel, l.ttsLang);
+                }}
                 className="flex items-center gap-4 rounded-xl border-2 border-border bg-card p-4 text-left transition hover:border-primary/40 hover:shadow-card"
               >
                 <span className="text-3xl">{l.flag}</span>
@@ -254,11 +289,15 @@ function VocalOnboardingPage() {
           </p>
           <button
             onClick={async () => {
+              setFlowError(null);
+              log("info", "micro", "Demande d'autorisation microphone", "Autoriser le micro ou continuer au clavier");
               try {
                 if (navigator.mediaDevices?.getUserMedia) {
                   await navigator.mediaDevices.getUserMedia({ audio: true });
                 }
-              } catch {
+                log("success", "micro", "Microphone autorisé", "Répondre à chaque question à la voix ou au clavier");
+              } catch (err: any) {
+                showError("Microphone refusé ou indisponible.", "Vous pouvez continuer en tapant vos réponses dans le champ texte.", "micro");
                 toast.error("Microphone refusé", { description: "Vous pouvez quand même taper vos réponses." });
               }
               try {
@@ -283,8 +322,10 @@ function VocalOnboardingPage() {
   const prev = () => setStepIdx((i) => Math.max(0, i - 1));
 
   const startListening = () => {
+    setFlowError(null);
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR) {
+      showError("Reconnaissance vocale non disponible sur ce navigateur.", "Utilisez Chrome/Edge ou tapez votre réponse puis cliquez sur Continuer.", step.key);
       toast.error("Reconnaissance vocale non disponible", { description: "Utilise un navigateur compatible (Chrome, Edge)." });
       return;
     }
@@ -293,13 +334,18 @@ function VocalOnboardingPage() {
     r.onresult = (e: any) => {
       const text = Array.from(e.results).map((res: any) => res[0].transcript).join("");
       setTranscript(text);
+      appendVocalLog({ level: "info", step: step.key, message: `Transcription reçue : ${text}`, nextAction: "Vérifier puis continuer" });
     };
-    r.onend = () => setListening(false);
-    r.onerror = () => setListening(false);
+    r.onend = () => { setListening(false); appendVocalLog({ level: "info", step: step.key, message: "Écoute arrêtée", nextAction: "Cliquer sur Continuer" }); };
+    r.onerror = (event: any) => {
+      setListening(false);
+      showError(`Erreur d'écoute : ${event?.error || "microphone"}.`, "Tapez votre réponse au clavier ou réessayez le micro.", step.key);
+    };
     r.start();
     recRef.current = r;
     setListening(true);
     setTranscript("");
+    log("info", step.key, "Écoute vocale démarrée", "Parler clairement puis attendre la transcription");
   };
 
   const stopListening = () => {
@@ -308,28 +354,45 @@ function VocalOnboardingPage() {
   };
 
   const validateAndNext = () => {
+    setFlowError(null);
     if (step.isInfo) { next(); return; }
+    if (step.isGallery) { log("success", "gallery", "Galerie ignorée ou validée", "Passage à la dernière étape"); next(); return; }
+    if (step.isPhoto) {
+      const hasPhoto = step.isPhoto === "avatar" ? !!data.avatarUrl : !!data.coverUrl;
+      if (!hasPhoto && !step.optional) {
+        showError("La photo de profil est obligatoire pour terminer la carte vocale.", "Cliquez dans la zone bleue pour ajouter une photo, puis continuez.", step.key);
+        toast.error("Photo de profil requise");
+        return;
+      }
+      log("success", step.key, hasPhoto ? "Photo validée" : "Photo optionnelle ignorée", "Passage à l'étape suivante");
+      next();
+      return;
+    }
     const said = transcript.trim();
     if (step.field === "ref") {
       const code = said.replace(/\D/g, "");
       if (code.length === 6) setData((d) => ({ ...d, refCode: code }));
+      log("success", "ref", code.length === 6 ? `Code parrain enregistré : ${code}` : "Aucun code parrain", "Continuer vers l'identité");
       next();
     } else if (step.field === "name") {
       const parts = said.split(/\s+/);
       const first = parts[0] || "";
       const last = parts.slice(1).join(" ") || "";
-      if (!first) { toast.error("Je n'ai pas entendu votre nom. Réessayez."); return; }
+      if (!first) { showError("Je n'ai pas entendu votre nom.", "Réessayez au micro ou tapez votre nom complet.", "name"); toast.error("Je n'ai pas entendu votre nom. Réessayez."); return; }
       setData((d) => ({ ...d, firstName: cap(first), lastName: cap(last) }));
+      log("success", "name", `Nom capturé : ${cap(first)} ${cap(last)}`, "Continuer vers le téléphone");
       next();
     } else if (step.field === "phone1" || step.field === "phone2" || step.field === "phone3" || step.field === "whatsapp") {
       const digits = said.replace(/\D/g, "");
-      if (step.optional && (said.toLowerCase().includes("non") || !digits)) { next(); return; }
-      if (digits.length < 8) { toast.error("Numéro non reconnu, réessayez chiffre par chiffre."); return; }
+      if (step.optional && (said.toLowerCase().includes("non") || !digits)) { log("success", step.field, "Numéro optionnel ignoré", "Continuer"); next(); return; }
+      if (digits.length < 8) { showError("Numéro non reconnu.", "Dictez le numéro chiffre par chiffre ou tapez-le au clavier.", step.field); toast.error("Numéro non reconnu, réessayez chiffre par chiffre."); return; }
       setData((d) => ({ ...d, [step.field!]: digits }));
+      log("success", step.field, `Numéro capturé : ${digits}`, "Continuer");
       next();
     } else if (step.field === "activity" || step.field === "city") {
-      if (!said) { toast.error("Je n'ai rien entendu, réessayez."); return; }
+      if (!said) { showError("Je n'ai rien entendu.", "Réessayez au micro ou tapez votre réponse.", step.field); toast.error("Je n'ai rien entendu, réessayez."); return; }
       setData((d) => ({ ...d, [step.field!]: said }));
+      log("success", step.field, `Réponse capturée : ${said}`, "Continuer");
       next();
     }
     setTranscript("");
@@ -362,10 +425,14 @@ function VocalOnboardingPage() {
     const preview = URL.createObjectURL(file);
     setData((d) => ({ ...d, [field === "avatar" ? "avatarUrl" : "coverUrl"]: preview }));
     setUploading(true);
+    log("info", field, `Photo sélectionnée : ${file.name}`, "Envoi de la photo puis passage à l'étape suivante");
     const url = await uploadImage(file, field);
     setUploading(false);
     if (url) {
       setData((d) => ({ ...d, [field === "avatar" ? "avatarUrl" : "coverUrl"]: url }));
+      log("success", field, "Photo envoyée", "Passage à l'étape suivante");
+    } else {
+      log("warning", field, "Photo gardée en aperçu local, envoi distant impossible", "Vous pouvez continuer ; la carte sera créée en mode reprise si nécessaire");
     }
     setTimeout(() => next(), 500);
   };
@@ -388,6 +455,7 @@ function VocalOnboardingPage() {
 
 
   const finish = async () => {
+    setFlowError(null);
     const phones = [data.phone1, data.phone2, data.phone3]
       .filter(Boolean)
       .map((raw) => {
@@ -397,9 +465,45 @@ function VocalOnboardingPage() {
     const slug = slugify(`${data.firstName}-${data.lastName}-${data.phone1.slice(-4)}`) || `user-${Date.now()}`;
 
     if (!data.firstName || !data.phone1) {
+      showError("Nom et téléphone principal obligatoires.", "Retournez aux étapes Identité et Téléphone principal pour compléter la carte.", "done");
       toast.error("Nom et téléphone principal obligatoires");
       return;
     }
+
+    const createLocalFallback = (finalSlug = slug) => {
+      const id = `vocal-${Date.now()}`;
+      upsertProfile({
+        id,
+        slug: finalSlug,
+        email: "",
+        kind: "informel",
+        firstName: data.firstName,
+        lastName: data.lastName,
+        title: data.activity,
+        sector: data.activity || "Autre",
+        city: data.city,
+        phones,
+        socials: data.whatsapp ? { whatsapp: data.whatsapp } : {},
+        avatarUrl: data.avatarUrl || undefined,
+        coverUrl: data.coverUrl || undefined,
+        templateId: "minimal",
+        palette: { primary: "#0066FF", accent: "#FF6B00", ink: "#0B1220" },
+        hasPremium: true,
+        premiumCode: undefined,
+        prospects: [],
+        createdAt: Date.now(),
+        gallery: data.gallery.map((url, i) => ({
+          id: `vg-${i}-${Date.now()}`,
+          category: "photos" as const,
+          mediaType: "image" as const,
+          url,
+          caption: "",
+          createdAt: Date.now(),
+        })),
+      });
+      useApp.setState({ currentProfileId: id });
+      return finalSlug;
+    };
 
     // 1) Si déjà connecté → MAJ profil local (mock store)
     if (me) {
@@ -430,6 +534,7 @@ function VocalOnboardingPage() {
 
     // 2) Mode standalone : RPC publique
     try {
+      log("info", "done", "Envoi de la carte vocale vers Supabase", "Créer le profil puis afficher la carte publique");
       // Filtrer les blob: (uploads échoués) — on n'envoie que des URLs persistantes
       const safeAvatar = data.avatarUrl && !data.avatarUrl.startsWith("blob:") ? data.avatarUrl : null;
       const safeCover = data.coverUrl && !data.coverUrl.startsWith("blob:") ? data.coverUrl : null;
@@ -453,6 +558,7 @@ function VocalOnboardingPage() {
       });
       if (error) throw error;
       const finalSlug = (result as any)?.slug ?? slug;
+      log("success", "done", `Carte créée : /c/${finalSlug}`, "Afficher la carte publique");
       toast.success("Carte FlexCard créée !");
       if (data.whatsapp) {
         const phone = data.whatsapp.replace(/\D/g, "");
@@ -462,7 +568,15 @@ function VocalOnboardingPage() {
       }
       navigate({ to: "/c/$slug", params: { slug: finalSlug } });
     } catch (err: any) {
-      toast.error("Création impossible", { description: err?.message || "Réessayez dans un instant." });
+      const finalSlug = createLocalFallback(slug);
+      showError(
+        `Supabase n'a pas confirmé la création (${err?.message || "erreur inconnue"}).`,
+        "Mode reprise activé : la carte est créée localement et affichée immédiatement.",
+        "done",
+      );
+      log("warning", "done", `Carte créée en mode reprise : /c/${finalSlug}`, "Afficher la carte publique");
+      toast.warning("Carte créée en mode reprise", { description: "La carte s'affiche maintenant ; la synchronisation distante pourra être relancée." });
+      navigate({ to: "/c/$slug", params: { slug: finalSlug } });
     }
   };
 
@@ -501,6 +615,17 @@ function VocalOnboardingPage() {
             <Mic className="h-3.5 w-3.5" /> Interface vocale · FlexCard
           </div>
           <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{stepTitle(step.key)}</h1>
+
+          {flowError && (
+            <div role="alert" className="mt-5 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm">
+              <div className="font-semibold text-destructive">Blocage détecté sur le parcours vocal</div>
+              <p className="mt-1 text-muted-foreground">{flowError.message}</p>
+              <p className="mt-1 font-medium">Action suivante : {flowError.nextAction}</p>
+              <a href={getVocalResumeHref()} className="mt-3 inline-flex rounded-xl bg-gradient-brand px-4 py-2 text-sm font-semibold text-white shadow-glow">
+                Reprendre le parcours vocal
+              </a>
+            </div>
+          )}
 
           <div className="mt-6 rounded-2xl bg-primary/5 border border-primary/20 p-4 flex gap-3 items-start">
             <button
@@ -656,9 +781,37 @@ function VocalOnboardingPage() {
         <div className="lg:sticky lg:top-6 self-start">
           <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Aperçu de votre carte</div>
           <BusinessCard profile={preview as any} variant="full" />
+          <ExecutionLog entries={runLog} onClear={() => { clearVocalLog(); setRunLog([]); }} />
         </div>
       </div>
     </div>
+  );
+}
+
+function ExecutionLog({ entries, onClear }: { entries: VocalLogEntry[]; onClear: () => void }) {
+  return (
+    <section aria-label="Journal d'exécution vocal" className="mt-4 rounded-2xl border border-border bg-card p-4 shadow-card">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-sm font-semibold">Journal d'exécution</h2>
+        <button type="button" onClick={onClear} className="text-[11px] font-semibold text-muted-foreground hover:text-foreground">
+          Effacer
+        </button>
+      </div>
+      <div className="mt-3 max-h-64 space-y-2 overflow-auto text-xs" data-testid="vocal-execution-log">
+        {entries.length === 0 ? (
+          <p className="text-muted-foreground">Aucune étape enregistrée pour le moment.</p>
+        ) : entries.map((entry) => (
+          <div key={entry.id} className="rounded-xl bg-secondary/60 p-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-semibold">{entry.step}</span>
+              <span className="text-[10px] text-muted-foreground">{entry.at}</span>
+            </div>
+            <p className="mt-1 text-muted-foreground">{entry.message}</p>
+            {entry.nextAction && <p className="mt-1 font-medium">Action : {entry.nextAction}</p>}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 

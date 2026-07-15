@@ -7,10 +7,12 @@ import { z } from "zod";
 import { toast } from "sonner";
 import type { AccountKind } from "@/lib/mock/types";
 import { SECTORS_BY_KIND } from "@/lib/mock/sectors";
+import { getVocalResumeHref, navigateToVocalOnboarding } from "@/lib/vocalDiagnostics";
 
 const searchSchema = z.object({
   ref: z.string().optional(),
   kind: z.enum(["particulier", "informel", "entreprise"]).optional(),
+  voiceFallback: z.string().optional(),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -36,7 +38,7 @@ const KIND_OPTIONS: { kind: AccountKind; label: string; desc: string; icon: Reac
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { ref, kind: urlKind } = Route.useSearch();
+  const { ref, kind: urlKind, voiceFallback } = Route.useSearch();
 
   const [step, setStep] = useState<Step>("kind");
   const [kind, setKind] = useState<AccountKind>(urlKind ?? "particulier");
@@ -53,6 +55,12 @@ function AuthPage() {
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [voiceError, setVoiceError] = useState<{ message: string; nextAction: string } | null>(
+    voiceFallback ? {
+      message: "La page de connexion s'est ouverte au lieu du parcours vocal.",
+      nextAction: "Reprendre directement la création vocale avec le bouton ci-dessous.",
+    } : null,
+  );
 
   useEffect(() => { if (urlKind) { setKind(urlKind); setStep("form"); } }, [urlKind]);
   useEffect(() => { setSector(SECTORS_BY_KIND[kind][0]); }, [kind]);
@@ -131,11 +139,28 @@ function AuthPage() {
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">L'interface vocale crée votre carte pour vous.</p>
                 <button
-                  onClick={() => navigate({ to: "/onboarding/vocal" })}
+                  onClick={() => {
+                    setVoiceError(null);
+                    navigateToVocalOnboarding({
+                      navigate,
+                      source: "auth-voice-shortcut",
+                      onError: (message, nextAction) => setVoiceError({ message, nextAction }),
+                    });
+                  }}
                   className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent-orange)] px-4 py-2 text-sm font-semibold text-white shadow-glow"
                 >
                   <Mic className="h-4 w-4" /> Créer ma carte à la voix
                 </button>
+                {voiceError && (
+                  <div role="alert" className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-xs">
+                    <div className="font-semibold text-destructive">La création vocale ne s'est pas ouverte.</div>
+                    <p className="mt-1 text-muted-foreground">{voiceError.message}</p>
+                    <p className="mt-1 font-medium">Action suivante : {voiceError.nextAction}</p>
+                    <a href={getVocalResumeHref()} className="mt-2 inline-flex rounded-lg bg-gradient-brand px-3 py-2 font-semibold text-white">
+                      Reprendre la création vocale
+                    </a>
+                  </div>
+                )}
               </div>
             </>
           )}
