@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useApp } from "@/lib/mock/store";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -21,35 +21,28 @@ export const Route = createFileRoute("/admin")({
 });
 
 type Tab = "users" | "team" | "finance" | "support" | "modération" | "analytics" | "imprimeurs";
-type AccessState = "checking" | "granted";
+type AccessState = "checking" | "signin" | "granted";
 
 function AdminPage() {
-  const navigate = useNavigate();
+  // no external navigation: /admin owns its own sign-in screen
   const [access, setAccess] = useState<AccessState>("checking");
   const [tab, setTab] = useState<Tab>("users");
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data: userRes } = await supabase.auth.getUser();
-      const user = userRes.user;
-      if (!user) {
-        if (!cancelled) navigate({ to: "/auth", search: { redirect: "/admin" } as any });
-        return;
-      }
-      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
-      if (cancelled) return;
-      if (!isAdmin) {
-        // Not part of the team — bounce back to the auth screen (Espace Équipe uniquement)
-        toast.error("Espace réservé à l'équipe FlexCard");
-        await supabase.auth.signOut();
-        navigate({ to: "/auth", search: { redirect: "/admin" } as any });
-        return;
-      }
-      setAccess("granted");
-    })();
-    return () => { cancelled = true; };
-  }, [navigate]);
+  const check = useCallback(async () => {
+    const { data: userRes } = await supabase.auth.getUser();
+    const user = userRes.user;
+    if (!user) { setAccess("signin"); return; }
+    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
+    if (!isAdmin) {
+      toast.error("Espace réservé à l'équipe FlexCard");
+      await supabase.auth.signOut();
+      setAccess("signin");
+      return;
+    }
+    setAccess("granted");
+  }, []);
+
+  useEffect(() => { check(); }, [check]);
 
   if (access === "checking") {
     return (
@@ -57,6 +50,10 @@ function AdminPage() {
         <div className="surface-elevated p-8 text-sm text-muted-foreground">Vérification des droits…</div>
       </div>
     );
+  }
+
+  if (access === "signin") {
+    return <AdminSignIn onSuccess={check} />;
   }
 
 
@@ -69,7 +66,7 @@ function AdminPage() {
             <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">ADMIN</span>
           </div>
           <button
-            onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/auth" }); }}
+            onClick={async () => { await supabase.auth.signOut(); setAccess("signin"); }}
             className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold hover:bg-secondary"
           >
             <LogOut className="h-3.5 w-3.5" /> Se déconnecter
@@ -441,4 +438,74 @@ function TeamPanel() {
     </section>
   );
 }
+
+function AdminSignIn({ onSuccess }: { onSuccess: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error || !data.user) throw new Error(error?.message ?? "Identifiants invalides");
+      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: data.user.id, _role: "admin" });
+      if (!isAdmin) {
+        await supabase.auth.signOut();
+        throw new Error("Ce compte n'appartient pas à l'équipe FlexCard");
+      }
+      toast.success("Bienvenue dans l'Espace Équipe");
+      onSuccess();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Connexion impossible");
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div className="min-h-screen grid place-items-center bg-gradient-mesh px-4 py-10">
+      <div className="w-full max-w-md surface-elevated p-8">
+        <div className="flex items-center gap-3">
+          <Logo className="h-9" />
+          <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-bold text-destructive">ESPACE ÉQUIPE</span>
+        </div>
+        <h1 className="mt-6 text-2xl font-bold">Connexion staff</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Accès réservé à l'équipe FlexCard (admin, modérateur, commercial, coordinateur, partenaire, imprimeur).
+        </p>
+        <form onSubmit={submit} className="mt-6 space-y-4">
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Email professionnel</label>
+            <input
+              type="email" required autoFocus value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@flexcard.pro"
+              className="mt-1 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Mot de passe</label>
+            <input
+              type="password" required value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+            />
+          </div>
+          <button
+            type="submit" disabled={busy}
+            className="w-full rounded-xl bg-gradient-brand px-5 py-3 text-sm font-bold text-white shadow-glow disabled:opacity-60"
+          >
+            {busy ? "Connexion…" : "Se connecter à l'espace équipe"}
+          </button>
+        </form>
+        <div className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
+          <Link to="/" className="hover:text-foreground">← Retour au site</Link>
+          <Link to="/auth" className="hover:text-foreground">Espace utilisateur →</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
