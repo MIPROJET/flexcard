@@ -356,8 +356,7 @@ function CreateCardSection() {
           onMouseEnter={() => speak("Cliquez ici pour créer votre carte par la voix.")}
           onClick={() => {
             speak("Bienvenue. Je vais vous guider, étape par étape.");
-            // route /onboarding existante — la flow vocal arrive en Lot 3
-            window.location.assign("/onboarding?mode=voice");
+            window.location.assign("/onboarding/vocal");
           }}
           className="group relative overflow-hidden rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/5 via-card to-card p-8 text-left transition hover:border-primary hover:shadow-elev"
         >
