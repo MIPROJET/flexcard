@@ -24,7 +24,7 @@ type Tab = "users" | "team" | "finance" | "support" | "modération" | "analytics
 type AccessState = "checking" | "signin" | "granted";
 
 function AdminPage() {
-  const navigate = useNavigate();
+  // no external navigation: /admin owns its own sign-in screen
   const [access, setAccess] = useState<AccessState>("checking");
   const [tab, setTab] = useState<Tab>("users");
 
