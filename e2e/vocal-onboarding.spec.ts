@@ -82,7 +82,7 @@ test("création de carte par vocal avec validations, journal et rendu final", as
   await page.getByRole("button", { name: /Continuer/ }).click();
 
   await expect(page.getByRole("heading", { name: "Vérification" })).toBeVisible();
-  await expect(page.getByText("Awa Traore")).toBeVisible();
+  await expect(page.getByText("Awa Traore").first()).toBeVisible();
   await page.getByRole("button", { name: /Continuer/ }).click();
 
   await expect(page.getByRole("heading", { name: "Photo de profil" })).toBeVisible();
