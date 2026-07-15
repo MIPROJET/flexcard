@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as SecuriteRouteImport } from './routes/securite'
 import { Route as ParrainageRouteImport } from './routes/parrainage'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MaCarteRouteImport } from './routes/ma-carte'
@@ -50,6 +51,11 @@ const SecuriteRoute = SecuriteRouteImport.update({
 const ParrainageRoute = ParrainageRouteImport.update({
   id: '/parrainage',
   path: '/parrainage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
@@ -107,9 +113,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
-  id: '/onboarding/',
-  path: '/onboarding/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => OnboardingRoute,
 } as any)
 const PrintCodeRoute = PrintCodeRouteImport.update({
   id: '/print/$code',
@@ -117,9 +123,9 @@ const PrintCodeRoute = PrintCodeRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingVocalRoute = OnboardingVocalRouteImport.update({
-  id: '/onboarding/vocal',
-  path: '/onboarding/vocal',
-  getParentRoute: () => rootRouteImport,
+  id: '/vocal',
+  path: '/vocal',
+  getParentRoute: () => OnboardingRoute,
 } as any)
 const CSlugRoute = CSlugRouteImport.update({
   id: '/c/$slug',
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/ma-carte': typeof MaCarteRoute
   '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
   '/securite': typeof SecuriteRoute
   '/tarifs': typeof TarifsRoute
@@ -241,6 +248,7 @@ export interface FileRoutesById {
   '/ma-carte': typeof MaCarteRoute
   '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
   '/securite': typeof SecuriteRoute
   '/tarifs': typeof TarifsRoute
@@ -271,6 +279,7 @@ export interface FileRouteTypes {
     | '/ma-carte'
     | '/me'
     | '/mentions-legales'
+    | '/onboarding'
     | '/parrainage'
     | '/securite'
     | '/tarifs'
@@ -328,6 +337,7 @@ export interface FileRouteTypes {
     | '/ma-carte'
     | '/me'
     | '/mentions-legales'
+    | '/onboarding'
     | '/parrainage'
     | '/securite'
     | '/tarifs'
@@ -358,13 +368,12 @@ export interface RootRouteChildren {
   MaCarteRoute: typeof MaCarteRoute
   MeRoute: typeof MeRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  OnboardingRoute: typeof OnboardingRouteWithChildren
   ParrainageRoute: typeof ParrainageRoute
   SecuriteRoute: typeof SecuriteRoute
   TarifsRoute: typeof TarifsRoute
   CSlugRoute: typeof CSlugRoute
-  OnboardingVocalRoute: typeof OnboardingVocalRoute
   PrintCodeRoute: typeof PrintCodeRoute
-  OnboardingIndexRoute: typeof OnboardingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -388,6 +397,13 @@ declare module '@tanstack/react-router' {
       path: '/parrainage'
       fullPath: '/parrainage'
       preLoaderRoute: typeof ParrainageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mentions-legales': {
@@ -469,10 +485,10 @@ declare module '@tanstack/react-router' {
     }
     '/onboarding/': {
       id: '/onboarding/'
-      path: '/onboarding'
+      path: '/'
       fullPath: '/onboarding/'
       preLoaderRoute: typeof OnboardingIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof OnboardingRoute
     }
     '/print/$code': {
       id: '/print/$code'
@@ -483,10 +499,10 @@ declare module '@tanstack/react-router' {
     }
     '/onboarding/vocal': {
       id: '/onboarding/vocal'
-      path: '/onboarding/vocal'
+      path: '/vocal'
       fullPath: '/onboarding/vocal'
       preLoaderRoute: typeof OnboardingVocalRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof OnboardingRoute
     }
     '/c/$slug': {
       id: '/c/$slug'
@@ -589,6 +605,20 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface OnboardingRouteChildren {
+  OnboardingVocalRoute: typeof OnboardingVocalRoute
+  OnboardingIndexRoute: typeof OnboardingIndexRoute
+}
+
+const OnboardingRouteChildren: OnboardingRouteChildren = {
+  OnboardingVocalRoute: OnboardingVocalRoute,
+  OnboardingIndexRoute: OnboardingIndexRoute,
+}
+
+const OnboardingRouteWithChildren = OnboardingRoute._addFileChildren(
+  OnboardingRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -601,14 +631,23 @@ const rootRouteChildren: RootRouteChildren = {
   MaCarteRoute: MaCarteRoute,
   MeRoute: MeRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  OnboardingRoute: OnboardingRouteWithChildren,
   ParrainageRoute: ParrainageRoute,
   SecuriteRoute: SecuriteRoute,
   TarifsRoute: TarifsRoute,
   CSlugRoute: CSlugRoute,
-  OnboardingVocalRoute: OnboardingVocalRoute,
   PrintCodeRoute: PrintCodeRoute,
-  OnboardingIndexRoute: OnboardingIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
