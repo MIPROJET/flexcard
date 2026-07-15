@@ -24,6 +24,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OnboardingIndexRouteImport } from './routes/onboarding.index'
 import { Route as PrintCodeRouteImport } from './routes/print.$code'
 import { Route as OnboardingVocalRouteImport } from './routes/onboarding.vocal'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
@@ -110,6 +111,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OnboardingRoute,
 } as any)
 const PrintCodeRoute = PrintCodeRouteImport.update({
   id: '/print/$code',
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/c/$slug': typeof CSlugRoute
   '/onboarding/vocal': typeof OnboardingVocalRoute
   '/print/$code': typeof PrintCodeRoute
+  '/onboarding/': typeof OnboardingIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -211,7 +218,6 @@ export interface FileRoutesByTo {
   '/ma-carte': typeof MaCarteRoute
   '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
-  '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
   '/securite': typeof SecuriteRoute
   '/tarifs': typeof TarifsRoute
@@ -227,6 +233,7 @@ export interface FileRoutesByTo {
   '/c/$slug': typeof CSlugRoute
   '/onboarding/vocal': typeof OnboardingVocalRoute
   '/print/$code': typeof PrintCodeRoute
+  '/onboarding': typeof OnboardingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -257,6 +264,7 @@ export interface FileRoutesById {
   '/c/$slug': typeof CSlugRoute
   '/onboarding/vocal': typeof OnboardingVocalRoute
   '/print/$code': typeof PrintCodeRoute
+  '/onboarding/': typeof OnboardingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -287,6 +295,7 @@ export interface FileRouteTypes {
     | '/c/$slug'
     | '/onboarding/vocal'
     | '/print/$code'
+    | '/onboarding/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -299,7 +308,6 @@ export interface FileRouteTypes {
     | '/ma-carte'
     | '/me'
     | '/mentions-legales'
-    | '/onboarding'
     | '/parrainage'
     | '/securite'
     | '/tarifs'
@@ -315,6 +323,7 @@ export interface FileRouteTypes {
     | '/c/$slug'
     | '/onboarding/vocal'
     | '/print/$code'
+    | '/onboarding'
   id:
     | '__root__'
     | '/'
@@ -344,6 +353,7 @@ export interface FileRouteTypes {
     | '/c/$slug'
     | '/onboarding/vocal'
     | '/print/$code'
+    | '/onboarding/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -473,6 +483,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof OnboardingIndexRouteImport
+      parentRoute: typeof OnboardingRoute
+    }
     '/print/$code': {
       id: '/print/$code'
       path: '/print/$code'
@@ -590,10 +607,12 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 
 interface OnboardingRouteChildren {
   OnboardingVocalRoute: typeof OnboardingVocalRoute
+  OnboardingIndexRoute: typeof OnboardingIndexRoute
 }
 
 const OnboardingRouteChildren: OnboardingRouteChildren = {
   OnboardingVocalRoute: OnboardingVocalRoute,
+  OnboardingIndexRoute: OnboardingIndexRoute,
 }
 
 const OnboardingRouteWithChildren = OnboardingRoute._addFileChildren(

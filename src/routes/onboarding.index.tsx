@@ -8,7 +8,7 @@ import { Logo } from "@/components/flex/Logo";
 import { ArrowRight, ArrowLeft, Sparkles, Check } from "lucide-react";
 import { PhoneInput } from "@/components/flex/PhoneInput";
 
-export const Route = createFileRoute("/onboarding")({
+export const Route = createFileRoute("/onboarding/")({
   
   ssr: false,head: () => ({ meta: [{ title: "Créer ma carte — FlexCard" }] }),
   component: OnboardingPage,
