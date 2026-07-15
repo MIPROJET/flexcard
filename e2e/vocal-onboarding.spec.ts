@@ -93,7 +93,7 @@ test("création de carte par vocal avec validations, journal et rendu final", as
   await page.getByRole("button", { name: /Continuer/ }).click();
 
   await expect(page.getByRole("heading", { name: "C'est terminé !" })).toBeVisible();
-  await expect(page.getByTestId("vocal-execution-log")).toContainText("name");
+  await expect(page.getByTestId("vocal-execution-log")).toContainText("Étape 14/14");
   await page.getByRole("button", { name: /Activer ma carte FlexCard/ }).click();
 
   await expect(page).toHaveURL(/\/c\/awa-traore-0304/);
