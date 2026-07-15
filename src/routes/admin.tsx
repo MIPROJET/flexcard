@@ -439,3 +439,73 @@ function TeamPanel() {
   );
 }
 
+function AdminSignIn({ onSuccess }: { onSuccess: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error || !data.user) throw new Error(error?.message ?? "Identifiants invalides");
+      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: data.user.id, _role: "admin" });
+      if (!isAdmin) {
+        await supabase.auth.signOut();
+        throw new Error("Ce compte n'appartient pas à l'équipe FlexCard");
+      }
+      toast.success("Bienvenue dans l'Espace Équipe");
+      onSuccess();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Connexion impossible");
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div className="min-h-screen grid place-items-center bg-gradient-mesh px-4 py-10">
+      <div className="w-full max-w-md surface-elevated p-8">
+        <div className="flex items-center gap-3">
+          <Logo className="h-9" />
+          <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-bold text-destructive">ESPACE ÉQUIPE</span>
+        </div>
+        <h1 className="mt-6 text-2xl font-bold">Connexion staff</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Accès réservé à l'équipe FlexCard (admin, modérateur, commercial, coordinateur, partenaire, imprimeur).
+        </p>
+        <form onSubmit={submit} className="mt-6 space-y-4">
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Email professionnel</label>
+            <input
+              type="email" required autoFocus value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@flexcard.pro"
+              className="mt-1 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Mot de passe</label>
+            <input
+              type="password" required value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+            />
+          </div>
+          <button
+            type="submit" disabled={busy}
+            className="w-full rounded-xl bg-gradient-brand px-5 py-3 text-sm font-bold text-white shadow-glow disabled:opacity-60"
+          >
+            {busy ? "Connexion…" : "Se connecter à l'espace équipe"}
+          </button>
+        </form>
+        <div className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
+          <Link to="/" className="hover:text-foreground">← Retour au site</Link>
+          <Link to="/auth" className="hover:text-foreground">Espace utilisateur →</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
