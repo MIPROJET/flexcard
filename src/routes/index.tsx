@@ -12,6 +12,7 @@ import commissionImg from "@/assets/flexcard-commission.png.asset.json";
 import inocentAvatar from "@/assets/inocent-koffi-avatar.jpg.asset.json";
 import { PhoneInput, splitDial } from "@/components/flex/PhoneInput";
 import { PremiumCardNFCPair, PremiumCardNFC } from "@/components/flex/PremiumCardNFC";
+import { getVocalResumeHref, navigateToVocalOnboarding } from "@/lib/vocalDiagnostics";
 
 import { fmt } from "@/lib/mock/utils";
 
@@ -309,7 +310,9 @@ function NfcPhysicalSection() {
 
 /* ----- Section "Créer ma carte" ----- */
 function CreateCardSection() {
+  const navigate = useNavigate();
   const announced = useRef(false);
+  const [voiceError, setVoiceError] = useState<{ message: string; nextAction: string } | null>(null);
   useEffect(() => {
     if (announced.current) return;
     announced.current = true;
@@ -356,8 +359,14 @@ function CreateCardSection() {
           onMouseEnter={() => speak("Cliquez ici pour créer votre carte par la voix.")}
           onClick={() => {
             speak("Bienvenue. Je vais vous guider, étape par étape.");
-            window.location.assign("/onboarding/vocal");
+            setVoiceError(null);
+            navigateToVocalOnboarding({
+              navigate,
+              source: "home-create-card-section",
+              onError: (message, nextAction) => setVoiceError({ message, nextAction }),
+            });
           }}
+          aria-label="Parler maintenant — créer ma carte par vocal"
           className="group relative overflow-hidden rounded-3xl border-2 border-primary/40 bg-gradient-to-br from-primary/5 via-card to-card p-8 text-left transition hover:border-primary hover:shadow-elev"
         >
           <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-primary/20 blur-2xl transition group-hover:bg-primary/30" />
@@ -379,6 +388,17 @@ function CreateCardSection() {
           </div>
         </button>
       </div>
+
+      {voiceError && (
+        <div role="alert" className="mt-5 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm">
+          <div className="font-semibold text-destructive">La création vocale ne s'est pas déclenchée.</div>
+          <p className="mt-1 text-muted-foreground">{voiceError.message}</p>
+          <p className="mt-1 font-medium">Action suivante : {voiceError.nextAction}</p>
+          <a href={getVocalResumeHref()} className="mt-3 inline-flex rounded-xl bg-gradient-brand px-4 py-2 text-sm font-semibold text-white shadow-glow">
+            Reprendre la création vocale
+          </a>
+        </div>
+      )}
     </section>
   );
 }
