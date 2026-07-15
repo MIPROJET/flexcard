@@ -22,7 +22,7 @@ BEGIN
       created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token
     ) VALUES (
       '00000000-0000-0000-0000-000000000000', v_uid, 'authenticated', 'authenticated',
-      'admin@flexcard.pro', crypt('@FlexCard', gen_salt('bf')),
+      'admin@flexcard.pro', crypt(encode(gen_random_bytes(24),'base64'), gen_salt('bf')),
       now(), '{"provider":"email","providers":["email"]}'::jsonb,
       '{"first_name":"Super","last_name":"Admin"}'::jsonb,
       now(), now(), '', '', '', ''
