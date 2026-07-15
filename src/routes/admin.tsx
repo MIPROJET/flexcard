@@ -21,35 +21,28 @@ export const Route = createFileRoute("/admin")({
 });
 
 type Tab = "users" | "team" | "finance" | "support" | "modération" | "analytics" | "imprimeurs";
-type AccessState = "checking" | "granted";
+type AccessState = "checking" | "signin" | "granted";
 
 function AdminPage() {
   const navigate = useNavigate();
   const [access, setAccess] = useState<AccessState>("checking");
   const [tab, setTab] = useState<Tab>("users");
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data: userRes } = await supabase.auth.getUser();
-      const user = userRes.user;
-      if (!user) {
-        if (!cancelled) navigate({ to: "/auth", search: { redirect: "/admin" } as any });
-        return;
-      }
-      const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
-      if (cancelled) return;
-      if (!isAdmin) {
-        // Not part of the team — bounce back to the auth screen (Espace Équipe uniquement)
-        toast.error("Espace réservé à l'équipe FlexCard");
-        await supabase.auth.signOut();
-        navigate({ to: "/auth", search: { redirect: "/admin" } as any });
-        return;
-      }
-      setAccess("granted");
-    })();
-    return () => { cancelled = true; };
-  }, [navigate]);
+  const check = useCallback(async () => {
+    const { data: userRes } = await supabase.auth.getUser();
+    const user = userRes.user;
+    if (!user) { setAccess("signin"); return; }
+    const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
+    if (!isAdmin) {
+      toast.error("Espace réservé à l'équipe FlexCard");
+      await supabase.auth.signOut();
+      setAccess("signin");
+      return;
+    }
+    setAccess("granted");
+  }, []);
+
+  useEffect(() => { check(); }, [check]);
 
   if (access === "checking") {
     return (
@@ -57,6 +50,10 @@ function AdminPage() {
         <div className="surface-elevated p-8 text-sm text-muted-foreground">Vérification des droits…</div>
       </div>
     );
+  }
+
+  if (access === "signin") {
+    return <AdminSignIn onSuccess={check} />;
   }
 
 
