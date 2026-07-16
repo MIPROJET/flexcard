@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PublicHeader } from "@/components/flex/PublicHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
@@ -279,9 +279,9 @@ function AuthPage() {
             <p className="mt-1 text-xs text-muted-foreground">
               Coordinateurs, agents commerciaux et imprimeurs relais ont un espace dédié.
             </p>
-            <a href="/me" className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-glow">
+            <Link to="/admin" className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-glow">
               Accéder à l'espace pro →
-            </a>
+            </Link>
           </div>
         </div>
       </section>

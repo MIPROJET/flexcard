@@ -52,8 +52,10 @@ export function clearVocalLog() {
   window.dispatchEvent(new CustomEvent("flexcard:vocal-log", { detail: [] }));
 }
 
-export function getVocalResumeHref() {
-  return `${VOCAL_ONBOARDING_PATH}?resume=1`;
+export function getVocalResumeHref(source?: string) {
+  const params = new URLSearchParams({ resume: "1" });
+  if (source) params.set("source", source);
+  return `${VOCAL_ONBOARDING_PATH}?${params.toString()}`;
 }
 
 export function navigateToVocalOnboarding({
@@ -83,23 +85,19 @@ export function navigateToVocalOnboarding({
   };
 
   try {
-    const result = navigate({ to: VOCAL_ONBOARDING_PATH, search: { resume: "1" } });
-    void Promise.resolve(result).catch((err) => {
-      fail(err?.message || "La navigation interne vers le parcours vocal a échoué.");
-      window.location.assign(getVocalResumeHref());
-    });
+    // Force une vraie navigation navigateur : le parcours vocal ne dépend plus
+    // d'un état auth/TanStack éventuellement bloqué sur /auth.
+    window.location.assign(getVocalResumeHref(source));
   } catch (err: any) {
-    fail(err?.message || "La navigation interne vers le parcours vocal a échoué.");
-    window.location.assign(getVocalResumeHref());
-    return false;
-  }
-
-  window.setTimeout(() => {
-    if (window.location.pathname !== VOCAL_ONBOARDING_PATH) {
-      fail(`La page est restée sur ${window.location.pathname} au lieu d'ouvrir ${VOCAL_ONBOARDING_PATH}.`);
-      window.location.assign(getVocalResumeHref());
+    fail(err?.message || "La navigation directe vers le parcours vocal a échoué.");
+    try {
+      const result = navigate({ to: VOCAL_ONBOARDING_PATH, search: { resume: "1", source } });
+      void Promise.resolve(result).catch((navErr) => fail(navErr?.message || "La navigation interne vers le parcours vocal a échoué."));
+    } catch (navErr: any) {
+      fail(navErr?.message || "La navigation interne vers le parcours vocal a échoué.");
+      return false;
     }
-  }, 900);
+  }
 
   return true;
 }
