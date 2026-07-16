@@ -75,8 +75,6 @@ function AuthPage() {
   useEffect(() => { if (urlKind) { setKind(urlKind); setStep("form"); } }, [urlKind]);
   useEffect(() => { setSector(SECTORS_BY_KIND[kind][0]); }, [kind]);
 
-  // If user is already logged in, redirect to dashboard
-  useEffect(() => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session?.user) window.location.href = postLogin;
