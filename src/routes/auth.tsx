@@ -13,7 +13,15 @@ const searchSchema = z.object({
   ref: z.string().optional(),
   kind: z.enum(["particulier", "informel", "entreprise"]).optional(),
   voiceFallback: z.string().optional(),
+  next: z.string().optional(),
 });
+
+function safeNext(next: string | undefined): string | null {
+  if (!next) return null;
+  // Only same-origin relative paths.
+  if (!next.startsWith("/") || next.startsWith("//")) return null;
+  return next;
+}
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -38,7 +46,9 @@ const KIND_OPTIONS: { kind: AccountKind; label: string; desc: string; icon: Reac
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { ref, kind: urlKind, voiceFallback } = Route.useSearch();
+  const { ref, kind: urlKind, voiceFallback, next } = Route.useSearch();
+  const nextPath = safeNext(next);
+  const postLogin = nextPath ?? "/dashboard";
 
   const [step, setStep] = useState<Step>("kind");
   const [kind, setKind] = useState<AccountKind>(urlKind ?? "particulier");
@@ -67,10 +77,11 @@ function AuthPage() {
 
   // If user is already logged in, redirect to dashboard
   useEffect(() => {
+  useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user) navigate({ to: "/dashboard" });
+      if (data.session?.user) window.location.href = postLogin;
     });
-  }, [navigate]);
+  }, [postLogin]);
 
   const chooseKind = (k: AccountKind) => { setKind(k); setStep("form"); };
 
@@ -82,7 +93,7 @@ function AuthPage() {
     const { error: err } = await supabase.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}${postLogin}`,
         data: {
           first_name: firstName.trim(),
           last_name: lastName.trim(),
