@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "sdk_version": "0.23.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://oboljtsnpmxwvirfzdft.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "flexcard-mcp",
+      "version": "0.1.0",
+      "title": "FlexCard MCP"
+    },
+    "tools": [
+      {
+        "name": "get_my_profile",
+        "title": "Get my FlexCard profile",
+        "description": "Return the signed-in user's FlexCard profile (name, slug, kind, sector, city, company, title, premium status).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_prospects",
+        "title": "List my prospects",
+        "description": "List prospects (people who scanned the signed-in user's FlexCard). Returns scanner phone, contact name/email if known, first/last visit dates and visit count.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 50,
+              "description": "Maximum number of prospects to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_public_card",
+        "title": "Get a public FlexCard",
+        "description": "Fetch a public FlexCard by its slug (the identifier at /c/<slug>). Returns the public fields only.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The public card slug (e.g. 'jean-kouassi')."
+            }
+          },
+          "required": [
+            "slug"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

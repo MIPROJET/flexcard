@@ -15,6 +15,7 @@ import { Route as ParrainageRouteImport } from './routes/parrainage'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as MeRouteImport } from './routes/me'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MaCarteRouteImport } from './routes/ma-carte'
 import { Route as DirectoryRouteImport } from './routes/directory'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -37,6 +38,10 @@ import { Route as AuthenticatedPremiumRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedGalleryRouteImport } from './routes/_authenticated.gallery'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated.billing'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
 const TarifsRoute = TarifsRouteImport.update({
   id: '/tarifs',
@@ -66,6 +71,11 @@ const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
 const MeRoute = MeRouteImport.update({
   id: '/me',
   path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MaCarteRoute = MaCarteRouteImport.update({
@@ -177,6 +187,29 @@ const AuthenticatedBillingRoute = AuthenticatedBillingRouteImport.update({
   path: '/billing',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -187,12 +220,15 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
   '/ma-carte': typeof MaCarteRoute
+  '/mcp': typeof McpRoute
   '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
   '/securite': typeof SecuriteRoute
   '/tarifs': typeof TarifsRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/gallery': typeof AuthenticatedGalleryRoute
@@ -206,6 +242,8 @@ export interface FileRoutesByFullPath {
   '/onboarding/vocal': typeof OnboardingVocalRoute
   '/print/$code': typeof PrintCodeRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -216,11 +254,14 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
   '/ma-carte': typeof MaCarteRoute
+  '/mcp': typeof McpRoute
   '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/parrainage': typeof ParrainageRoute
   '/securite': typeof SecuriteRoute
   '/tarifs': typeof TarifsRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/gallery': typeof AuthenticatedGalleryRoute
@@ -234,6 +275,8 @@ export interface FileRoutesByTo {
   '/onboarding/vocal': typeof OnboardingVocalRoute
   '/print/$code': typeof PrintCodeRoute
   '/onboarding': typeof OnboardingIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -246,12 +289,15 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/directory': typeof DirectoryRoute
   '/ma-carte': typeof MaCarteRoute
+  '/mcp': typeof McpRoute
   '/me': typeof MeRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/onboarding': typeof OnboardingRouteWithChildren
   '/parrainage': typeof ParrainageRoute
   '/securite': typeof SecuriteRoute
   '/tarifs': typeof TarifsRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/gallery': typeof AuthenticatedGalleryRoute
@@ -265,6 +311,8 @@ export interface FileRoutesById {
   '/onboarding/vocal': typeof OnboardingVocalRoute
   '/print/$code': typeof PrintCodeRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -277,12 +325,15 @@ export interface FileRouteTypes {
     | '/contact'
     | '/directory'
     | '/ma-carte'
+    | '/mcp'
     | '/me'
     | '/mentions-legales'
     | '/onboarding'
     | '/parrainage'
     | '/securite'
     | '/tarifs'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/billing'
     | '/dashboard'
     | '/gallery'
@@ -296,6 +347,8 @@ export interface FileRouteTypes {
     | '/onboarding/vocal'
     | '/print/$code'
     | '/onboarding/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -306,11 +359,14 @@ export interface FileRouteTypes {
     | '/contact'
     | '/directory'
     | '/ma-carte'
+    | '/mcp'
     | '/me'
     | '/mentions-legales'
     | '/parrainage'
     | '/securite'
     | '/tarifs'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/billing'
     | '/dashboard'
     | '/gallery'
@@ -324,6 +380,8 @@ export interface FileRouteTypes {
     | '/onboarding/vocal'
     | '/print/$code'
     | '/onboarding'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
   id:
     | '__root__'
     | '/'
@@ -335,12 +393,15 @@ export interface FileRouteTypes {
     | '/contact'
     | '/directory'
     | '/ma-carte'
+    | '/mcp'
     | '/me'
     | '/mentions-legales'
     | '/onboarding'
     | '/parrainage'
     | '/securite'
     | '/tarifs'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/billing'
     | '/_authenticated/dashboard'
     | '/_authenticated/gallery'
@@ -354,6 +415,8 @@ export interface FileRouteTypes {
     | '/onboarding/vocal'
     | '/print/$code'
     | '/onboarding/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -366,14 +429,19 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DirectoryRoute: typeof DirectoryRoute
   MaCarteRoute: typeof MaCarteRoute
+  McpRoute: typeof McpRoute
   MeRoute: typeof MeRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   OnboardingRoute: typeof OnboardingRouteWithChildren
   ParrainageRoute: typeof ParrainageRoute
   SecuriteRoute: typeof SecuriteRoute
   TarifsRoute: typeof TarifsRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   CSlugRoute: typeof CSlugRoute
   PrintCodeRoute: typeof PrintCodeRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -418,6 +486,13 @@ declare module '@tanstack/react-router' {
       path: '/me'
       fullPath: '/me'
       preLoaderRoute: typeof MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ma-carte': {
@@ -574,6 +649,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBillingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -629,14 +732,20 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DirectoryRoute: DirectoryRoute,
   MaCarteRoute: MaCarteRoute,
+  McpRoute: McpRoute,
   MeRoute: MeRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   OnboardingRoute: OnboardingRouteWithChildren,
   ParrainageRoute: ParrainageRoute,
   SecuriteRoute: SecuriteRoute,
   TarifsRoute: TarifsRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   CSlugRoute: CSlugRoute,
   PrintCodeRoute: PrintCodeRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
